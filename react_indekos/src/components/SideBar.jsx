@@ -20,12 +20,13 @@ import {
   PointOfSaleOutlined,
 } from "@mui/icons-material";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import logoImage from "../asset/logo.png";
 import profileImage from "../asset/profile.jpg";
 import axiosClient from "../axios-client";
 import { useDispatch, useSelector } from 'react-redux';
 import { setActivePage } from '../state/actions';
+import { useLocation } from 'react-router-dom';
 
 const navItems = [
   {
@@ -56,7 +57,7 @@ const SideBar = ({
   setIsSideBarOpen,
   isNonMobile,
 }) => {
-  const { pathname } = useLocation();
+  // const { pathname } = useLocation();
   const active = useSelector((state) => state.activePage);
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
@@ -72,7 +73,7 @@ const SideBar = ({
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        console.log(data);
+
         setUser(data);
         setLoading(false);
       } catch (error) {
@@ -158,7 +159,8 @@ const SideBar = ({
                         if (lcText === 'keluar') {
                           handleLogout();
                         } else {
-                          navigate(`/${lcText}/${user}`);
+                          navigate(`/${lcText}/${user.id}`, { state: { userId:user.id } });
+                          setUser(user);
                           dispatch(setActivePage(lcText));
                         }
                       }}
