@@ -37,13 +37,13 @@ Route::get('/dashboard/{userId}', [DashboardController::class, 'informasiKos']);
 Route::post('/dashboard/pemasukan/{penyewaId}', [DashboardController::class, 'storePemasukan']);
 Route::patch('/dashboard/penyewa/status/{penyewaId}', [DashboardController::class, 'updatePenyewaStatus']);
 Route::get('/gedung/{userId}', [KelolaGedungFasilitasController::class, 'gedungByPemilik']);
+Route::get('/kamar/{id_gedung}', [KelolaGedungFasilitasController::class, 'kamarByGedung']);
+Route::get('/fasilitas umum/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasUmumByGedung']);
+Route::get('/fasilitas kamar/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasKamarByGedung']);
 
 Route::post('/tambah gedung/{userId}', [KelolaGedungFasilitasController::class, 'tambahGedung']);
 // Route::put('/edit gedung/{id_gedung}', [KelolaGedungController::class, 'updateGedung']);
 // Route::delete('/gedung/{id_gedung}', [KelolaGedungController::class, 'hapusGedung']);
-Route::get('/kamar/{id_gedung}', [KelolaGedungFasilitasController::class, 'kamarByGedung']);
-Route::get('/fasilitas umum/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasUmumByGedung']);
-Route::get('/fasilitas kamar/{id_kamar}', [KelolaGedungFasilitasController::class, 'fasilitasKamarByGedung']);
 Route::post('/tambah penyewa', [KelolaPenyewaController::class, 'tambahPenyewa']);
 Route::get('/kelola penyewa/{userId}', [KelolaPenyewaController::class, 'kelolaPenyewa']);
 Route::get('/penyewa/{id_penyewa}', [KelolaPenyewaController::class, 'detailPenyewa']);

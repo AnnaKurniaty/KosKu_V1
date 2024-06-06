@@ -30,6 +30,7 @@ const Inventory = () => {
     const location = useLocation();
     const [gedungList, setGedungList] = useState([]);
     const [fasilitasUmumList, setFasilitasUmum] = useState([]);
+    const [fasilitasKamarList, setFasilitasKamar] = useState([]);
     const [loading, setLoading] = useState(true);
     const [gedungId, setGedungId] = useState(null);
     const [image, setImage] = useState(null);
@@ -72,6 +73,22 @@ const Inventory = () => {
     };
     
     const handleTabKamar  = async () => {
+        setLoading(true);
+        try {
+            if (location.state && location.state.gedungId) {
+                setGedungId(location.state.gedungId);
+                const response = await axiosClient.get(`/fasilitas kamar/${location.state.gedungId}`);
+                const data = response.data;
+                setFasilitasKamar(data.fasilitas || []);
+            }
+        } catch (error) {
+            console.error("Failed to fetch data", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleTab  = async () => {
         setLoading(true);
         try {
             if (location.state && location.state.gedungId) {
@@ -139,9 +156,9 @@ const Inventory = () => {
                         backgroundColor:theme.palette.secondary[500],
                         }
                     }}>
-                        <Tab label="Tipe Kamar" value="1" onClick={() => handleTabKamar()}/>
+                        <Tab label="Tipe Kamar" value="1" onClick={() => handleTab()}/>
                         <Tab label="Fasilitas Umum" value="2" onClick={() => handleTabUmum()} />
-                        <Tab label="Fasilitas Kamar" value="3" />
+                        <Tab label="Fasilitas Kamar" value="3" onClick={() => handleTabKamar()}/>
                     </TabList>
                     </Box>
                     <TabPanel value="1">
@@ -231,9 +248,7 @@ const Inventory = () => {
                                 component="img"
                                 alt={`${kamar.gambar_kamar}`}
                                 src={`/src/asset/kamar/${kamar.gambar_kamar}`}
-                                height="200"
-                                width="auto"
-                                borderRadius="0.55rem"
+                                style={{ height: '200px', width: 'auto', borderRadius:'1rem' }}
                             ></Box>
                                 <Typography variant="h5" align='center' sx={{ color: theme.palette.secondary[100] }} margin="1em 0 0" fontWeight='bold'>
                                 {kamar.nama_kamar}
@@ -309,7 +324,6 @@ const Inventory = () => {
                                                 </div>
                                         </Box>
                                     </Modal>
-                                    
                                 </div>
                         </Box>
                     </Box>
@@ -318,7 +332,7 @@ const Inventory = () => {
                     <TabPanel value="2">
                     {fasilitasUmumList.length > 0 && fasilitasUmumList.map(fasilitasUmum => (
                     <Box
-                        key={fasilitasUmum.id_fasilitas_umum}
+                        key={fasilitasUmum.id_fasilitas}
                         mt="20px"
                         display="grid"
                         gridTemplateColumns="repeat(12, 1fr)"
@@ -345,25 +359,26 @@ const Inventory = () => {
                                 component="img"
                                 alt={`${fasilitasUmum.gambar_fasilitas}`}
                                 src={`/src/asset/fasilitas/${fasilitasUmum.gambar_fasilitas}`}
-                                height="auto"
-                                width="auto"
+                                style={{ height: '200px', width: 'auto', borderRadius:'1rem' }}
                             ></Box>
                             <Typography variant="h3" align='center' sx={{ color: theme.palette.secondary[100] }}>
-                                {fasilitasUmum.fasilitas.nama_fasilitas}
+                                {fasilitasUmum.nama_fasilitas}
                             </Typography>
                             <div align="center">
                                 <Button type='submit' style={btnstyle} 
                                     onClick={() => {
                                         navigate('/detail fasilitas');
                                     }}>Lihat Detail</Button>
-                                    <IconButton style={btnstyle1} onClick={handleOpen2}><DeleteIcon /></IconButton>
+                                <IconButton style={btnstyle1} onClick={handleOpen2}><DeleteIcon /></IconButton>
                             </div>
                         </Box>
                     </Box>
                     ))}
                     </TabPanel>
                     <TabPanel value="3">
+                    {fasilitasKamarList.length > 0 && fasilitasKamarList.map(fasilitas => (
                     <Box
+                        key={fasilitas.id_fasilitas}
                         mt="20px"
                         display="grid"
                         gridTemplateColumns="repeat(12, 1fr)"
@@ -388,24 +403,23 @@ const Inventory = () => {
                         >
                             <Box
                                 component="img"
-                                alt="kasur"
-                                height="auto"
-                                width="auto"
+                                alt={`${fasilitas.gambar_fasilitas}`}
+                                src={`/src/asset/fasilitas/${fasilitas.gambar_fasilitas}`}
+                                style={{ height: '200px', width: 'auto', borderRadius:'1rem' }}
                             ></Box>
                             <Typography variant="h3" align='center' sx={{ color: theme.palette.secondary[100] }}>
-                                Kasur
-                            </Typography>
-                            <Typography variant="h6" align='center' sx={{ color: theme.palette.secondary[100] }}>
-                                19 September 2010
+                                {fasilitas.nama_fasilitas}
                             </Typography>
                             <div align="center">
                                 <Button type='submit' style={btnstyle} 
                                     onClick={() => {
                                         navigate('/detail fasilitas');
                                     }}>Lihat Detail</Button>
+                                <IconButton style={btnstyle1} onClick={handleOpen2}><DeleteIcon /></IconButton>
                             </div>
                         </Box>
                     </Box>
+                    ))}
                     </TabPanel>
                 </TabContext>
             </Box>

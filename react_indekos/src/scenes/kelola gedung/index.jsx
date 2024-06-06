@@ -228,16 +228,15 @@ const Room = () => {
                         <img
                             alt={`${gedung.gambar_gedung}`}
                             src={`/src/asset/gedung/${gedung.gambar_gedung}`}
+                            style={{ borderRadius:'1rem' }}
                             height="300"
                             width="auto"
-                            borderRadius="0.55rem"
                             onClick={() => {
                                 navigate(`/kelola fasilitas/${gedung.id_gedung}`, { state: { gedungId:gedung.id_gedung } });
                             }}
                         />
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ marginRight: 'auto' }}>
-                                {/* Display building name and room count */}
                                 <Typography variant="h5" sx={{ color: theme.palette.secondary[100] }} margin="1em 0 0" fontWeight='bold'>
                                     {gedung.nama_gedung}
                                 </Typography>

@@ -25,15 +25,28 @@ class KelolaGedungFasilitasController extends Controller
 
     public function fasilitasUmumByGedung($id_gedung)
     {
-        $fasilitasUmum = FasilitasUmum::where('id_gedung', $id_gedung)->get();
-        return response()->json(['fasilitas_umum' => $fasilitasUmum]);
+        $fasilitasUmum = FasilitasUmum::where('id_gedung', $id_gedung)
+            ->join('fasilitas as f', 'fasilitas_umum.id_fasilitas', '=', 'f.id_fasilitas')
+            ->distinct()
+            ->select('fasilitas_umum.id_fasilitas', 'f.nama_fasilitas', 'fasilitas_umum.*')
+            ->get();
+
+        // Return the facilities as a JSON response
+        return response()->json(['fasilitas' => $fasilitasUmum]);
     }
 
     public function fasilitasKamarByGedung($id_gedung)
     {
-        $kamarIds = Kamar::where('id_gedung', $id_gedung)->pluck('id');
-        $fasilitasKamar = FasilitasKamar::whereIn('id_kamar', $kamarIds)->get();
-        return response()->json(['fasilitas_kamar' => $fasilitasKamar]);
+        $fasilitas = FasilitasKamar::where('id_gedung', $id_gedung)
+            ->join('kamar as k', 'fasilitas_kamar.id_kamar', '=', 'k.id_kamar')
+            ->join('fasilitas as f', 'fasilitas_kamar.id_fasilitas', '=', 'f.id_fasilitas')
+            ->where('k.id_gedung', $id_gedung)
+            ->distinct()
+            ->select('f.*')
+            ->get();
+
+        // Return the facilities as a JSON response
+        return response()->json(['fasilitas' => $fasilitas]);
     }
 
     public function tambahGedung(Request $request, $userId)
