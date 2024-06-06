@@ -20,19 +20,22 @@ class KelolaGedungFasilitasController extends Controller
     public function kamarByGedung($id_gedung)
     {
         $kamar = Kamar::where('id_gedung', $id_gedung)->get();
-        return response()->json(['kamar' => $kamar]);
+        $type = 'kamar';
+
+        return response()->json(['kamar' => $kamar, 'type' => $type]);
     }
 
     public function fasilitasUmumByGedung($id_gedung)
     {
-        $fasilitasUmum = FasilitasUmum::where('id_gedung', $id_gedung)
-            ->join('fasilitas as f', 'fasilitas_umum.id_fasilitas', '=', 'f.id_fasilitas')
+        $fasilitas = FasilitasUmum::where('id_gedung', $id_gedung)
+            ->join('fasilitas', 'fasilitas_umum.id_fasilitas', '=', 'fasilitas.id_fasilitas')
             ->distinct()
-            ->select('fasilitas_umum.id_fasilitas', 'f.nama_fasilitas', 'fasilitas_umum.*')
+            ->select('fasilitas_umum.id_fasilitas', 'fasilitas.nama_fasilitas', 'fasilitas.gambar_fasilitas', 'fasilitas_umum.*')
             ->get();
+        $type = 'fasilitas_umum';
 
         // Return the facilities as a JSON response
-        return response()->json(['fasilitas' => $fasilitasUmum]);
+        return response()->json(['fasilitas' => $fasilitas, 'type' => $type]);
     }
 
     public function fasilitasKamarByGedung($id_gedung)
@@ -44,9 +47,10 @@ class KelolaGedungFasilitasController extends Controller
             ->distinct()
             ->select('f.*')
             ->get();
+        $type = 'fasilitas_kamar';
 
         // Return the facilities as a JSON response
-        return response()->json(['fasilitas' => $fasilitas]);
+        return response()->json(['fasilitas' => $fasilitas, 'type' => $type]);
     }
 
     public function tambahGedung(Request $request, $userId)
@@ -80,5 +84,27 @@ class KelolaGedungFasilitasController extends Controller
         $fasilitas = Fasilitas::create($request->all());
 
         return response()->json(['message' => 'Fasilitas berhasil ditambahkan', 'fasilitas' => $fasilitas]);
+    }
+
+    public function editGedung(Request $request, $id_gedung)
+    {
+        $request->validate([
+            'nama_gedung' => 'required|string|max:255',
+            'jumlah_kamar' => 'required|integer',
+            'gambar_gedung' => 'nullable|string'
+        ]);
+
+        $gedung = Gedung::findOrFail($id_gedung);
+        $gedung->update($request->all());
+
+        return response()->json(['message' => 'Gedung berhasil diperbarui', 'gedung' => $gedung]);
+    }
+
+    public function hapusGedung($id_gedung)
+    {
+        $gedung = Gedung::findOrFail($id_gedung);
+        $gedung->delete();
+
+        return response()->json(['message' => 'Gedung berhasil dihapus']);
     }
 }

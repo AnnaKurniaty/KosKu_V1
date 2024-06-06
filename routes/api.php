@@ -42,8 +42,8 @@ Route::get('/fasilitas umum/{id_gedung}', [KelolaGedungFasilitasController::clas
 Route::get('/fasilitas kamar/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasKamarByGedung']);
 
 Route::post('/tambah gedung/{userId}', [KelolaGedungFasilitasController::class, 'tambahGedung']);
-// Route::put('/edit gedung/{id_gedung}', [KelolaGedungController::class, 'updateGedung']);
-// Route::delete('/gedung/{id_gedung}', [KelolaGedungController::class, 'hapusGedung']);
+Route::put('/edit gedung/{id_gedung}', [KelolaGedungController::class, 'editGedung']);
+Route::delete('/gedung/{id_gedung}', [KelolaGedungController::class, 'hapusGedung']);
 Route::post('/tambah penyewa', [KelolaPenyewaController::class, 'tambahPenyewa']);
 Route::get('/kelola penyewa/{userId}', [KelolaPenyewaController::class, 'kelolaPenyewa']);
 Route::get('/penyewa/{id_penyewa}', [KelolaPenyewaController::class, 'detailPenyewa']);

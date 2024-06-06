@@ -26,6 +26,7 @@ const Room = () => {
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState(null);
     const [image, setImage] = useState(null);
+    const [gedung, setGedung] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,12 +49,19 @@ const Room = () => {
         fetchData();
     }, [location.state]);
 
-    const editBuilding = (buildingId) => {
+    const editgedung = (id_gedung) => {
         navigate(`/edit-building/${buildingId}`);
     };
 
-    const deleteBuilding = (buildingId) => {
-        // Implement logic to delete building by ID
+    const hapusGedung = async (gedung) => {
+        try {
+            await axiosClient.delete(`/gedung/${gedung.id_gedung}`, { state: { gedungId:gedung.id_gedung } });
+            console.log('Gedung berhasil dihapus');
+        } catch (error) {
+            console.error('Gagal menghapus gedung', error);
+        } finally {
+            handleClose();
+        }
     };
 
     const handleImageChange = (event) => {
@@ -118,7 +126,7 @@ const Room = () => {
 
     return (
         <Box m='1.5rem 2.5rem'>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
                     <Typography
                         variant='h5'
@@ -195,7 +203,7 @@ const Room = () => {
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={() => submitForm(user.id)}>Ya, simpan</Button>
+                                <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={() => submitForm(userId)}>Ya, simpan</Button>
                                 <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
                             </div>
                         </form>
@@ -259,7 +267,25 @@ const Room = () => {
                                             variant='standard'
                                             color='warning'
                                             fullWidth 
-                                            value="Gedung Kos Putih"
+                                            value={gedung.nama_gedung}
+                                            required
+                                            onChange={(e) => setValue(e.target.value)}
+                                            
+                                            InputLabelProps={{
+                                                style: { color: "black" }
+                                            }} 
+                                            InputProps={{
+                                                style: {
+                                                    color: "black"
+                                                },
+                                            }}
+                                            />
+                                             <TextField 
+                                            label='Jumlah Kamar' 
+                                            variant='standard'
+                                            color='warning'
+                                            fullWidth 
+                                            value={gedung.jumlah_kamar}
                                             required
                                             onChange={(e) => setValue(e.target.value)}
                                             
@@ -283,7 +309,7 @@ const Room = () => {
                                                     Pilih Gambar
                                                     <input
                                                     type="file"
-                                                    accept=".jpg,.png"
+                                                    accept=".jpg,.png,.jpeg"
                                                     onChange={handleImageChange}
                                                     hidden
                                                     />
@@ -309,8 +335,8 @@ const Room = () => {
                                     <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
                                         <h3 id="parent-modal-title" textStyle="bold">Hapus Gedung yang Dipilih ?</h3>
                                             <div align="center">
-                                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} >Ya, hapus</Button>
-                                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
+                                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={hapusGedung}>Ya, hapus</Button>
+                                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
                                             </div>
                                     </Box>
                                 </Modal>
