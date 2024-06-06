@@ -22,7 +22,7 @@ import {
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useNavigate } from "react-router-dom";
 import logoImage from "../asset/logo.png";
-import profileImage from "../asset/profile.jpg";
+import profileImage from "../asset/profile.jpeg";
 import axiosClient from "../axios-client";
 import { useDispatch, useSelector } from 'react-redux';
 import { setActivePage } from '../state/actions';

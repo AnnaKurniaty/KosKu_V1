@@ -188,7 +188,7 @@ const Gedung = () => {
                                                 Pilih Gambar
                                                 <input
                                                     type="file"
-                                                    accept=".jpg,.png"
+                                                    accept=".jpg,.png,.jpeg"
                                                     onChange={handleImageChange}
                                                     hidden
                                                 />
