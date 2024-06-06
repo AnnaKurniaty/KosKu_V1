@@ -3,7 +3,6 @@ import { Box, useTheme, Typography, Grid,Paper, TextField, Button } from "@mui/m
 import { LoadingButton } from '@mui/lab'
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
-import kasur from "../../asset/kasur.jpg";
 
 const Detail = () => {
   const theme = useTheme();

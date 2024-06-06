@@ -36,17 +36,20 @@ class KelolaGedungFasilitasController extends Controller
         return response()->json(['fasilitas_kamar' => $fasilitasKamar]);
     }
 
-    public function tambahGedung(Request $request)
+    public function tambahGedung(Request $request, $userId)
     {
         $request->validate([
-            'id_pemilik' => 'required|exists:users,id',
             'nama_gedung' => 'required|string|max:255',
             'jumlah_kamar' => 'required|integer',
             'gambar_gedung' => 'nullable|string'
         ]);
-
+    
+        // Tambahkan 'id_pemilik' ke dalam request
+        $request->merge(['id_pemilik' => $userId]);
+    
+        // Buat gedung baru dengan menggunakan data dari request
         $gedung = Gedung::create($request->all());
-
+    
         return response()->json(['message' => 'Gedung berhasil ditambahkan', 'gedung' => $gedung]);
     }
 

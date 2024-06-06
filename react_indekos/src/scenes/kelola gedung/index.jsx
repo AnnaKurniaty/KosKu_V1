@@ -1,5 +1,5 @@
-import React, { useState, useEffect  } from 'react'
-import { Box, useTheme, useMediaQuery, Typography, Button, TextField, CircularProgress} from '@mui/material'
+import React, { useState, useEffect } from 'react';
+import { Box, useTheme, useMediaQuery, Typography, Button, TextField, CircularProgress } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -7,7 +7,6 @@ import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import axiosClient from "../../axios-client.js";
 import { useLocation } from 'react-router-dom';
-
 
 const style = {
     position: 'absolute',
@@ -18,7 +17,7 @@ const style = {
     boxShadow: 24,
     width: 'auto',
     borderRadius: '1em'
-  };
+};
 
 const Room = () => {
     const theme = useTheme();
@@ -26,27 +25,28 @@ const Room = () => {
     const [gedungList, setGedungList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState(null);
+    const [image, setImage] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
-          setLoading(true);
-          try {
-            if (location.state && location.state.userId) {
-              setUserId(location.state.userId);
-              const response = await axiosClient.get(`/gedung/${location.state.userId}`);
-              const data = response.data;
-              setGedungList(data.gedung); // Atur data gedung dari respons ke state gedungList
+            setLoading(true);
+            try {
+                if (location.state && location.state.userId) {
+                    setUserId(location.state.userId);
+                    const response = await axiosClient.get(`/gedung/${location.state.userId}`);
+                    const data = response.data;
+                    setGedungList(data.gedung);
+                }
+            } catch (error) {
+                console.error("Failed to fetch data", error);
+            } finally {
+                setLoading(false);
             }
-          } catch (error) {
-            console.error("Failed to fetch data", error);
-          } finally {
-            setLoading(false);
-          }
         };
-    
+
         fetchData();
-      }, [location.state]);
-    
+    }, [location.state]);
 
     const editBuilding = (buildingId) => {
         navigate(`/edit-building/${buildingId}`);
@@ -58,7 +58,7 @@ const Room = () => {
 
     const handleImageChange = (event) => {
         setImage(event.target.files[0]);
-      };
+    };
     const [value, setValue] = React.useState('1');
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -76,38 +76,60 @@ const Room = () => {
         setOpen2(true);
     };
     const handleClose = () => {
-        setOpen(false),
-        setOpen1(false),
+        setOpen(false);
+        setOpen1(false);
         setOpen2(false);
     };
     const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
-    const navigate = useNavigate();
-    const textStyle={backgroundColor:theme.palette.background.alt}
-    const btnstyle={margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}
-    const btnstyle1={margin:'0.2em', backgroundColor:'#FF9900', color:"white", borderRadius: '0.5em'}
+
+    const submitForm = async () => {
+        try {
+            const formData = new FormData(userId);
+            formData.append('nama_gedung', value);
+            formData.append('jumlah_kamar', value);
+            formData.append('gambar_gedung', image);
+
+            const response = await axiosClient.post(`/tambah gedung/${userId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            console.log('Response:', response.data);
+            // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        } catch (error) {
+            console.error('Error:', error.response.data);
+            // Implement logic for handling errors, e.g., showing an error message to the user
+        }
+    };
+
+    const textStyle = { backgroundColor: theme.palette.background.alt };
+    const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' };
+    const btnstyle1 = { margin: '0.2em', backgroundColor: '#FF9900', color: "white", borderRadius: '0.5em' };
 
     if (loading) {
         return (
-          <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-            <CircularProgress />
-          </Box>
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <CircularProgress />
+            </Box>
         );
-      }
+    }
 
     return (
         <Box m='1.5rem 2.5rem'>
             <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
                 <Box>
                     <Typography
-                    variant='h5'
-                    color='white'
-                    fontWeight='bold'
-                    sx={{ mb: '5px' }}
+                        variant='h5'
+                        color='white'
+                        fontWeight='bold'
+                        sx={{ mb: '5px' }}
                     >
                         Daftar Gedung Kos
                     </Typography>
                 </Box>
-                <Button type='submit' style={btnstyle} 
+                <Button type='submit' style={btnstyle}
                     onClick={handleOpen}>+ Tambah</Button>
                 <Modal
                     open={open}
@@ -118,45 +140,62 @@ const Room = () => {
                     <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
                         <h3 id="parent-modal-title" textStyle="bold">Tambah Gedung</h3>
                         <form>
-                            <TextField 
-                            label='Nama Gedung' 
-                            variant='standard'
-                            color='warning'
-                            fullWidth 
-                            required
-                            onChange={(e) => setValue(e.target.value)}
-                            
-                            InputLabelProps={{
-                                style: { color: "black" }
-                            }} 
-                            InputProps={{
-                                style: {
-                                    color: "black"
-                                },
-                            }}
+                            <TextField
+                                label='Nama Gedung'
+                                variant='standard'
+                                color='warning'
+                                fullWidth
+                                required
+                                onChange={(e) => setValue(e.target.value)}
+
+                                InputLabelProps={{
+                                    style: { color: "black" }
+                                }}
+                                InputProps={{
+                                    style: {
+                                        color: "black"
+                                    },
+                                }}
                             />
                             <TextField
-                            label='Masukan Gambar/Foto' 
-                            variant='standard'
-                            color='warning'
-                            fullWidth
-                            disabled />  
-                            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
-                                <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
+                                label='Jumlah Kamar'
+                                variant='standard'
+                                color='warning'
+                                fullWidth
+                                required
+                                onChange={(e) => setValue(e.target.value)}
+
+                                InputLabelProps={{
+                                    style: { color: "black" }
+                                }}
+                                InputProps={{
+                                    style: {
+                                        color: "black"
+                                    },
+                                }}
+                            />
+                            <TextField
+                                label='Masukan Gambar/Foto'
+                                variant='standard'
+                                color='warning'
+                                fullWidth
+                                disabled />
+                            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding: 2 }}>
+                                <Button variant="contained" component="label" size="small" style={{ borderRadius: "2em" }}>
                                     Pilih Gambar
                                     <input
-                                    type="file"
-                                    accept=".jpg,.png"
-                                    onChange={handleImageChange}
-                                    hidden
+                                        type="file"
+                                        accept=".jpg,.png"
+                                        onChange={handleImageChange}
+                                        hidden
                                     />
                                 </Button>
-                                <Typography variant='caption' style={{marginLeft:'auto', textAlign:'left'}}>
-                                    Silakan unggah gambar (*.jpg, *png) 
+                                <Typography variant='caption' style={{ marginLeft: 'auto', textAlign: 'left' }}>
+                                    Silakan unggah gambar (*.jpg, *png)
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
+                                <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={() => submitForm(user.id)}>Ya, simpan</Button>
                                 <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
                             </div>
                         </form>
@@ -165,7 +204,7 @@ const Room = () => {
             </div>
                 {gedungList.map(gedung => (
                 <Box
-                    key={gedung.id}
+                    key={gedung.id_gedung}
                     mt="20px"
                     display="grid"
                     gridTemplateColumns="repeat(12, 1fr)"
@@ -174,7 +213,6 @@ const Room = () => {
                         "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
                     }}
                 >
-                    {/* Display building details */}
                     <Box
                         gridColumn="span 4"
                         gridRow="span 1"
@@ -188,20 +226,20 @@ const Room = () => {
                     >
                         {/* Display building image */}
                         <img
-                            alt="kost2"
-                            src={gedung.gambar_gedung}
-                            height="auto"
+                            alt={`${gedung.gambar_gedung}`}
+                            src={`/src/asset/gedung/${gedung.gambar_gedung}`}
+                            height="300"
                             width="auto"
                             borderRadius="0.55rem"
                             onClick={() => {
-                                navigate('/kelola fasilitas/${gedung.id}');
+                                navigate(`/kelola fasilitas/${gedung.id_gedung}`, { state: { gedungId:gedung.id_gedung } });
                             }}
                         />
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ marginRight: 'auto' }}>
                                 {/* Display building name and room count */}
                                 <Typography variant="h5" sx={{ color: theme.palette.secondary[100] }} margin="1em 0 0" fontWeight='bold'>
-                                    {gedung.nama}
+                                    {gedung.nama_gedung}
                                 </Typography>
                                 <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }} margin="0 0 0 0">
                                     Jumlah Kamar : {gedung.jumlah_kamar}
@@ -256,7 +294,7 @@ const Room = () => {
                                                 </Typography>
                                             </Box>
                                             <div align="center">
-                                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
+                                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={() => submitForm(user.id)}>Ya, simpan</Button>
                                                 <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
                                             </div>
                                         </form>
@@ -272,7 +310,7 @@ const Room = () => {
                                     <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
                                         <h3 id="parent-modal-title" textStyle="bold">Hapus Gedung yang Dipilih ?</h3>
                                             <div align="center">
-                                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, hapus</Button>
+                                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} >Ya, hapus</Button>
                                                 <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
                                             </div>
                                     </Box>

@@ -2,16 +2,6 @@ import * as React from 'react';
 import { useMediaQuery,Button, Typography } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 import Header from '../../components/Header'
-import ac from "../../asset/ac.jpg";
-import kamarmandi from "../../asset/kamar mandi.jpg";
-import kasur from "../../asset/kasur.jpg";
-import kipas from "../../asset/kipas.jpg";
-import lemari from "../../asset/lemari.jpg";
-import meja from "../../asset/meja.jpg";
-import mesincuci from "../../asset/mesin cuci.jpg";
-import parkiran from "../../asset/parkir.jpg";
-import wifi from "../../asset/wifi.jpg";
-import dapur from "../../asset/dapur.jpg";
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';

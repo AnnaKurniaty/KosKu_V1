@@ -44,8 +44,8 @@ function App() {
                 <Route path='/tambah gedung' element={<TambahGedung />} />
                 <Route path='/detail penyewa' element={<KelolaPenyewaDetail />} />
                 <Route path='/detail fasilitas' element={<KelolaFasilitasDetail />} />
-                <Route path='/kelola fasilitas' element={<KelolaFasilitas />} />
-                <Route path='/Laporan pemasukan & pengeluaran' element={<Laporan />} />
+                <Route path='/kelola fasilitas/:id' element={<KelolaFasilitas />} />
+                <Route path='/Laporan pemasukan & pengeluaran/:id' element={<Laporan />} />
               </Route>
               <Route path='*' element={<NoMatch />} />
             </Routes>
