@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { LoadingButton } from '@mui/lab';
-import { useTheme, Box, Grid, Paper, TextField } from '@mui/material';
+import { useTheme, Box, Grid, Paper, TextField, InputAdornment, IconButton } from '@mui/material';
 import axiosClient from '../../axios-client';
 import { useNavigate } from 'react-router-dom';
 import { useStateContext } from "../../context/ContextProvider";
 import logoImage from "../../asset/logo.png";
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login = () => {
   const theme = useTheme();
@@ -15,6 +16,10 @@ const Login = () => {
   const { setUser, setToken } = useStateContext();
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(null);
+
+  // Add these variables to your component to track the state
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   const submitHandle = (ev) => {
     ev.preventDefault();
@@ -91,7 +96,7 @@ const Login = () => {
           <TextField
             label='Password'
             variant='standard'
-            type='password'
+            type={showPassword ? "text" : "password"}
             color='warning'
             fullWidth
             required
@@ -110,6 +115,16 @@ const Login = () => {
               style: {
                 color: "black"
               },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              )
             }}
           />
           <div align="center">
