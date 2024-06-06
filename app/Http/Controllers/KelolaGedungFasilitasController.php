@@ -8,6 +8,7 @@ use App\Models\KamarModels as Kamar;
 use App\Models\FasilitasUmumModels as FasilitasUmum;
 use App\Models\FasilitasKamarModels as FasilitasKamar;
 use App\Models\FasilitasModels as Fasilitas;
+use Illuminate\Support\Facades\Storage;
 
 class KelolaGedungFasilitasController extends Controller
 {
@@ -54,14 +55,27 @@ class KelolaGedungFasilitasController extends Controller
         $request->validate([
             'nama_gedung' => 'required|string|max:255',
             'jumlah_kamar' => 'required|integer',
-            'gambar_gedung' => 'nullable|string'
+            'gambar_gedung' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
     
         // Tambahkan 'id_pemilik' ke dalam request
-        $request->merge(['id_pemilik' => $userId]);
+        // $request->merge(['id_pemilik' => $userId]);
+
+        // Mengupload gambar dan simpan ke folder
+        if ($request->hasFile('gambar_gedung')) {
+            $image = $request->file('gambar_gedung');
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $imagePath = $image->storeAs('gedung/gambar_gedung', $imageName, 'public');
+            $imageUrl = asset('storage/'.$imagePath);
+        }
     
         // Buat gedung baru dengan menggunakan data dari request
-        $gedung = Gedung::create($request->all());
+        $gedung = Gedung::create([
+            'id_pemilik' => $userId,
+            'nama_gedung' => $request->input('nama_gedung'),
+            'jumlah_kamar' => $request->input('jumlah_kamar'),
+            'gambar_gedung' => $imageUrl,
+        ]);
     
         return response()->json(['message' => 'Gedung berhasil ditambahkan', 'gedung' => $gedung]);
     }
@@ -80,5 +94,30 @@ class KelolaGedungFasilitasController extends Controller
         $fasilitas = Fasilitas::create($request->all());
 
         return response()->json(['message' => 'Fasilitas berhasil ditambahkan', 'fasilitas' => $fasilitas]);
+    }
+
+    public function hapusGedung($id)
+    {
+        //Mencari gedung berdasarkan ID
+        $gedung = Gedung::find($id);
+
+        // Jika gedung tidak ditemukan, kembalikan respons 404
+        if (!$gedung) {
+            return response()->json(['error' => 'Gedung not found'], 404);
+        }
+
+        // Hapus file gambar jika ada
+        if ($gedung->image_url) {
+            $imagePath = str_replace(url('/storage'), '', $item->image_url);
+            if (file_exists(public_path("storage/$imagePath"))) {
+                unlink(public_path("storage/$imagePath"));
+            }
+        }
+
+        // Hapus item dari database
+        $gedung->delete();
+
+        // Kembalikan respons sukses
+        return response()->json(['message' => 'Gedung deleted successfully']);
     }
 }
