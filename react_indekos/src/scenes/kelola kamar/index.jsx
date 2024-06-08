@@ -32,7 +32,7 @@ const style = {
 
 const Inventory = () => {
     const theme = useTheme()
-    const [type, setType] = useState('');
+    const [type, setType] = useState('kamar');
     const [value, setValue] = React.useState('1');
     const location = useLocation();
     const [gedungList, setGedungList] = useState([]);
@@ -48,7 +48,6 @@ const Inventory = () => {
                 setGedungId(location.state.gedungId);
                 const response = await axiosClient.get(`/kamar/${location.state.gedungId}`);
                 const data = response.data;
-                setType(data.type);
                 setGedungList(data.kamar || []);
             }
         } catch (error) {
@@ -111,7 +110,6 @@ const Inventory = () => {
 
     useEffect(() => {
         fetchData();
-        handleTabUmum();
         handleTabKamar();
         handleTab();
     }, [location.state]);
@@ -121,7 +119,6 @@ const Inventory = () => {
     }
 
     const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
-    const navigate = useNavigate();
     const textStyle={backgroundColor:theme.palette.background.alt}
     const btnstyle1={margin:'0.2em', backgroundColor:'#FF9900', color:"white", borderRadius: '0.5em'}
     const btnstyle={margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '10em'}
@@ -131,9 +128,8 @@ const Inventory = () => {
                 <Tambah
                     gedungId={gedungId}
                     style={style}
-                    handleTab={handleTab}
-                    handleTabKamar={handleTabKamar}
-                    handleTabUmum={handleTabUmum}
+                    type={type}
+                    fasilitasKamarList={fasilitasKamarList}
                 />
             </div>
             <Box sx={{ width: 'auto', typography: 'body1' }} style={textStyle} borderRadius="0.55rem" backgroundColor="white">
@@ -147,9 +143,9 @@ const Inventory = () => {
                         backgroundColor:theme.palette.secondary[500],
                         }
                     }}>
-                        <Tab label="Tipe Kamar" value="1" onClick={() => handleTab()}/>
-                        <Tab label="Fasilitas Umum" value="2" onClick={() => handleTabUmum()} />
-                        <Tab label="Fasilitas Kamar" value="3" onClick={() => handleTabKamar()}/>
+                        <Tab label="Tipe Kamar" value="1" onClick={handleTab}/>
+                        <Tab label="Fasilitas Umum" value="2" onClick={handleTabUmum} />
+                        <Tab label="Fasilitas Kamar" value="3" onClick={handleTabKamar}/>
                     </TabList>
                     </Box>
                     <TabPanel value="1">

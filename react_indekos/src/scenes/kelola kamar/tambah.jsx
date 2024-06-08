@@ -11,28 +11,27 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 const TambahFasilitas = ({
     gedungId,
     style,
-    handleTabKamar,
-    handleTabUmum,
-    handleTab,
+    type,
+    fasilitasKamarList,
 }) => {
 
   const [errorMessage, setErrorMessage] = useState('');
-  const [type, setType] = useState('');
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openAdd1, setOpenAdd1] = React.useState(false);
   const [openAdd2, setOpenAdd2] = React.useState(false);
   const [dateValue, setDateValue] = useState('');
   const handleOpen = () => {
-      if(type === handleTab){
+      if(type === 'kamar'){
           setOpenAdd(true);
       }
-      else if(type === handleTabUmum){
+      else if(type === 'fasilitas_umum'){
           setOpenAdd1(true);
       }
       else{
           setOpenAdd2(true);
       }
   };
+
   const handleClose = () => {
     setOpenAdd(false),
     setOpenAdd1(false),
@@ -49,28 +48,41 @@ const TambahFasilitas = ({
   };
 
   const [formData, setFormData] = useState({
-    'nama_fasilitas': '',
-    'jumlah_fasilitas': '',
-    'tanggal_pembelian': '',
-    'biaya_pembelian': '',
-    'gambar_fasilitas': null,
+    'nama_kamar': '',
+    'biaya_kamar': '',
+    'gambar_kamar': null,
  })
 
-    const handleSubmitFasilitasKamar = async (e) => {
+ const [idFasilitasList, setIdFasilitasList] = useState([]);
+ const handleSelectChange = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      // Jika checkbox dipilih, tambahkan nilai ke array
+      setIdFasilitasList((prev) => [...prev, value]);
+    } else {
+      // Jika checkbox tidak dipilih, hapus nilai dari array
+      setIdFasilitasList((prev) => prev.filter((id) => id !== value));
+    }
+
+};
+
+    const handleSubmitKamar = async (e) => {
         e.preventDefault();
-        // const data = new FormData();
-        console.log('formData ', formData)
+
         const data = new FormData();
-        data.append('nama_fasilitas', formData.nama_fasilitas);
-        data.append('jumlah_fasilitas', formData.jumlah_fasilitas);
-        data.append('tanggal_pembelian', formData.tanggal_pembelian);
-        data.append('biaya_pembelian', formData.biaya_pembelian);
-        if (formData.gambar_fasilitas) {
-        data.append('gambar_fasilitas', formData.gambar_fasilitas);
+        data.append('id_gedung', gedungId);
+        data.append('nama_kamar', formData.nama_kamar);
+        data.append('biaya_kamar', formData.biaya_kamar);
+        // Iterasi melalui array dan tambahkan setiap elemen ke FormData
+        idFasilitasList.forEach(id => {
+            data.append('id_fasilitas_list[]', id);
+        });
+        if (formData.gambar_kamar) {
+        data.append('gambar_kamar', formData.gambar_kamar);
         }
 
         try {
-        const response = await axiosClient.post(`/fasilitas-kamar/insert`, data, {
+        const response = await axiosClient.post(`/kamar/insert`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -80,7 +92,6 @@ const TambahFasilitas = ({
         console.log('Response:', response.data);
         // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
         handleClose();
-        handleTabKamar();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
         // Implement logic for handling errors, e.g., showing an error message to the user
@@ -121,8 +132,8 @@ const TambahFasilitas = ({
                             color='warning'
                             fullWidth 
                             required
-                            onChange={(e) => setValue(e.target.value)}
-                            
+                            onChange={handleChange}
+                            name="nama_kamar"
                             InputLabelProps={{
                                 style: { color: "black" }
                             }} 
@@ -138,8 +149,8 @@ const TambahFasilitas = ({
                             color='warning'
                             fullWidth 
                             required
-                            onChange={(e) => setValue(e.target.value)}
-                            
+                            onChange={handleChange}
+                            name="biaya_kamar"
                             InputLabelProps={{
                                 style: { color: "black" }
                             }} 
@@ -158,9 +169,11 @@ const TambahFasilitas = ({
                                 </Typography>
                             </div>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox color="success"/>} label="Meja" />
-                                <FormControlLabel control={<Checkbox color="success"/>} label="Kursi" />
-                                <FormControlLabel control={<Checkbox color="success"/>} label="Disabled" />
+                                {fasilitasKamarList.map((fs, index) => (
+                                    <>
+                                        <FormControlLabel key={index} control={<Checkbox color="success"/>} value={fs.id_fasilitas} label={fs.nama_fasilitas} onClick={handleSelectChange} />
+                                    </>
+                                ))}
                             </FormGroup>
                             <Typography align='left' marginTop='10px'>
                                     Masukan Gambar / Foto 
@@ -180,8 +193,8 @@ const TambahFasilitas = ({
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} formNoValidate>Kembali</Button>
+                                <Button type='submit' onClick={handleSubmitKamar} style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
+                                <Button type='submit' onClick={handleClose} style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
                             </div>
                         </form>
                     </Box>
@@ -201,8 +214,8 @@ const TambahFasilitas = ({
                             color='warning'
                             fullWidth 
                             required
-                            onChange={(e) => setValue(e.target.value)}
-                            
+                            onChange={handleChange}
+                            name="nama_fasilitas_umum"
                             InputLabelProps={{
                                 style: { color: "black" }
                             }} 
@@ -342,7 +355,7 @@ const TambahFasilitas = ({
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmitFasilitasKamar}>Ya, simpan</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
                                 <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
                             </div>
                         </form>
