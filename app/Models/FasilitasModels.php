@@ -22,6 +22,8 @@ class FasilitasModels extends Model
         'biaya_perawatan',
         'tanggal_perawatan',
         'gambar_fasilitas',
+        'biaya_pembelian',
+        'tanggal_pembelian',
     ];
 
     public function fasilitasKamar()
