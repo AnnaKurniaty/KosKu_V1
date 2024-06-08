@@ -404,4 +404,39 @@ class KelolaGedungFasilitasController extends Controller
         return response()->json(['message' => 'Fasilitas deleted successfully']);
     }
 
+    //Kamar
+    public function tambahKamar(Request $request)
+    {
+        $request->validate([
+            'id_gedung' => 'required',
+            'nama_kamar' => 'required|string',
+            'biaya_kamar' => 'required|integer',
+            'gambar_kamar' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'id_fasilitas_list' => 'required|array'
+        ]);
+
+        // Mengupload gambar dan simpan ke folder
+        $imageUrl = ImageHelper::uploadImage($request, 'gambar_kamar', 'kamar');
+    
+        // Buat kamar baru dengan menggunakan data dari request
+        $kamar = Kamar::create([
+            'id_gedung' => $request->input('id_gedung'),
+            'nama_kamar' => $request->input('nama_kamar'),
+            'biaya_kamar' => $request->input('biaya_kamar'),
+            'status_kamar' => 'kosong',
+            'gambar_kamar' => $imageUrl,
+        ]);
+
+        //insert ke table Fasilitas Kamar
+        // Iterasi melalui array id_fasilitas
+        foreach ($request->input('id_fasilitas_list') as $idFasilitas) {
+            FasilitasKamar::create([
+                'id_kamar' => $kamar->id_kamar,
+                'id_fasilitas' => $idFasilitas,
+            ]);
+        }
+
+        return response()->json(['message' => 'Kamar berhasil ditambahkan', 'kamar' => $kamar]);
+    }
+
 }

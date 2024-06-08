@@ -62,6 +62,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/fasilitas-umum/delete/{id_fasilitas}', [KelolaGedungFasilitasController::class, 'hapusFasilitasUmum']);
 });
 
+//Kamar
+Route::middleware('auth:sanctum')->group(function () {
+    // Route::get('/fasilitas umum/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasUmumByGedung']);
+    Route::post('/kamar/insert', [KelolaGedungFasilitasController::class, 'tambahKamar']);
+    // Route::post('/fasilitas-umum/update/{id_fasilitas}', [KelolaGedungFasilitasController::class, 'updateFasilitasUmum']);
+    // Route::post('/fasilitas-umum/delete/{id_fasilitas}', [KelolaGedungFasilitasController::class, 'hapusFasilitasUmum']);
+});
+
 Route::post('/tambah penyewa', [KelolaPenyewaController::class, 'tambahPenyewa']);
 Route::get('/kelola penyewa/{userId}', [KelolaPenyewaController::class, 'kelolaPenyewa']);
 Route::get('/penyewa/{id_penyewa}', [KelolaPenyewaController::class, 'detailPenyewa']);
