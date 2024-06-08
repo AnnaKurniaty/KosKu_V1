@@ -7,7 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DataGrid, GridToolbarExport, GridToolbarContainer } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
-import axios from 'axios';
+import axiosClient from "../../axios-client.js";
 import { useLocation } from 'react-router-dom';
 
 const CustomGridToolbarExport = styled(GridToolbarExport)(({ theme }) => ({
@@ -36,7 +36,8 @@ const Laporan = () => {
       setLoading(true);
       try {
         if (location.state && location.state.userId) {
-          const response = await axios.get(`/laporan/${location.state.userId}`);
+          console.log("INI STATE : ", location.state);
+          const response = await axiosClient.get(`/laporan/${location.state.userId}`);
           console.log("Response data:", response.data); // Debugging log
           const data = response.data;
           setFinancialData({
