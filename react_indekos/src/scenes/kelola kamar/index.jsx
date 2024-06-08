@@ -13,8 +13,8 @@ import { useLocation } from 'react-router-dom';
 import axiosClient from "../../axios-client.js";
 import Tambah from './tambah.jsx';
 import Detail from './detail.jsx';
+import Hapus from './hapus.jsx';
 import DetailFasilitasKamar from '../kelola fasilitas/detail_kamar.jsx';
-import UpdateKamar from '../kelola fasilitas/update_kamar.jsx';
 import DetailFasilitasUmum from '../kelola fasilitas/detail_umum.jsx';
 import HapusFasilitas from '../kelola fasilitas/hapus.jsx';
 
@@ -188,8 +188,17 @@ const Inventory = () => {
                                 {kamar.nama_kamar}
                                 </Typography>
                                 <div align="center">
-                                    <Button style={btnstyle}>Lihat Detail</Button>
-                                    <IconButton style={btnstyle1}><DeleteIcon /></IconButton>
+                                    <Detail
+                                        style={style}
+                                        kamar={kamar}
+                                        fetchData={fetchData}
+                                        handleTabKamar={handleTabKamar}
+                                    />
+                                    <Hapus 
+                                        style={style}
+                                        id_kamar={kamar.id_kamar}
+                                        fetchData={fetchData}
+                                    />
                                 </div>
                         </Box>
                     </Box>

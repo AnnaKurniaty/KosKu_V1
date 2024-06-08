@@ -56,9 +56,6 @@ const DetailFasilitasKamar = ({
                                 style={{ borderRadius: '1rem' }}
                                 height="150"
                                 width="auto"
-                                onClick={() => {
-                                    navigate(`/kelola fasilitas/${gedung.id_gedung}`, { state: { gedungId: gedung.id_gedung } });
-                                }}
                             />
                             <TextField 
                             label='Nama Fasilitas Kamar' 
@@ -72,9 +69,6 @@ const DetailFasilitasKamar = ({
                                 style: { color: "black" }
                             }} 
                             InputProps={{
-                                style: {
-                                    color: "black"
-                                },
                                 readOnly: true,
                             }}
                             />

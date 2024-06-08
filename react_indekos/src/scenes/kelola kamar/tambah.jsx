@@ -65,7 +65,7 @@ const TambahFasilitas = ({
         data.append('jumlah_fasilitas', formData.jumlah_fasilitas);
         data.append('tanggal_pembelian', formData.tanggal_pembelian);
         data.append('biaya_pembelian', formData.biaya_pembelian);
-        if (formData.gambar_gedung) {
+        if (formData.gambar_fasilitas) {
         data.append('gambar_fasilitas', formData.gambar_fasilitas);
         }
 

@@ -47,7 +47,7 @@ const EditKamar = ({
         data.append('biaya_pembelian', formData.biaya_pembelian);
         data.append('tanggal_perawatan', formData.tanggal_perawatan);
         data.append('biaya_perawatan', formData.biaya_perawatan);
-        if (formData.gambar_gedung) {
+        if (formData.gambar_fasilitas) {
         data.append('gambar_fasilitas', formData.gambar_fasilitas);
         }
 

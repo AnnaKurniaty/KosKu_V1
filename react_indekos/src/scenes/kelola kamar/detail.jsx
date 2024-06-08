@@ -6,10 +6,10 @@ import React, { useState } from "react";
 import axiosClient from "../../axios-client";
 
 
-const UpdateGedung = ({
+const detail = ({
     style,
     fetchData,
-    gedung,
+    kamar,
 }) => {
     const btnstyle1 = { margin: '0.2em', backgroundColor: '#FF9900', color: "white", borderRadius: '0.5em' };
 
@@ -20,8 +20,10 @@ const UpdateGedung = ({
 
     //For Inpput
     const [formData, setFormData] = useState({
-        'nama_gedung': gedung.nama_gedung,
-        'gambar_gedung': null,
+        'nama_kamar': kamar.nama_kamar,
+        'biaya_kamar': kamar.biaya_kamar,
+        'status_kamar': kamar.status_kamar,
+        'gambar_kamar': null,
     })
 
     const handleChange = (e) => {
@@ -39,14 +41,15 @@ const UpdateGedung = ({
         console.log("Data FormData First : ", formData);
 
         const data = new FormData();
-        data.append('nama_gedung', formData.nama_gedung);
-        data.append('jumlah_kamar', 1231231);
-        if (formData.gambar_gedung) {
-            data.append('gambar_gedung', formData.gambar_gedung);
+        data.append('nama_kamar', formData.nama_kamar);
+        data.append('biaya_kamar', formData.biaya_kamar);
+        data.append('status_kamar', formData.status_kamar);
+        if (formData.gambar_kamar) {
+            data.append('gambar_kamar', formData.gambar_kamar);
         }
 
         try {
-            const response = await axiosClient.post(`/edit-gedung/${gedung.id_gedung}`, data, {
+            const response = await axiosClient.post(`/edit-kamar/${kamar.id_kamar}`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -73,49 +76,64 @@ const UpdateGedung = ({
                 aria-describedby="parent-modal-description"
             >
                 <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
-                    <h3 id="parent-modal-title" textstyle="bold">Edit Gedung</h3>
+                    <h3 id="parent-modal-title" textstyle="bold">Detail Kamar</h3>
                     <form onSubmit={handleSubmit}>
                         <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
                             {errorMessage}
                         </Typography>
+                        <img
+                                alt="No-Img"
+                                src={`${kamar.gambar_kamar}`}
+                                style={{ borderRadius: '1rem' }}
+                                height="150"
+                                width="auto"
+                            />
                         <TextField
-                            label='Nama Gedung'
+                            label='Nama Kamar'
                             variant='standard'
                             color='warning'
                             fullWidth
-                            value={formData.nama_gedung}
+                            value={formData.nama_kamar}
                             onChange={handleChange}
-                            name='nama_gedung'
+                            name='nama_kamar'
                             InputLabelProps={{
                                 style: { color: "black" }
                             }}
                             InputProps={{
-                                style: {
-                                    color: "black"
-                                },
+                                readOnly: true,
                             }}
                         />
                         <TextField
-                            label='Masukan Gambar/Foto'
+                            label='Biaya Kamar'
                             variant='standard'
                             color='warning'
                             fullWidth
-                            disabled />
-                        <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding: 2 }}>
-                            <Button variant="contained" component="label" size="small" style={{ borderRadius: "2em" }}>
-                                Pilih Gambar
-                                <input
-                                    type="file"
-                                    accept=".jpg,.png,.jpeg"
-                                    name='gambar_gedung'
-                                    onChange={handleFileChange}
-                                    hidden
-                                />
-                            </Button>
-                            <Typography variant='caption' style={{ marginLeft: 'auto', textAlign: 'left' }}>
-                                Silakan unggah gambar (*.jpg, *png)
-                            </Typography>
-                        </Box>
+                            value={formData.nama_biaya}
+                            onChange={handleChange}
+                            name='nama_biaya'
+                            InputLabelProps={{
+                                style: { color: "black" }
+                            }}
+                            InputProps={{
+                                readOnly: true,
+                            }}
+                        />
+                        <TextField
+                            label='Status Kamar'
+                            variant='standard'
+                            color='warning'
+                            fullWidth
+                            value={formData.status_biaya}
+                            onChange={handleChange}
+                            name='status_biaya'
+                            InputLabelProps={{
+                                style: { color: "black" }
+                            }}
+                            InputProps={{
+                                readOnly: true,
+                            }}
+                        />
+
                         <div align="center">
                             <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Ya, simpan</Button>
                             <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Kembali</Button>
@@ -127,4 +145,4 @@ const UpdateGedung = ({
     );
 }
 
-export default UpdateGedung;
+export default detail;

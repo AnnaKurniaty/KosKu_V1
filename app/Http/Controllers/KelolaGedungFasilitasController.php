@@ -252,6 +252,8 @@ class KelolaGedungFasilitasController extends Controller
             'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
             'tanggal_pembelian' => $request->input('tanggal_pembelian'),
             'biaya_pembelian' => $request->input('biaya_pembelian'),
+            'biaya_perawatan' => $request->input('biaya_perawatan'),
+            'tanggal_perawatan' => $request->input('tanggal_perawatan'),
             'gambar_fasilitas' => $imageUrl,
         ]);
 
@@ -288,6 +290,40 @@ class KelolaGedungFasilitasController extends Controller
 
         // Kembalikan respons sukses
         return response()->json(['message' => 'Fasilitas deleted successfully']);
+    }
+
+    public function tambahFasilitasUmum(Request $request)
+    {
+        $request->validate([
+            'nama_fasilitas' => 'required|string|max:255',
+            'jumlah_fasilitas' => 'required|integer',
+            'tanggal_pembelian' => 'required|date',
+            'biaya_perawatan' => 'nullable|string',
+            'tanggal_perawatan' => 'nullable|date',
+            'gambar_fasilitas' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'biaya_pembelian' => 'required|integer',
+        ]);
+
+        // Mengupload gambar dan simpan ke folder
+        $imageUrl = ImageHelper::uploadImage($request, 'gambar_fasilitas', 'fasilitas');
+    
+        // Buat fasilitas baru dengan menggunakan data dari request
+        $fasilitas = Fasilitas::create([
+            'nama_fasilitas' => $request->input('nama_fasilitas'),
+            'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
+            'tanggal_pembelian' => $request->input('tanggal_pembelian'),
+            'biaya_perawatan' => $request->input('biaya_perawatan'),
+            'tanggal_perawatan' => $request->input('tanggal_perawatan'),
+            'biaya_pembelian' => $request->input('biaya_pembelian'),
+            'gambar_fasilitas' => $imageUrl,
+        ]);
+
+        //insert ke table Fasilitas Kamar
+        FasilitasUmum::create([
+            'id_fasilitas' => $fasilitas->id_fasilitas,
+        ]);
+
+        return response()->json(['message' => 'Fasilitas umum berhasil ditambahkan', 'fasilitas' => $fasilitas]);
     }
 
     public function updateFasilitasUmum(Request $request, $id_fasilitas)
@@ -328,6 +364,8 @@ class KelolaGedungFasilitasController extends Controller
             'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
             'tanggal_pembelian' => $request->input('tanggal_pembelian'),
             'biaya_pembelian' => $request->input('biaya_pembelian'),
+            'biaya_perawatan' => $request->input('biaya_perawatan'),
+            'tanggal_perawatan' => $request->input('tanggal_perawatan'),
             'gambar_fasilitas' => $imageUrl,
         ]);
 

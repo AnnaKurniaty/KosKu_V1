@@ -19,6 +19,8 @@ class FasilitasUmumModels extends Model
         'id_fasilitas',
         'biaya_perawatan',
         'tanggal_perawatan',
+        'biaya_pembelian',
+        'tanggal_pembelian',
     ];
 
     public function gedung()
