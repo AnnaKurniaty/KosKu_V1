@@ -12,6 +12,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useLocation } from 'react-router-dom';
 import axiosClient from "../../axios-client.js";
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import DetailFasilitasKamar from './detail.jsx';
 
 const style = {
     position: 'absolute',
@@ -36,6 +40,7 @@ const Inventory = () => {
     const [loading, setLoading] = useState(true);
     const [gedungId, setGedungId] = useState(null);
     const [image, setImage] = useState(null);
+    const [dateValue, setDateValue] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -109,17 +114,67 @@ const Inventory = () => {
         }
     };
 
-    const handleChange = (event, newValue) => {
+    const handleChangeTab = (event, newValue) => {
         setValue(newValue);
+    }
+
+    const [formData, setFormData] = useState({
+        'nama_fasilitas': '',
+        'jumlah_fasilitas': '',
+        'tanggal_pembelian': '',
+        'biaya_pembelian': '',
+        'gambar_fasilitas': null,
+    })
+
+    const handleSubmitFasilitasKamar = async (e) => {
+        e.preventDefault();
+        // const data = new FormData();
+        console.log('formData ', formData)
+        const data = new FormData();
+        data.append('nama_fasilitas', formData.nama_gedung);
+        data.append('jumlah_fasilitas', formData.jumlah_fasilitas);
+        data.append('tanggal_pembelian', formData.tanggal_pembelian);
+        data.append('biaya_pembelian', formData.biaya_pembelian);
+        if (formData.gambar_gedung) {
+        data.append('gambar_fasilitas', formData.gambar_fasilitas);
+        }
+
+        try {
+        const response = await axiosClient.post(`/fasilitas-kamar/insert`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        console.log('Response:', response.data);
+        // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        handleClose();
+        fetchData();
+        } catch (error) {
+        console.error('Error:', error.response.data.errors);
+        // Implement logic for handling errors, e.g., showing an error message to the user
+        setErrorMessage(error.response.data.message);
+        handleOpen();
+        }
     };
-    const handleImageChange = (event) => {
-        setImage(event.target.files[0]);
-      };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleFileChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.files[0] });
+    };
+
     const [openAdd, setOpenAdd] = React.useState(false);
     const [openAdd1, setOpenAdd1] = React.useState(false);
     const [openAdd2, setOpenAdd2] = React.useState(false);
-    const [open1, setOpen1] = React.useState(false);
-    const [open2, setOpen2] = React.useState(false);
+    const [open3, setOpen3] = React.useState(false);
+    const [open4, setOpen4] = React.useState(false);
+    const [open5, setOpen5] = React.useState(false);
+    const [open6, setOpen6] = React.useState(false);
     const handleOpen = () => {
         if(type === 'kamar'){
             setOpenAdd(true);
@@ -131,11 +186,17 @@ const Inventory = () => {
             setOpenAdd2(true);
         }
     };
-    const handleOpen1 = () => {
-        setOpen1(true);
+    const handleOpen3 = () => {
+        setOpen3(true);
     };
-    const handleOpen2 = () => {
-        setOpen2(true);
+    const handleOpen4 = () => {
+        setOpen4(true);
+    };
+    const handleOpen5 = () => {
+        setOpen5(true);
+    };
+    const handleOpen6 = () => {
+        setOpen6(true);
     };
     const handleClose = () => {
         setOpenAdd(false),
@@ -206,19 +267,29 @@ const Inventory = () => {
                                 },
                             }}
                             />
-                            <TextField
-                            label='Masukan Gambar/Foto' 
-                            variant='standard'
-                            color='warning'
-                            fullWidth
-                            disabled />  
+                            <div style={{ display: 'flex', alignItems: 'left', marginTop:'10px'}}>
+                                <Typography>
+                                    Fasilitas* 
+                                </Typography>
+                                <Typography variant="caption">
+                                     (Pilih dengan menekan fasilitas)
+                                </Typography>
+                            </div>
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox color="success"/>} label="Meja" />
+                                <FormControlLabel control={<Checkbox color="success"/>} label="Kursi" />
+                                <FormControlLabel control={<Checkbox color="success"/>} label="Disabled" />
+                            </FormGroup>
+                            <Typography align='left' marginTop='10px'>
+                                    Masukan Gambar / Foto 
+                            </Typography>
                             <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
                                 <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
                                     Pilih Gambar
                                     <input
                                     type="file"
                                     accept=".jpg,.png"
-                                    onChange={handleImageChange}
+                                    onChange={handleFileChange}
                                     hidden
                                     />
                                 </Button>
@@ -241,59 +312,6 @@ const Inventory = () => {
                 >
                     <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
                         <h3 id="parent-modal-title" textStyle="bold">Tambah Fasilitas Umum</h3>
-                        {/* <form>
-                            <TextField 
-                            label='Nama Gedung' 
-                            variant='standard'
-                            color='warning'
-                            fullWidth 
-                            required
-                            onChange={(e) => setValue(e.target.value)}
-                            
-                            InputLabelProps={{
-                                style: { color: "black" }
-                            }} 
-                            InputProps={{
-                                style: {
-                                    color: "black"
-                                },
-                            }}
-                            />
-                            <TextField
-                            label='Masukan Gambar/Foto' 
-                            variant='standard'
-                            color='warning'
-                            fullWidth
-                            disabled />  
-                            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
-                                <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
-                                    Pilih Gambar
-                                    <input
-                                    type="file"
-                                    accept=".jpg,.png"
-                                    onChange={handleImageChange}
-                                    hidden
-                                    />
-                                </Button>
-                                <Typography variant='caption' style={{marginLeft:'auto', textAlign:'left'}}>
-                                    Silakan unggah gambar (*.jpg, *png) 
-                                </Typography>
-                            </Box>
-                            <div align="center">
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
-                            </div>
-                        </form> */}
-                    </Box>
-                </Modal>
-                <Modal
-                    open={openAdd2}
-                    onClose={handleClose}
-                    aria-labelledby="parent-modal-title"
-                    aria-describedby="parent-modal-description"
-                >
-                   <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
-                        <h3 id="parent-modal-title" textStyle="bold">Tambah Fasilitas Kamar</h3>
                         <form>
                             <TextField 
                             label='Nama Gedung' 
@@ -324,7 +342,7 @@ const Inventory = () => {
                                     <input
                                     type="file"
                                     accept=".jpg,.png"
-                                    onChange={handleImageChange}
+                                    onChange={handleFileChange}
                                     hidden
                                     />
                                 </Button>
@@ -339,13 +357,122 @@ const Inventory = () => {
                         </form>
                     </Box>
                 </Modal>
+                <Modal
+                    open={openAdd2}
+                    onClose={handleClose}
+                    aria-labelledby="parent-modal-title"
+                    aria-describedby="parent-modal-description"
+                >
+                   <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                        <h3 id="parent-modal-title" textStyle="bold">Tambah Fasilitas Kamar</h3>
+                        <form>
+                            <TextField 
+                            label='Nama Fasilitas Kamar' 
+                            variant='standard'
+                            color='warning'
+                            fullWidth 
+                            required
+                            onChange={handleChange}
+                            name='nama_fasilitas'
+                            
+                            InputLabelProps={{
+                                style: { color: "black" }
+                            }} 
+                            InputProps={{
+                                style: {
+                                    color: "black"
+                                },
+                            }}
+                            />
+                            <TextField 
+                            label='Jumlah Fasilitas' 
+                            style={{marginTop:'10px'}}
+                            variant='standard'
+                            color='warning'
+                            fullWidth 
+                            required
+                            onChange={handleChange}
+                            name='jumlah_fasilitas'
+                            
+                            InputLabelProps={{
+                                style: { color: "black" }
+                            }} 
+                            InputProps={{
+                                style: {
+                                    color: "black"
+                                },
+                            }}
+                            />
+                            <TextField 
+                            label='Tanggal Pembelian / Pembuatan' 
+                            style={{marginTop:'10px'}}
+                            type='date'
+                            variant='standard'
+                            color='warning'
+                            fullWidth 
+                            required
+                            value={dateValue}
+                            onChange={handleChange}
+                            name='tanggal_pembelian'
+                            InputLabelProps={{
+                                shrink: dateValue == '', // Shrink label if value is not empty
+                                style: { color: "black" }
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: "black"
+                                },
+                            }}
+                            />
+                            <TextField 
+                            label='Biaya Pembelian' 
+                            style={{marginTop:'10px'}}
+                            variant='standard'
+                            color='warning'
+                            fullWidth 
+                            required
+                            onChange={handleChange}
+                            name='biaya_pembelian'
+                            
+                            InputLabelProps={{
+                                style: { color: "black" }
+                            }} 
+                            InputProps={{
+                                style: {
+                                    color: "black"
+                                },
+                            }}
+                            />
+                            <Typography align='left' marginTop='10px'>Masukan Gambar/Foto</Typography> 
+                            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
+                                <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
+                                    Pilih Gambar
+                                    <input
+                                    type="file"
+                                    accept=".jpg,.png"
+                                    name='gambar_fasilitas'
+                                    onChange={handleFileChange}
+                                    hidden
+                                    />
+                                </Button>
+                                <Typography variant='caption' style={{marginLeft:'auto', textAlign:'left'}}>
+                                    Silakan unggah gambar (*.jpg, *png) 
+                                </Typography>
+                            </Box>
+                            <div align="center">
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmitFasilitasKamar}>Ya, simpan</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
+                            </div>
+                        </form>
+                    </Box>
+                </Modal>
             </div>
             <Box sx={{ width: 'auto', typography: 'body1' }} style={textStyle} borderRadius="0.55rem" backgroundColor="white">
                 <TabContext value={value}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', '& .MuiTab-root.Mui-selected': {
                         color:theme.palette.secondary[500],
                         }, }}>
-                    <TabList onChange={handleChange}
+                    <TabList onChange={handleChangeTab}
                     TabIndicatorProps={{
                         style: {
                         backgroundColor:theme.palette.secondary[500],
@@ -392,22 +519,21 @@ const Inventory = () => {
                                 {kamar.nama_kamar}
                                 </Typography>
                                 <div align="center">
-                                    <Button style={btnstyle} onClick={handleOpen1}>Lihat Detail</Button>
+                                    <Button style={btnstyle} onClick={handleOpen3}>Lihat Detail</Button>
                                     <Modal
-                                        open={open1}
+                                        open={open3}
                                         onClose={handleClose}
                                         aria-labelledby="parent-modal-title"
                                         aria-describedby="parent-modal-description"
                                     >
                                         <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
-                                            <h3 id="parent-modal-title" textStyle="bold">Edit Gedung</h3>
+                                            <h3 id="parent-modal-title" textStyle="bold">Edit Kamar</h3>
                                             <form>
                                                 <TextField 
-                                                label='Nama Gedung' 
+                                                label='Nama Kamar' 
                                                 variant='standard'
                                                 color='warning'
                                                 fullWidth 
-                                                value="Gedung Kos Putih"
                                                 required
                                                 onChange={(e) => setValue(e.target.value)}
                                                 
@@ -420,19 +546,46 @@ const Inventory = () => {
                                                     },
                                                 }}
                                                 />
-                                                <TextField
-                                                label='Masukan Gambar/Foto' 
+                                                <TextField 
+                                                label='Biaya Kamar' 
                                                 variant='standard'
                                                 color='warning'
-                                                fullWidth
-                                                disabled />  
+                                                fullWidth 
+                                                required
+                                                onChange={(e) => setValue(e.target.value)}
+                                                
+                                                InputLabelProps={{
+                                                    style: { color: "black" }
+                                                }} 
+                                                InputProps={{
+                                                    style: {
+                                                        color: "black"
+                                                    },
+                                                }}
+                                                />
+                                                <div style={{ display: 'flex', alignItems: 'left', marginTop:'10px'}}>
+                                                    <Typography>
+                                                        Fasilitas* 
+                                                    </Typography>
+                                                    <Typography variant="caption">
+                                                        (Pilih dengan menekan fasilitas)
+                                                    </Typography>
+                                                </div>
+                                                <FormGroup>
+                                                    <FormControlLabel control={<Checkbox color="success"/>} label="Meja" />
+                                                    <FormControlLabel control={<Checkbox color="success"/>} label="Kursi" />
+                                                    <FormControlLabel control={<Checkbox color="success"/>} label="Disabled" />
+                                                </FormGroup>
+                                                <Typography align='left' marginTop='10px'>
+                                                        Masukan Gambar / Foto 
+                                                </Typography>
                                                 <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
                                                     <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
                                                         Pilih Gambar
                                                         <input
                                                         type="file"
                                                         accept=".jpg,.png"
-                                                        onChange={handleImageChange}
+                                                        onChange={handleFileChange}
                                                         hidden
                                                         />
                                                     </Button>
@@ -442,20 +595,20 @@ const Inventory = () => {
                                                 </Box>
                                                 <div align="center">
                                                     <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
-                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
+                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} formNoValidate>Kembali</Button>
                                                 </div>
                                             </form>
                                         </Box>
                                     </Modal>
-                                    <IconButton style={btnstyle1} onClick={handleOpen2}><DeleteIcon /></IconButton>
+                                    <IconButton style={btnstyle1} onClick={handleOpen4}><DeleteIcon /></IconButton>
                                     <Modal
-                                        open={open2}
+                                        open={open4}
                                         onClose={handleClose}
                                         aria-labelledby="parent-modal-title"
                                         aria-describedby="parent-modal-description"
                                     >
                                         <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
-                                            <h3 id="parent-modal-title" textStyle="bold">Hapus Gedung yang Dipilih ?</h3>
+                                            <h3 id="parent-modal-title" textStyle="bold">Hapus Kamar yang Dipilih ?</h3>
                                                 <div align="center">
                                                     <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, hapus</Button>
                                                     <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
@@ -503,11 +656,8 @@ const Inventory = () => {
                                 {fasilitas.nama_fasilitas}
                             </Typography>
                             <div align="center">
-                                <Button type='submit' style={btnstyle} 
-                                    onClick={() => {
-                                        navigate('/detail fasilitas');
-                                    }}>Lihat Detail</Button>
-                                <IconButton style={btnstyle1} onClick={handleOpen2}><DeleteIcon /></IconButton>
+                                <Button type='submit' style={btnstyle} onClick={handleOpen3}>Lihat Detail</Button>
+                                <IconButton style={btnstyle1} onClick={handleOpen4}><DeleteIcon /></IconButton>
                             </div>
                         </Box>
                     </Box>
@@ -549,12 +699,127 @@ const Inventory = () => {
                                 {fasilitas.nama_fasilitas}
                             </Typography>
                             <div align="center">
-                                <Button type='submit' style={btnstyle} 
-                                    onClick={() => {
-                                        navigate('/detail fasilitas');
-                                    }}>Lihat Detail</Button>
-                                <IconButton style={btnstyle1} onClick={handleOpen2}><DeleteIcon /></IconButton>
-                            </div>
+                                    <Button style={btnstyle} onClick={handleOpen5}>Lihat Detail</Button>
+                                    <Modal
+                                        open={open5}
+                                        onClose={handleClose}
+                                        aria-labelledby="parent-modal-title"
+                                        aria-describedby="parent-modal-description"
+                                    >
+                                        <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                                            <h3 id="parent-modal-title" textStyle="bold">Lihat Detail</h3>
+                                            <form>
+                                                <TextField 
+                                                label='Nama Fasilitas Kamar' 
+                                                variant='standard'
+                                                color='warning'
+                                                fullWidth 
+                                                required
+                                                onChange={(e) => setValue(e.target.value)}
+                                                
+                                                InputLabelProps={{
+                                                    style: { color: "black" }
+                                                }} 
+                                                InputProps={{
+                                                    style: {
+                                                        color: "black"
+                                                    },
+                                                }}
+                                                />
+                                                <TextField 
+                                                label='Jumlah Fasilitas' 
+                                                style={{marginTop:'10px'}}
+                                                variant='standard'
+                                                color='warning'
+                                                fullWidth 
+                                                required
+                                                onChange={(e) => setValue(e.target.value)}
+                                                
+                                                InputLabelProps={{
+                                                    style: { color: "black" }
+                                                }} 
+                                                InputProps={{
+                                                    style: {
+                                                        color: "black"
+                                                    },
+                                                }}
+                                                />
+                                                <TextField 
+                                                label='Tanggal Pembelian / Pembuatan' 
+                                                style={{marginTop:'10px'}}
+                                                type='date'
+                                                variant='standard'
+                                                color='warning'
+                                                fullWidth 
+                                                required
+                                                value={dateValue}
+                                                onChange={(e) => setValue(e.target.value)}
+                                                InputLabelProps={{
+                                                    shrink: dateValue == '', // Shrink label if value is not empty
+                                                    style: { color: "black" }
+                                                }}
+                                                InputProps={{
+                                                    style: {
+                                                        color: "black"
+                                                    },
+                                                }}
+                                                />
+                                                <TextField 
+                                                label='Biaya Pembelian' 
+                                                style={{marginTop:'10px'}}
+                                                variant='standard'
+                                                color='warning'
+                                                fullWidth 
+                                                required
+                                                onChange={(e) => setValue(e.target.value)}
+                                                
+                                                InputLabelProps={{
+                                                    style: { color: "black" }
+                                                }} 
+                                                InputProps={{
+                                                    style: {
+                                                        color: "black"
+                                                    },
+                                                }}
+                                                />
+                                                <Typography align='left' marginTop='10px'>Masukan Gambar/Foto</Typography> 
+                                                <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
+                                                    <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
+                                                        Pilih Gambar
+                                                        <input
+                                                        type="file"
+                                                        accept=".jpg,.png"
+                                                        onChange={handleFileChange}
+                                                        hidden
+                                                        />
+                                                    </Button>
+                                                    <Typography variant='caption' style={{marginLeft:'auto', textAlign:'left'}}>
+                                                        Silakan unggah gambar (*.jpg, *png) 
+                                                    </Typography>
+                                                </Box>
+                                                <div align="center">
+                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
+                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
+                                                </div>
+                                            </form>
+                                        </Box>
+                                    </Modal>
+                                    <IconButton style={btnstyle1} onClick={handleOpen6}><DeleteIcon /></IconButton>
+                                    <Modal
+                                        open={open6}
+                                        onClose={handleClose}
+                                        aria-labelledby="parent-modal-title"
+                                        aria-describedby="parent-modal-description"
+                                    >
+                                        <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                                            <h3 id="parent-modal-title" textStyle="bold">Hapus Fasilitas Kamar yang Dipilih ?</h3>
+                                                <div align="center">
+                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, hapus</Button>
+                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
+                                                </div>
+                                        </Box>
+                                    </Modal>
+                                </div>
                         </Box>
                     </Box>
                     ))}

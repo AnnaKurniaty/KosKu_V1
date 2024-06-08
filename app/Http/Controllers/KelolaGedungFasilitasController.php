@@ -167,7 +167,7 @@ class KelolaGedungFasilitasController extends Controller
             'nama_fasilitas' => 'required|string|max:255',
             'jumlah_fasilitas' => 'required|integer',
             'tanggal_pembelian' => 'required|date',
-            'biaya_perawatan' => 'required|string',
+            'biaya_perawatan' => 'string',
             'tanggal_perawatan' => 'nullable|date',
             'gambar_fasilitas' => 'image|mimes:jpeg,png,jpg|max:2048',
             'biaya_pembelian' => 'required|integer',
