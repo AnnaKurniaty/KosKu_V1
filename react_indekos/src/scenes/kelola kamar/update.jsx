@@ -40,7 +40,7 @@ const UpdateGedung = ({
 
         const data = new FormData();
         data.append('nama_gedung', formData.nama_gedung);
-        data.append('jumlah_kamar', formData.jumlah_kamar);
+        data.append('jumlah_kamar', 1231231);
         if (formData.gambar_gedung) {
             data.append('gambar_gedung', formData.gambar_gedung);
         }
@@ -86,23 +86,6 @@ const UpdateGedung = ({
                             value={formData.nama_gedung}
                             onChange={handleChange}
                             name='nama_gedung'
-                            InputLabelProps={{
-                                style: { color: "black" }
-                            }}
-                            InputProps={{
-                                style: {
-                                    color: "black"
-                                },
-                            }}
-                        />
-                        <TextField
-                            label='Jumlah Kamar'
-                            variant='standard'
-                            color='warning'
-                            fullWidth
-                            value={formData.jumlah_kamar}
-                            onChange={handleChange}
-                            name='jumlah_kamar'
                             InputLabelProps={{
                                 style: { color: "black" }
                             }}

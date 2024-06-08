@@ -7,12 +7,13 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ContextProvider } from './context/ContextProvider'; // Import ContextProvider
 import Layout from './scenes/layout';
 import InformasiKos from './scenes/informasi kos';
-import KelolaFasilitas from './scenes/kelola fasilitas';
+import KelolaFasilitas from './scenes/kelola kamar';
 import KelolaPenyewa from './scenes/kelola penyewa';
 import KelolaGedung from './scenes/kelola gedung';
-import KelolaPenyewaDetail from './scenes/kelola penyewa/detail';
-import KelolaFasilitasDetail from './scenes/kelola fasilitas/detail';
-import TambahFasilitas from './scenes/kelola fasilitas/tambah';
+// import KelolaPenyewaDetail from './scenes/kelola penyewa/detail';
+import KelolaFasilitasKamarDetail from './scenes/kelola fasilitas/detail_kamar';
+import KelolaFasilitasUmumDetail from './scenes/kelola fasilitas/detail_umum';
+import TambahFasilitas from './scenes/kelola kamar/tambah';
 import TambahGedung from './scenes/kelola gedung/tambah';
 import Laporan from './scenes/laporan';
 import Login from './scenes/login';
@@ -38,12 +39,13 @@ function App() {
                 <Route path='/' element={<Navigate to='/dashboard/:id' replace />} />
                 <Route path='/dashboard/:id' element={<InformasiKos />} />
                 <Route path='/kelola gedung dan fasilitas/:id' element={<KelolaGedung />} />
+                <Route path='/tambah-gedung' element={<TambahGedung />} />
                 {/* <Route path='/tambah kamar' element={<TambahKamar />} /> */}
                 <Route path='/kelola penyewa' element={<KelolaPenyewa />} />
-                <Route path='/tambah fasilitas' element={<TambahFasilitas />} />
-                <Route path='/tambah gedung' element={<TambahGedung />} />
-                <Route path='/detail penyewa' element={<KelolaPenyewaDetail />} />
-                <Route path='/detail fasilitas' element={<KelolaFasilitasDetail />} />
+                <Route path='/tambah-fasilitas' element={<TambahFasilitas />} />
+                {/* <Route path='/detail penyewa' element={<KelolaPenyewaDetail />} /> */}
+                <Route path='/detail-fasilitas-kamar' element={<KelolaFasilitasKamarDetail />} />
+                <Route path='/detail-fasilitas-umum' element={<KelolaFasilitasUmumDetail />} />
                 <Route path='/kelola fasilitas/:id' element={<KelolaFasilitas />} />
                 <Route path='/Laporan pemasukan & pengeluaran/:id' element={<Laporan />} />
               </Route>

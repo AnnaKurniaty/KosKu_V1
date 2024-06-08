@@ -37,8 +37,6 @@ Route::get('/dashboard/{userId}', [DashboardController::class, 'informasiKos']);
 Route::post('/dashboard/pemasukan/{penyewaId}', [DashboardController::class, 'storePemasukan']);
 Route::patch('/dashboard/penyewa/status/{penyewaId}', [DashboardController::class, 'updatePenyewaStatus']);
 Route::get('/kamar/{id_gedung}', [KelolaGedungFasilitasController::class, 'kamarByGedung']);
-Route::get('/fasilitas umum/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasUmumByGedung']);
-Route::get('/fasilitas kamar/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasKamarByGedung']);
 
 //GEDUNG
 Route::middleware('auth:sanctum')->group(function () {
@@ -48,11 +46,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/gedung/{id_gedung}', [KelolaGedungFasilitasController::class, 'hapusGedung']);
 });
 
-//Fasilitas
-// Route::get('/fasilitas-kamar', [KelolaGedungFasilitasController::class, 'gedungByPemilik']);
-Route::post('/fasilitas-kamar/insert', [KelolaGedungFasilitasController::class, 'tambahFasilitasKamar']);
-Route::post('/fasilitas-kamar/update/{id}', [KelolaGedungFasilitasController::class, 'updateFasilitasKamar']);
-Route::post('/fasilitas-kamar/delete/{id}', [KelolaGedungFasilitasController::class, 'hapusFasilitasKamar']);
+//Fasilitas Kamar
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/fasilitas kamar/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasKamarByGedung']);
+    Route::post('/fasilitas-kamar/insert', [KelolaGedungFasilitasController::class, 'tambahFasilitasKamar']);
+    Route::post('/fasilitas-kamar/update/{id_fasilitas}', [KelolaGedungFasilitasController::class, 'updateFasilitasKamar']);
+    Route::post('/fasilitas-kamar/delete/{id_fasilitas}', [KelolaGedungFasilitasController::class, 'hapusFasilitasKamar']);
+});
+
+//Fasilitas Kamar
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/fasilitas umum/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasUmumByGedung']);
+    Route::post('/fasilitas-umum/insert', [KelolaGedungFasilitasController::class, 'tambahFasilitasUmum']);
+    Route::post('/fasilitas-umum/update/{id_fasilitas}', [KelolaGedungFasilitasController::class, 'updateFasilitasUmum']);
+    Route::post('/fasilitas-umum/delete/{id_fasilitas}', [KelolaGedungFasilitasController::class, 'hapusFasilitasUmum']);
+});
 
 Route::post('/tambah penyewa', [KelolaPenyewaController::class, 'tambahPenyewa']);
 Route::get('/kelola penyewa/{userId}', [KelolaPenyewaController::class, 'kelolaPenyewa']);

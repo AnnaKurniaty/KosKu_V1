@@ -24,10 +24,24 @@ class KelolaGedungFasilitasController extends Controller
 
     public function fasilitasUmumByGedung($id_gedung)
     {
-        $fasilitas = FasilitasUmum::where('id_gedung', $id_gedung)
-            ->join('fasilitas', 'fasilitas_umum.id_fasilitas', '=', 'fasilitas.id_fasilitas')
-            ->distinct()
-            ->select('fasilitas_umum.id_fasilitas', 'fasilitas.nama_fasilitas', 'fasilitas.gambar_fasilitas', 'fasilitas_umum.*')
+        $fasilitas = DB::table('gedung as g')
+            ->leftJoin('fasilitas_umum as fu', function($join) {
+                $join->on('fu.id_gedung', '=', 'g.id_gedung')
+                    ->orWhereNull('fu.id_gedung');
+            })
+            ->leftJoin('fasilitas as f', 'f.id_fasilitas', '=', 'fu.id_fasilitas')
+            ->where('g.id_gedung', '=', $id_gedung)
+            ->groupBy('f.id_fasilitas', 'f.nama_fasilitas', 'f.jumlah_fasilitas','f.biaya_pembelian', 'f.tanggal_pembelian','f.gambar_fasilitas', 'fu.biaya_perawatan', 'fu.tanggal_perawatan')
+            ->select(
+                'f.id_fasilitas', 
+                'f.nama_fasilitas', 
+                'f.jumlah_fasilitas',
+                'f.biaya_pembelian', 
+                'f.tanggal_pembelian', 
+                'f.gambar_fasilitas', 
+                'fu.biaya_perawatan', 
+                'fu.tanggal_perawatan'
+            )
             ->get();
         $type = 'fasilitas_umum';
 
@@ -37,34 +51,27 @@ class KelolaGedungFasilitasController extends Controller
 
     public function fasilitasKamarByGedung($id_gedung)
     {
-        // $fasilitas = FasilitasKamar::where('id_gedung', $id_gedung)
-        //     ->join('kamar as k', 'fasilitas_kamar.id_kamar', '=', 'k.id_kamar')
-        //     ->join('fasilitas as f', 'fasilitas_kamar.id_fasilitas', '=', 'f.id_fasilitas')
-        //     ->where('k.id_gedung', $id_gedung)
-        //     ->distinct()
-        //     ->select('f.*')
-        //     ->get();
-        // $fasilitas = Fasilitas::select('fasilitas.*')
-        //     ->leftJoin('fasilitas_kamar', function($join) {
-        //         $join->on('fasilitas.id_fasilitas', '=', 'fasilitas_kamar.id_fasilitas')
-        //             ->orWhereNull('fasilitas_kamar.id_fasilitas');
-        //     })
-        //     ->leftJoin('kamar', 'kamar.id_kamar', '=', 'fasilitas_kamar.id_kamar')
-        //     ->leftJoin('gedung as g', 'kamar.id_gedung', '=', 'g.id_gedung')
-        //     ->where('g.id_gedung', '=', $id_gedung)
-        //     ->groupBy('fasilitas.id_fasilitas', 'fasilitas.nama_fasilitas')
-        //     ->get();
         $fasilitas = DB::table('gedung as g')
-                ->leftJoin('kamar as k', 'k.id_gedung', '=', 'g.id_gedung')
-                ->leftJoin('fasilitas_kamar as fk', function($join) {
-                    $join->on('fk.id_kamar', '=', 'k.id_kamar')
-                        ->orWhereNull('fk.id_kamar');
-                })
-                ->leftJoin('fasilitas as f', 'f.id_fasilitas', '=', 'fk.id_fasilitas')
-                ->where('g.id_gedung', '=', 1)
-                ->groupBy('f.id_fasilitas', 'f.nama_fasilitas')
-                ->select('f.*')
-                ->get();
+            ->leftJoin('kamar as k', 'k.id_gedung', '=', 'g.id_gedung')
+            ->leftJoin('fasilitas_kamar as fk', function($join) {
+                $join->on('fk.id_kamar', '=', 'k.id_kamar')
+                    ->orWhereNull('fk.id_kamar');
+            })
+            ->leftJoin('fasilitas as f', 'f.id_fasilitas', '=', 'fk.id_fasilitas')
+            ->where('g.id_gedung', '=', $id_gedung)
+            ->groupBy('f.id_fasilitas', 'f.nama_fasilitas', 'f.biaya_pembelian', 'f.jumlah_fasilitas','f.tanggal_pembelian','f.gambar_fasilitas', 'fk.biaya_perawatan', 'fk.tanggal_perawatan')
+            ->select(
+                'f.id_fasilitas', 
+                'f.nama_fasilitas', 
+                'f.jumlah_fasilitas',
+                'f.biaya_pembelian', 
+                'f.tanggal_pembelian', 
+                'f.gambar_fasilitas', 
+                'fk.biaya_perawatan', 
+                'fk.tanggal_perawatan'
+            )
+            ->get();
+
 
         $type = 'fasilitas_kamar';
 
@@ -85,9 +92,6 @@ class KelolaGedungFasilitasController extends Controller
             'jumlah_kamar' => 'required|integer',
             'gambar_gedung' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-    
-        // Tambahkan 'id_pemilik' ke dalam request
-        // $request->merge(['id_pemilik' => $userId]);
 
         // Mengupload gambar dan simpan ke folder
         if ($request->hasFile('gambar_gedung')) {
@@ -122,9 +126,6 @@ class KelolaGedungFasilitasController extends Controller
         if (!$gedung) {
             return response()->json(['error' => 'Gedung not found'], 404);
         }
-    
-        // Tambahkan 'id_pemilik' ke dalam request
-        // $request->merge(['id_pemilik' => $userId]);
 
         // Hapus file gambar jika ada
         if ($gedung->gambar_gedung && $request->hasFile('gambar_gedung')) {
@@ -196,7 +197,7 @@ class KelolaGedungFasilitasController extends Controller
     
         // Buat fasilitas baru dengan menggunakan data dari request
         $fasilitas = Fasilitas::create([
-            'nama_fasilitas' => $request->input('jumlah_fasilitas'),
+            'nama_fasilitas' => $request->input('nama_fasilitas'),
             'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
             'tanggal_pembelian' => $request->input('tanggal_pembelian'),
             'biaya_perawatan' => $request->input('biaya_perawatan'),
@@ -213,20 +214,20 @@ class KelolaGedungFasilitasController extends Controller
         return response()->json(['message' => 'Fasilitas kamar berhasil ditambahkan', 'fasilitas' => $fasilitas]);
     }
 
-    public function updateFasilitasKamar(Request $request, $id)
+    public function updateFasilitasKamar(Request $request, $id_fasilitas)
     {   
         $request->validate([
             'nama_fasilitas' => 'required|string|max:255',
             'jumlah_fasilitas' => 'required|integer',
             'tanggal_pembelian' => 'required|date',
+            'biaya_pembelian' => 'required|string',
             'biaya_perawatan' => 'required|string',
             'tanggal_perawatan' => 'required|date',
             'gambar_fasilitas' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'biaya_pembelian' => 'required|integer',
         ]);
 
         //Mencari fasilitas berdasarkan ID
-        $fasilitas = Fasilitas::findOrFail($id);
+        $fasilitas = Fasilitas::findOrFail($id_fasilitas);
 
         // Jika fasilitas tidak ditemukan, kembalikan respons 404
         if (!$fasilitas) {
@@ -247,31 +248,27 @@ class KelolaGedungFasilitasController extends Controller
     
         // Update fasilitas dengan menggunakan data dari request
         $fasilitas->update([
-            'nama_fasilitas' => $request->input('jumlah_fasilitas'),
+            'nama_fasilitas' => $request->input('nama_fasilitas'),
             'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
             'tanggal_pembelian' => $request->input('tanggal_pembelian'),
-            'biaya_perawatan' => $request->input('biaya_perawatan'),
-            'tanggal_perawatan' => $request->input('tanggal_perawatan'),
             'biaya_pembelian' => $request->input('biaya_pembelian'),
             'gambar_fasilitas' => $imageUrl,
-            'biaya_perawatan' => $request->input('nama_fasilitas'),
-            'tanggal_perawatan' => $request->input('tanggal_perawatan'),
         ]);
 
         //Update for table fasilitas kamar
         FasilitasKamar::where('id_fasilitas', $id_fasilitas)
             ->update([
-                'biaya_perawatan' => $request->input('nama_fasilitas'),
+                'biaya_perawatan' => $request->input('biaya_perawatan'),
                 'tanggal_perawatan' => $request->input('tanggal_perawatan'),
             ]);
     
         return response()->json(['message' => 'Fasilitas berhasil diubah', 'fasilitas' => $fasilitas]);
     }
 
-    public function hapusFasilitasKamar($id)
+    public function hapusFasilitasKamar($id_fasilitas)
     {
         //Mencari fasilitas berdasarkan ID
-        $fasilitas = Fasilitas::find($id);
+        $fasilitas = Fasilitas::find($id_fasilitas);
 
         // Jika gedung tidak ditemukan, kembalikan respons 404
         if (!$fasilitas) {
@@ -285,6 +282,82 @@ class KelolaGedungFasilitasController extends Controller
 
         // Hapus dari table fasilitas kamar
         FasilitasKamar::where('id_fasilitas', $id_fasilitas)->delete();
+
+        // Hapus item dari database
+        $fasilitas->delete();
+
+        // Kembalikan respons sukses
+        return response()->json(['message' => 'Fasilitas deleted successfully']);
+    }
+
+    public function updateFasilitasUmum(Request $request, $id_fasilitas)
+    {   
+        $request->validate([
+            'nama_fasilitas' => 'required|string|max:255',
+            'jumlah_fasilitas' => 'required|integer',
+            'tanggal_pembelian' => 'required|date',
+            'biaya_pembelian' => 'required|string',
+            'biaya_perawatan' => 'required|string',
+            'tanggal_perawatan' => 'required|date',
+            'gambar_fasilitas' => 'image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        //Mencari fasilitas berdasarkan ID
+        $fasilitas = Fasilitas::findOrFail($id_fasilitas);
+
+        // Jika fasilitas tidak ditemukan, kembalikan respons 404
+        if (!$fasilitas) {
+            return response()->json(['error' => 'Fasilitas not found'], 404);
+        }
+
+        // Hapus file gambar jika ada
+        if ($fasilitas->gambar_fasilitas && $request->hasFile('gambar_fasilitas')) {
+            ImageHelper::deleteImage($fasilitas->gambar_fasilitas);
+        }
+
+        // Mengupload gambar dan simpan ke folder
+        $imageUrl = ImageHelper::uploadImage($request, 'gambar_fasilitas', 'fasilitas');
+        if ($imageUrl == null) {
+            //default img url jika tidak ada perubahan
+            $imageUrl = $fasilitas->gambar_fasilitas;
+        }
+    
+        // Update fasilitas dengan menggunakan data dari request
+        $fasilitas->update([
+            'nama_fasilitas' => $request->input('nama_fasilitas'),
+            'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
+            'tanggal_pembelian' => $request->input('tanggal_pembelian'),
+            'biaya_pembelian' => $request->input('biaya_pembelian'),
+            'gambar_fasilitas' => $imageUrl,
+        ]);
+
+        //Update for table fasilitas kamar
+        FasilitasUmum::where('id_fasilitas', $id_fasilitas)
+            ->update([
+                'biaya_perawatan' => $request->input('biaya_perawatan'),
+                'tanggal_perawatan' => $request->input('tanggal_perawatan'),
+            ]);
+    
+        return response()->json(['message' => 'Fasilitas berhasil diubah', 'fasilitas' => $fasilitas]);
+    }
+
+    public function hapusFasilitasUmum($id_fasilitas)
+    {
+        //Mencari fasilitas berdasarkan ID
+        $fasilitas = Fasilitas::find($id_fasilitas);
+
+        // Jika gedung tidak ditemukan, kembalikan respons 404
+        if (!$fasilitas) {
+            return response()->json(['error' => 'Gedung not found'], 404);
+        }
+
+        // Hapus file gambar jika ada
+        if ($fasilitas->gambar_fasilitas) {
+            ImageHelper::deleteImage($fasilitas->gambar_fasilitas);
+        }
+
+        // Hapus dari table fasilitas kamar
+        FasilitasUmum::where('id_fasilitas', $id_fasilitas)->delete();
 
         // Hapus item dari database
         $fasilitas->delete();

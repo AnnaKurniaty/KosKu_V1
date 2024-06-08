@@ -15,7 +15,7 @@ import axiosClient from "../../axios-client.js";
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import DetailFasilitasKamar from './detail.jsx';
+import DetailFasilitasKamar from './detail_kamar.jsx';
 
 const style = {
     position: 'absolute',
@@ -150,7 +150,7 @@ const Inventory = () => {
         console.log('Response:', response.data);
         // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
         handleClose();
-        fetchData();
+        handleTabKamar();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
         // Implement logic for handling errors, e.g., showing an error message to the user
@@ -512,7 +512,7 @@ const Inventory = () => {
                             <Box
                                 component="img"
                                 alt={`${kamar.gambar_kamar}`}
-                                src={`/src/asset/kamar/${kamar.gambar_kamar}`}
+                                src={`${kamar.gambar_kamar}`}
                                 style={{ height: '200px', width: 'auto', borderRadius:'1rem' }}
                             ></Box>
                                 <Typography variant="h5" align='center' sx={{ color: theme.palette.secondary[100] }} margin="1em 0 0" fontWeight='bold'>
@@ -649,7 +649,7 @@ const Inventory = () => {
                             <Box
                                 component="img"
                                 alt={`${fasilitas.gambar_fasilitas}`}
-                                src={`/src/asset/fasilitas/${fasilitas.gambar_fasilitas}`}
+                                src={`${fasilitas.gambar_fasilitas}`}
                                 style={{ height: '200px', width: 'auto', borderRadius:'1rem' }}
                             ></Box>
                             <Typography variant="h3" align='center' sx={{ color: theme.palette.secondary[100] }}>
@@ -692,7 +692,7 @@ const Inventory = () => {
                             <Box
                                 component="img"
                                 alt={`${fasilitas.gambar_fasilitas}`}
-                                src={`/src/asset/fasilitas/${fasilitas.gambar_fasilitas}`}
+                                src={`${fasilitas.gambar_fasilitas}`}
                                 style={{ height: '200px', width: 'auto', borderRadius:'1rem' }}
                             ></Box>
                             <Typography variant="h3" align='center' sx={{ color: theme.palette.secondary[100] }}>
@@ -713,9 +713,10 @@ const Inventory = () => {
                                                 label='Nama Fasilitas Kamar' 
                                                 variant='standard'
                                                 color='warning'
+                                                value={formData.nama_fasilitas}
                                                 fullWidth 
                                                 required
-                                                onChange={(e) => setValue(e.target.value)}
+                                                onChange={handleChange}
                                                 
                                                 InputLabelProps={{
                                                     style: { color: "black" }
@@ -731,9 +732,10 @@ const Inventory = () => {
                                                 style={{marginTop:'10px'}}
                                                 variant='standard'
                                                 color='warning'
+                                                value={formData.jumlah_fasilitas}
                                                 fullWidth 
                                                 required
-                                                onChange={(e) => setValue(e.target.value)}
+                                                onChange={handleChange}
                                                 
                                                 InputLabelProps={{
                                                     style: { color: "black" }
@@ -750,12 +752,12 @@ const Inventory = () => {
                                                 type='date'
                                                 variant='standard'
                                                 color='warning'
+                                                value={formData.tanggal_pembelian}
                                                 fullWidth 
                                                 required
-                                                value={dateValue}
-                                                onChange={(e) => setValue(e.target.value)}
+                                                onChange={handleChange}
                                                 InputLabelProps={{
-                                                    shrink: dateValue == '', // Shrink label if value is not empty
+                                                    shrink: value == '', // Shrink label if value is not empty
                                                     style: { color: "black" }
                                                 }}
                                                 InputProps={{
@@ -769,9 +771,10 @@ const Inventory = () => {
                                                 style={{marginTop:'10px'}}
                                                 variant='standard'
                                                 color='warning'
+                                                value={formData.biaya_pembelian}
                                                 fullWidth 
                                                 required
-                                                onChange={(e) => setValue(e.target.value)}
+                                                onChange={handleChange}
                                                 
                                                 InputLabelProps={{
                                                     style: { color: "black" }
@@ -799,7 +802,7 @@ const Inventory = () => {
                                                 </Box>
                                                 <div align="center">
                                                     <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
-                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
+                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
                                                 </div>
                                             </form>
                                         </Box>
@@ -815,7 +818,7 @@ const Inventory = () => {
                                             <h3 id="parent-modal-title" textStyle="bold">Hapus Fasilitas Kamar yang Dipilih ?</h3>
                                                 <div align="center">
                                                     <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, hapus</Button>
-                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
+                                                    <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
                                                 </div>
                                         </Box>
                                     </Modal>
