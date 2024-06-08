@@ -63,7 +63,7 @@ class KelolaGedungFasilitasController extends Controller
                 ->leftJoin('fasilitas as f', 'f.id_fasilitas', '=', 'fk.id_fasilitas')
                 ->where('g.id_gedung', '=', 1)
                 ->groupBy('f.id_fasilitas', 'f.nama_fasilitas')
-                ->select('f.id_fasilitas', 'f.nama_fasilitas')
+                ->select('f.*')
                 ->get();
 
         $type = 'fasilitas_kamar';
