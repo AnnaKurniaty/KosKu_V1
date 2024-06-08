@@ -12,12 +12,6 @@ use Illuminate\Support\Facades\Storage;
 
 class KelolaGedungFasilitasController extends Controller
 {
-    public function gedungByPemilik($userId)
-    {
-        $gedung = Gedung::where('id_pemilik', $userId)->get();
-        return response()->json(['gedung' => $gedung]);
-    }
-
     public function kamarByGedung($id_gedung)
     {
         $kamar = Kamar::where('id_gedung', $id_gedung)->get();
@@ -54,34 +48,10 @@ class KelolaGedungFasilitasController extends Controller
         return response()->json(['fasilitas' => $fasilitas, 'type' => $type]);
     }
 
-    public function tambahGedung(Request $request, $userId)
+    public function gedungByPemilik($userId)
     {
-        $request->validate([
-            'nama_gedung' => 'required|string|max:255',
-            'jumlah_kamar' => 'required|integer',
-            'gambar_gedung' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
-    
-        // Tambahkan 'id_pemilik' ke dalam request
-        // $request->merge(['id_pemilik' => $userId]);
-
-        // Mengupload gambar dan simpan ke folder
-        if ($request->hasFile('gambar_gedung')) {
-            $image = $request->file('gambar_gedung');
-            $imageName = time().'.'.$image->getClientOriginalExtension();
-            $imagePath = $image->storeAs('gedung/gambar_gedung', $imageName, 'public');
-            $imageUrl = asset('storage/'.$imagePath);
-        }
-    
-        // Buat gedung baru dengan menggunakan data dari request
-        $gedung = Gedung::create([
-            'id_pemilik' => $userId,
-            'nama_gedung' => $request->input('nama_gedung'),
-            'jumlah_kamar' => $request->input('jumlah_kamar'),
-            'gambar_gedung' => $imageUrl,
-        ]);
-    
-        return response()->json(['message' => 'Gedung berhasil ditambahkan', 'gedung' => $gedung]);
+        $gedung = Gedung::where('id_pemilik', $userId)->get();
+        return response()->json(['gedung' => $gedung]);
     }
 
     public function tambahFasilitas(Request $request)
@@ -100,6 +70,84 @@ class KelolaGedungFasilitasController extends Controller
         return response()->json(['message' => 'Fasilitas berhasil ditambahkan', 'fasilitas' => $fasilitas]);
     }
 
+    public function tambahGedung(Request $request, $userId)
+    {
+        // $request->validate([
+        //     'nama_gedung' => 'required|string|max:255',
+        //     'jumlah_kamar' => 'required|integer',
+        //     'gambar_gedung' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        // ]);
+    
+        // // Tambahkan 'id_pemilik' ke dalam request
+        // // $request->merge(['id_pemilik' => $userId]);
+
+        // // Mengupload gambar dan simpan ke folder
+        // if ($request->hasFile('gambar_gedung')) {
+        //     $image = $request->file('gambar_gedung');
+        //     $imageName = time().'.'.$image->getClientOriginalExtension();
+        //     $imagePath = $image->storeAs('gedung/gambar_gedung', $imageName, 'public');
+        //     $imageUrl = asset('storage/'.$imagePath);
+        // }
+    
+        // // Buat gedung baru dengan menggunakan data dari request
+        // $gedung = Gedung::create([
+        //     'id_pemilik' => $userId,
+        //     'nama_gedung' => $request->input('nama_gedung'),
+        //     'jumlah_kamar' => $request->input('jumlah_kamar'),
+        //     'gambar_gedung' => $imageUrl,
+        // ]);
+    
+        return response()->json(['message' => 'Gedung berhasil ditambahkan', 'gedung' => $request->input('nama_gedung')]);
+    }
+
+    public function updateGedung(Request $request, $id_gedung)
+    {   
+        $request->validate([
+            'nama_gedung' => 'required|string|max:255',
+            'gambar_gedung' => 'image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        //Mencari gedung berdasarkan ID
+        $gedung = Gedung::findOrFail($id_gedung);
+
+        // Jika gedung tidak ditemukan, kembalikan respons 404
+        if (!$gedung) {
+            return response()->json(['error' => 'Gedung not found'], 404);
+        }
+    
+        // Tambahkan 'id_pemilik' ke dalam request
+        // $request->merge(['id_pemilik' => $userId]);
+
+        // Hapus file gambar jika ada
+        if ($gedung->gambar_gedung && $request->hasFile('gambar_gedung')) {
+            $url = $gedung->gambar_gedung;
+            $parts = explode('/storage/', $url);
+            $pathAfterStorage = $parts[1];
+            if (file_exists(public_path("storage/$pathAfterStorage"))) {
+                unlink(public_path("storage/$pathAfterStorage"));
+            }
+        }
+
+        //default img url jika tidak ada perubahan
+        $imageUrl = $gedung->gambar_gedung;
+
+        // Mengupload gambar dan simpan ke folder
+        if ($request->hasFile('gambar_gedung')) {
+            $image = $request->file('gambar_gedung');
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $imagePath = $image->storeAs('gedung/gambar_gedung', $imageName, 'public');
+            $imageUrl = asset('storage/'.$imagePath);
+        }
+    
+        // Update gedung dengan menggunakan data dari request
+        $gedung->update([
+            'nama_gedung' => $request->input('nama_gedung'),
+            'gambar_gedung' => $imageUrl,
+        ]);
+    
+        return response()->json(['message' => 'Gedung berhasil diubah', 'gedung' => $gedung]);
+    }
+
     public function hapusGedung($id)
     {
         //Mencari gedung berdasarkan ID
@@ -111,10 +159,12 @@ class KelolaGedungFasilitasController extends Controller
         }
 
         // Hapus file gambar jika ada
-        if ($gedung->image_url) {
-            $imagePath = str_replace(url('/storage'), '', $item->image_url);
-            if (file_exists(public_path("storage/$imagePath"))) {
-                unlink(public_path("storage/$imagePath"));
+        if ($gedung->gambar_gedung) {
+            $url = $gedung->gambar_gedung;
+            $parts = explode('/storage/', $url);
+            $pathAfterStorage = $parts[1];
+            if (file_exists(public_path("storage/$pathAfterStorage"))) {
+                unlink(public_path("storage/$pathAfterStorage"));
             }
         }
 

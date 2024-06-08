@@ -41,10 +41,12 @@ Route::get('/fasilitas umum/{id_gedung}', [KelolaGedungFasilitasController::clas
 Route::get('/fasilitas kamar/{id_gedung}', [KelolaGedungFasilitasController::class, 'fasilitasKamarByGedung']);
 
 //GEDUNG
-Route::get('/gedung/{userId}', [KelolaGedungFasilitasController::class, 'gedungByPemilik']);
-Route::post('/tambah gedung/{userId}', [KelolaGedungFasilitasController::class, 'tambahGedung']);
-// Route::put('/edit gedung/{id_gedung}', [KelolaGedungController::class, 'updateGedung']);
-Route::delete('/gedung/{id_gedung}', [KelolaGedungFasilitasController::class, 'hapusGedung']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/gedung/{userId}', [KelolaGedungFasilitasController::class, 'gedungByPemilik']);
+    Route::post('/tambah-gedung/{userId}', [KelolaGedungFasilitasController::class, 'tambahGedung']);
+    Route::post('/edit-gedung/{id_gedung}', [KelolaGedungFasilitasController::class, 'updateGedung']);
+    Route::delete('/gedung/{id_gedung}', [KelolaGedungFasilitasController::class, 'hapusGedung']);
+});
 
 Route::post('/tambah penyewa', [KelolaPenyewaController::class, 'tambahPenyewa']);
 Route::get('/kelola penyewa/{userId}', [KelolaPenyewaController::class, 'kelolaPenyewa']);
