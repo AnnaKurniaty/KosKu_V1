@@ -9,6 +9,7 @@ use App\Models\FasilitasUmumModels as FasilitasUmum;
 use App\Models\FasilitasKamarModels as FasilitasKamar;
 use App\Models\FasilitasModels as Fasilitas;
 use Illuminate\Support\Facades\Storage;
+use App\Helper\ImageHelper;
 
 class KelolaGedungFasilitasController extends Controller
 {
@@ -52,22 +53,6 @@ class KelolaGedungFasilitasController extends Controller
     {
         $gedung = Gedung::where('id_pemilik', $userId)->get();
         return response()->json(['gedung' => $gedung]);
-    }
-
-    public function tambahFasilitas(Request $request)
-    {
-        $request->validate([
-            'nama_fasilitas' => 'required|string|max:255',
-            'jumlah_fasilitas' => 'required|integer',
-            'tanggal_pembelian' => 'required|date',
-            'biaya_perawatan' => 'required|string',
-            'tanggal_perawatan' => 'nullable|date',
-            'gambar_fasilitas' => 'nullable|string'
-        ]);
-
-        $fasilitas = Fasilitas::create($request->all());
-
-        return response()->json(['message' => 'Fasilitas berhasil ditambahkan', 'fasilitas' => $fasilitas]);
     }
 
     public function tambahGedung(Request $request, $userId)
@@ -174,4 +159,40 @@ class KelolaGedungFasilitasController extends Controller
         // Kembalikan respons sukses
         return response()->json(['message' => 'Gedung deleted successfully']);
     }
+
+    //Fasilitas
+    public function tambahFasilitasKamar(Request $request)
+    {
+        $request->validate([
+            'nama_fasilitas' => 'required|string|max:255',
+            'jumlah_fasilitas' => 'required|integer',
+            'tanggal_pembelian' => 'required|date',
+            'biaya_perawatan' => 'required|string',
+            'tanggal_perawatan' => 'nullable|date',
+            'gambar_fasilitas' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'biaya_pembelian' => 'required|integer',
+        ]);
+
+        // Mengupload gambar dan simpan ke folder
+        $imageUrl = ImageHelper::uploadImage($request, 'gambar_fasilitas', 'fasilitas');
+    
+        // Buat fasilitas baru dengan menggunakan data dari request
+        $fasilitas = Fasilitas::create([
+            'nama_fasilitas' => $request->input('jumlah_fasilitas'),
+            'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
+            'tanggal_pembelian' => $request->input('tanggal_pembelian'),
+            'biaya_perawatan' => $request->input('biaya_perawatan'),
+            'tanggal_perawatan' => $request->input('tanggal_perawatan'),
+            'biaya_pembelian' => $request->input('biaya_pembelian'),
+            'gambar_fasilitas' => $imageUrl,
+        ]);
+
+        //insert ke table Fasilitas Kamar
+        FasilitasKamar::create([
+            'id_fasilitas' => $fasilitas->id_fasilitas,
+        ]);
+
+        return response()->json(['message' => 'Fasilitas kamar berhasil ditambahkan', 'fasilitas' => $fasilitas]);
+    } 
+
 }
