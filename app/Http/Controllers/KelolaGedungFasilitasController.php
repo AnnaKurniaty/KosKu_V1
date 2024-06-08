@@ -10,6 +10,7 @@ use App\Models\FasilitasKamarModels as FasilitasKamar;
 use App\Models\FasilitasModels as Fasilitas;
 use Illuminate\Support\Facades\Storage;
 use App\Helper\ImageHelper;
+use Illuminate\Support\Facades\DB;
 
 class KelolaGedungFasilitasController extends Controller
 {
@@ -36,13 +37,35 @@ class KelolaGedungFasilitasController extends Controller
 
     public function fasilitasKamarByGedung($id_gedung)
     {
-        $fasilitas = FasilitasKamar::where('id_gedung', $id_gedung)
-            ->join('kamar as k', 'fasilitas_kamar.id_kamar', '=', 'k.id_kamar')
-            ->join('fasilitas as f', 'fasilitas_kamar.id_fasilitas', '=', 'f.id_fasilitas')
-            ->where('k.id_gedung', $id_gedung)
-            ->distinct()
-            ->select('f.*')
-            ->get();
+        // $fasilitas = FasilitasKamar::where('id_gedung', $id_gedung)
+        //     ->join('kamar as k', 'fasilitas_kamar.id_kamar', '=', 'k.id_kamar')
+        //     ->join('fasilitas as f', 'fasilitas_kamar.id_fasilitas', '=', 'f.id_fasilitas')
+        //     ->where('k.id_gedung', $id_gedung)
+        //     ->distinct()
+        //     ->select('f.*')
+        //     ->get();
+        // $fasilitas = Fasilitas::select('fasilitas.*')
+        //     ->leftJoin('fasilitas_kamar', function($join) {
+        //         $join->on('fasilitas.id_fasilitas', '=', 'fasilitas_kamar.id_fasilitas')
+        //             ->orWhereNull('fasilitas_kamar.id_fasilitas');
+        //     })
+        //     ->leftJoin('kamar', 'kamar.id_kamar', '=', 'fasilitas_kamar.id_kamar')
+        //     ->leftJoin('gedung as g', 'kamar.id_gedung', '=', 'g.id_gedung')
+        //     ->where('g.id_gedung', '=', $id_gedung)
+        //     ->groupBy('fasilitas.id_fasilitas', 'fasilitas.nama_fasilitas')
+        //     ->get();
+        $fasilitas = DB::table('gedung as g')
+                ->leftJoin('kamar as k', 'k.id_gedung', '=', 'g.id_gedung')
+                ->leftJoin('fasilitas_kamar as fk', function($join) {
+                    $join->on('fk.id_kamar', '=', 'k.id_kamar')
+                        ->orWhereNull('fk.id_kamar');
+                })
+                ->leftJoin('fasilitas as f', 'f.id_fasilitas', '=', 'fk.id_fasilitas')
+                ->where('g.id_gedung', '=', 1)
+                ->groupBy('f.id_fasilitas', 'f.nama_fasilitas')
+                ->select('f.id_fasilitas', 'f.nama_fasilitas')
+                ->get();
+
         $type = 'fasilitas_kamar';
 
         // Return the facilities as a JSON response
