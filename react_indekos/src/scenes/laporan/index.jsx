@@ -55,12 +55,14 @@ const Laporan = () => {
     fetchData();
   }, [location.state]);
 
+  console.log("INI FINANCIAL ",financialData);
+
   const rows = [...(financialData.income || []), ...(financialData.expense || [])].map((item, index) => ({
     id: index + 1,
     tgl_pemasukan: item.tgl_pemasukan || '',
-    pemasukan: item.pemasukan || '',
-    tgl_pengeluaran: item.tgl_pengeluaran || '',
-    pengeluaran: item.pengeluaran || '',
+    pemasukan: item.biaya_pemasukan || '',
+    tgl_pengeluaran: item.tanggal_pengeluaran || '',
+    pengeluaran: item.biaya_pengeluaran || '',
   }));
 
   console.log("Rows data:", rows); // Debugging log
