@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, useTheme, useMediaQuery, Typography,CircularProgress } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../axios-client.js";
@@ -46,13 +46,6 @@ const Gedung = () => {
         fetchData();
     }, [location.state]);
 
-    const [open2, setOpen2] = React.useState(false);
-    const handleOpen2 = () => {
-        setOpen2(true);
-    };
-    const handleClose = () => {
-        setOpen2(false);
-    };
     const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
 
     // const textStyle = { backgroundColor: theme.palette.background.alt };
@@ -128,9 +121,6 @@ const Gedung = () => {
                             {/* Delete Gedung */}
                             <HapusGedung 
                                 style={style}
-                                handleOpen2={handleOpen2}
-                                open2={open2}
-                                handleClose={handleClose}
                                 id_gedung={gedung.id_gedung}
                                 fetchData={fetchData}
                             />

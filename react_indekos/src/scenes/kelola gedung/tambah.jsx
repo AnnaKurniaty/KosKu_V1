@@ -11,7 +11,7 @@ const TambahGedung = ({
     fetchData,
 }) => {
 
-  const [errorMessage, setErrorMessage] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {setOpen(false)};
   const handleOpen = () => {setOpen(true)};
@@ -33,7 +33,7 @@ const TambahGedung = ({
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // biar semua element html reset
 
     console.log("Data FormData First : ", formData);
 
@@ -89,7 +89,7 @@ const TambahGedung = ({
       >
         <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
           <h3 id="parent-modal-title" textstyle="bold">Tambah Gedung</h3>
-          <form onSubmit={handleSubmit}>
+          <form>
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
                 {errorMessage}
             </Typography>
@@ -148,8 +148,8 @@ const TambahGedung = ({
               </Typography>
             </Box>
             <div align="center">
-              <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Ya, simpan</Button>
-              <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Kembali</Button>
+              <Button type='submit' onClick={handleSubmit} style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Ya, simpan</Button>
+              <Button type='submit' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Kembali</Button>
             </div>
           </form>
         </Box>

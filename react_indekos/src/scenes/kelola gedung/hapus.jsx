@@ -3,17 +3,18 @@
 import { Box, Button, IconButton, Modal } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import axiosClient from "../../axios-client";
+import React from "react";
 
 
 const HapusGedung = ({
     style,
-    handleOpen2,
-    open2,
-    handleClose,
     id_gedung,
     fetchData,
 }) => {
     const btnstyle1 = { margin: '0.2em', backgroundColor: '#FF9900', color: "white", borderRadius: '0.5em' };
+    const [open, setOpen] = React.useState(false);
+    const handleClose = () => {setOpen(false)};
+    const handleOpen = () => {setOpen(true)};
 
     const onDelete = async (e) => {
         e.preventDefault();
@@ -26,19 +27,19 @@ const HapusGedung = ({
             });
             console.log('Response:', response.data);
             // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+            handleClose();
+            fetchData();
         } catch (error) {
             console.error('Error:', error.response.data);
             // Implement logic for handling errors, e.g., showing an error message to the user
         }
-        handleClose();
-        fetchData();
     }
 
     return (
         <>
-            <IconButton style={btnstyle1} onClick={handleOpen2}><DeleteIcon /></IconButton>
+            <IconButton style={btnstyle1} onClick={handleOpen}><DeleteIcon /></IconButton>
             <Modal
-                open={open2}
+                open={open}
                 onClose={handleClose}
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
