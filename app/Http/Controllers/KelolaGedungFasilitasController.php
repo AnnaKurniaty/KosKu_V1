@@ -168,12 +168,7 @@ class KelolaGedungFasilitasController extends Controller
 
         // Hapus file gambar jika ada
         if ($gedung->gambar_gedung) {
-            $url = $gedung->gambar_gedung;
-            $parts = explode('/storage/', $url);
-            $pathAfterStorage = $parts[1];
-            if (file_exists(public_path("storage/$pathAfterStorage"))) {
-                unlink(public_path("storage/$pathAfterStorage"));
-            }
+            ImageHelper::deleteImage($gedung->gambar_gedung);
         }
 
         // Hapus item dari database
@@ -190,7 +185,7 @@ class KelolaGedungFasilitasController extends Controller
             'nama_fasilitas' => 'required|string|max:255',
             'jumlah_fasilitas' => 'required|integer',
             'tanggal_pembelian' => 'required|date',
-            'biaya_perawatan' => 'string',
+            'biaya_perawatan' => 'nullable|string',
             'tanggal_perawatan' => 'nullable|date',
             'gambar_fasilitas' => 'image|mimes:jpeg,png,jpg|max:2048',
             'biaya_pembelian' => 'required|integer',
@@ -216,6 +211,86 @@ class KelolaGedungFasilitasController extends Controller
         ]);
 
         return response()->json(['message' => 'Fasilitas kamar berhasil ditambahkan', 'fasilitas' => $fasilitas]);
-    } 
+    }
+
+    public function updateFasilitasKamar(Request $request, $id)
+    {   
+        $request->validate([
+            'nama_fasilitas' => 'required|string|max:255',
+            'jumlah_fasilitas' => 'required|integer',
+            'tanggal_pembelian' => 'required|date',
+            'biaya_perawatan' => 'required|string',
+            'tanggal_perawatan' => 'required|date',
+            'gambar_fasilitas' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'biaya_pembelian' => 'required|integer',
+        ]);
+
+        //Mencari fasilitas berdasarkan ID
+        $fasilitas = Fasilitas::findOrFail($id);
+
+        // Jika fasilitas tidak ditemukan, kembalikan respons 404
+        if (!$fasilitas) {
+            return response()->json(['error' => 'Fasilitas not found'], 404);
+        }
+
+        // Hapus file gambar jika ada
+        if ($fasilitas->gambar_fasilitas && $request->hasFile('gambar_fasilitas')) {
+            ImageHelper::deleteImage($fasilitas->gambar_fasilitas);
+        }
+
+        // Mengupload gambar dan simpan ke folder
+        $imageUrl = ImageHelper::uploadImage($request, 'gambar_fasilitas', 'fasilitas');
+        if ($imageUrl == null) {
+            //default img url jika tidak ada perubahan
+            $imageUrl = $fasilitas->gambar_fasilitas;
+        }
+    
+        // Update fasilitas dengan menggunakan data dari request
+        $fasilitas->update([
+            'nama_fasilitas' => $request->input('jumlah_fasilitas'),
+            'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
+            'tanggal_pembelian' => $request->input('tanggal_pembelian'),
+            'biaya_perawatan' => $request->input('biaya_perawatan'),
+            'tanggal_perawatan' => $request->input('tanggal_perawatan'),
+            'biaya_pembelian' => $request->input('biaya_pembelian'),
+            'gambar_fasilitas' => $imageUrl,
+            'biaya_perawatan' => $request->input('nama_fasilitas'),
+            'tanggal_perawatan' => $request->input('tanggal_perawatan'),
+        ]);
+
+        //Update for table fasilitas kamar
+        FasilitasKamar::where('id_fasilitas', $id_fasilitas)
+            ->update([
+                'biaya_perawatan' => $request->input('nama_fasilitas'),
+                'tanggal_perawatan' => $request->input('tanggal_perawatan'),
+            ]);
+    
+        return response()->json(['message' => 'Fasilitas berhasil diubah', 'fasilitas' => $fasilitas]);
+    }
+
+    public function hapusFasilitasKamar($id)
+    {
+        //Mencari fasilitas berdasarkan ID
+        $fasilitas = Fasilitas::find($id);
+
+        // Jika gedung tidak ditemukan, kembalikan respons 404
+        if (!$fasilitas) {
+            return response()->json(['error' => 'Gedung not found'], 404);
+        }
+
+        // Hapus file gambar jika ada
+        if ($fasilitas->gambar_fasilitas) {
+            ImageHelper::deleteImage($fasilitas->gambar_fasilitas);
+        }
+
+        // Hapus dari table fasilitas kamar
+        FasilitasKamar::where('id_fasilitas', $id_fasilitas)->delete();
+
+        // Hapus item dari database
+        $fasilitas->delete();
+
+        // Kembalikan respons sukses
+        return response()->json(['message' => 'Fasilitas deleted successfully']);
+    }
 
 }

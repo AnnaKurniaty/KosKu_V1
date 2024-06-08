@@ -51,8 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
 //Fasilitas
 // Route::get('/fasilitas-kamar', [KelolaGedungFasilitasController::class, 'gedungByPemilik']);
 Route::post('/fasilitas-kamar/insert', [KelolaGedungFasilitasController::class, 'tambahFasilitasKamar']);
-// Route::post('/edit-gedung/{id_gedung}', [KelolaGedungFasilitasController::class, 'updateGedung']);
-// Route::delete('/gedung/{id_gedung}', [KelolaGedungFasilitasController::class, 'hapusGedung']);
+Route::post('/fasilitas-kamar/update/{id}', [KelolaGedungFasilitasController::class, 'updateFasilitasKamar']);
+Route::post('/fasilitas-kamar/delete/{id}', [KelolaGedungFasilitasController::class, 'hapusFasilitasKamar']);
 
 Route::post('/tambah penyewa', [KelolaPenyewaController::class, 'tambahPenyewa']);
 Route::get('/kelola penyewa/{userId}', [KelolaPenyewaController::class, 'kelolaPenyewa']);
