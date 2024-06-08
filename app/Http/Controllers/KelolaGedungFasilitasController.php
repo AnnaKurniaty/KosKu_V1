@@ -72,32 +72,32 @@ class KelolaGedungFasilitasController extends Controller
 
     public function tambahGedung(Request $request, $userId)
     {
-        // $request->validate([
-        //     'nama_gedung' => 'required|string|max:255',
-        //     'jumlah_kamar' => 'required|integer',
-        //     'gambar_gedung' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        // ]);
+        $request->validate([
+            'nama_gedung' => 'required|string|max:255',
+            'jumlah_kamar' => 'required|integer',
+            'gambar_gedung' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
     
-        // // Tambahkan 'id_pemilik' ke dalam request
-        // // $request->merge(['id_pemilik' => $userId]);
+        // Tambahkan 'id_pemilik' ke dalam request
+        // $request->merge(['id_pemilik' => $userId]);
 
-        // // Mengupload gambar dan simpan ke folder
-        // if ($request->hasFile('gambar_gedung')) {
-        //     $image = $request->file('gambar_gedung');
-        //     $imageName = time().'.'.$image->getClientOriginalExtension();
-        //     $imagePath = $image->storeAs('gedung/gambar_gedung', $imageName, 'public');
-        //     $imageUrl = asset('storage/'.$imagePath);
-        // }
+        // Mengupload gambar dan simpan ke folder
+        if ($request->hasFile('gambar_gedung')) {
+            $image = $request->file('gambar_gedung');
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $imagePath = $image->storeAs('gedung/gambar_gedung', $imageName, 'public');
+            $imageUrl = asset('storage/'.$imagePath);
+        }
     
-        // // Buat gedung baru dengan menggunakan data dari request
-        // $gedung = Gedung::create([
-        //     'id_pemilik' => $userId,
-        //     'nama_gedung' => $request->input('nama_gedung'),
-        //     'jumlah_kamar' => $request->input('jumlah_kamar'),
-        //     'gambar_gedung' => $imageUrl,
-        // ]);
+        // Buat gedung baru dengan menggunakan data dari request
+        $gedung = Gedung::create([
+            'id_pemilik' => $userId,
+            'nama_gedung' => $request->input('nama_gedung'),
+            'jumlah_kamar' => $request->input('jumlah_kamar'),
+            'gambar_gedung' => $imageUrl,
+        ]);
     
-        return response()->json(['message' => 'Gedung berhasil ditambahkan', 'gedung' => $request->input('nama_gedung')]);
+        return response()->json(['message' => 'Gedung berhasil ditambahkan', 'gedung' => $gedung]);
     }
 
     public function updateGedung(Request $request, $id_gedung)
