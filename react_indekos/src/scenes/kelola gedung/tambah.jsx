@@ -1,18 +1,20 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import React, { useState } from "react";
 import { Box, Typography, TextField, Button, Modal } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
 import axiosClient from "../../axios-client";
 
 const TambahGedung = ({
-    handleClose,
-    handleOpen,
     userId,
     style,
-    open,
     fetchData,
 }) => {
+
+  const [errorMessage, setErrorMessage] = useState([]);
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {setOpen(false)};
+  const handleOpen = () => {setOpen(true)};
 
   //For Inpput
   const [formData, setFormData] = useState({
@@ -38,12 +40,12 @@ const TambahGedung = ({
     const data = new FormData();
     data.append('nama_gedung', formData.nama_gedung);
     data.append('jumlah_kamar', formData.jumlah_kamar);
-    if (formData.image) {
+    if (formData.gambar_gedung) {
       data.append('gambar_gedung', formData.gambar_gedung);
     }
 
     try {
-      const response = await axiosClient.post(`/tambah gedung/${userId}`, formData, {
+      const response = await axiosClient.post(`/tambah-gedung/${userId}`, data, {
           headers: {
               'Content-Type': 'multipart/form-data',
               'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -52,12 +54,14 @@ const TambahGedung = ({
 
       console.log('Response:', response.data);
       // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+      handleClose();
+      fetchData();
     } catch (error) {
-      console.error('Error:', error.response.data);
+      console.error('Error:', error.response.data.errors);
       // Implement logic for handling errors, e.g., showing an error message to the user
+      setErrorMessage(error.response.data.message);
+      handleOpen();
     }
-    handleClose();
-    fetchData();
   };
 
   //STYLE
@@ -86,13 +90,15 @@ const TambahGedung = ({
         <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
           <h3 id="parent-modal-title" textstyle="bold">Tambah Gedung</h3>
           <form onSubmit={handleSubmit}>
+            <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
+                {errorMessage}
+            </Typography>
             <input type='hidden' name='userId' value={userId} />
             <TextField
               label='Nama Gedung'
               variant='standard'
               color='warning'
               fullWidth
-              required
               onChange={handleChange}
               name='nama_gedung'
               InputLabelProps={{
@@ -109,7 +115,6 @@ const TambahGedung = ({
               variant='standard'
               color='warning'
               fullWidth
-              required
               name='jumlah_kamar'
               onChange={handleChange}
               InputLabelProps={{

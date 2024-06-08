@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, useTheme, useMediaQuery, Typography, Button, TextField, CircularProgress } from '@mui/material';
+import { Box, useTheme, useMediaQuery, Typography,CircularProgress } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import EditIcon from '@mui/icons-material/Edit';
-import IconButton from '@mui/material/IconButton';
-import Modal from '@mui/material/Modal';
 import axiosClient from "../../axios-client.js";
 import { useLocation } from 'react-router-dom';
 import TambahGedung from './tambah.jsx';
+import UpdateGedung from './update.jsx';
 import HapusGedung from './hapus.jsx';
 
 const style = {
@@ -48,44 +46,17 @@ const Gedung = () => {
         fetchData();
     }, [location.state]);
 
-    // const editBuilding = (buildingId) => {
-    //     navigate(`/edit-building/${buildingId}`);
-    // };
-
-    // const deleteBuilding = (buildingId) => {
-    //     // Implement logic to delete building by ID
-    // };
-
-    const handleImageChange = (event) => {
-        setImage(event.target.files[0]);
-    };
-
-    const [value, setValue] = React.useState('1');
-    // const handleChange = (event, newValue) => {
-    //     setValue(newValue);
-    // };
-    const [open, setOpen] = React.useState(false);
-    const [open1, setOpen1] = React.useState(false);
     const [open2, setOpen2] = React.useState(false);
-    const handleOpen = () => {
-        setOpen(true);
-    };
-    const handleOpen1 = () => {
-        setOpen1(true);
-    };
     const handleOpen2 = () => {
         setOpen2(true);
     };
     const handleClose = () => {
-        setOpen(false);
-        setOpen1(false);
         setOpen2(false);
     };
     const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
 
     // const textStyle = { backgroundColor: theme.palette.background.alt };
-    // const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' };
-    const btnstyle1 = { margin: '0.2em', backgroundColor: '#FF9900', color: "white", borderRadius: '0.5em' };
+    // const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }; 
 
     if (loading) {
         return (
@@ -98,11 +69,8 @@ const Gedung = () => {
     return (
         <Box m='1.5rem 2.5rem'>
             <TambahGedung
-                handleClose={handleClose}
-                handleOpen={handleOpen}
                 userId={userId}
                 style={style}
-                open={open}
                 fetchData={fetchData}
             />
 
@@ -130,8 +98,8 @@ const Gedung = () => {
                     >
                         {/* Display building image */}
                         <img
-                            alt={`${gedung.gambar_gedung}`}
-                            src={`/src/asset/gedung/${gedung.gambar_gedung}`}
+                            alt="No-Img"
+                            src={`${gedung.gambar_gedung}`}
                             style={{ borderRadius: '1rem' }}
                             height="300"
                             width="auto"
@@ -149,61 +117,13 @@ const Gedung = () => {
                                     Jumlah Kamar : {gedung.jumlah_kamar}
                                 </Typography>
                             </div>
-                            <IconButton style={btnstyle1} onClick={handleOpen1}><EditIcon /></IconButton>
-                            <Modal
-                                open={open1}
-                                onClose={handleClose}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
-                                    <h3 id="parent-modal-title" textstyle="bold">Edit Gedung</h3>
-                                    <form>
-                                        <TextField
-                                            label='Nama Gedung'
-                                            variant='standard'
-                                            color='warning'
-                                            fullWidth
-                                            value="Gedung Kos Putih"
-                                            required
-                                            onChange={(e) => setValue(e.target.value)}
-
-                                            InputLabelProps={{
-                                                style: { color: "black" }
-                                            }}
-                                            InputProps={{
-                                                style: {
-                                                    color: "black"
-                                                },
-                                            }}
-                                        />
-                                        <TextField
-                                            label='Masukan Gambar/Foto'
-                                            variant='standard'
-                                            color='warning'
-                                            fullWidth
-                                            disabled />
-                                        <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding: 2 }}>
-                                            <Button variant="contained" component="label" size="small" style={{ borderRadius: "2em" }}>
-                                                Pilih Gambar
-                                                <input
-                                                    type="file"
-                                                    accept=".jpg,.png,.jpeg"
-                                                    onChange={handleImageChange}
-                                                    hidden
-                                                />
-                                            </Button>
-                                            <Typography variant='caption' style={{ marginLeft: 'auto', textAlign: 'left' }}>
-                                                Silakan unggah gambar (*.jpg, *png)
-                                            </Typography>
-                                        </Box>
-                                        <div align="center">
-                                            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={() => submitForm(user.id)}>Ya, simpan</Button>
-                                            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Kembali</Button>
-                                        </div>
-                                    </form>
-                                </Box>
-                            </Modal>
+                            
+                            {/* Update Gedung */}
+                            <UpdateGedung 
+                                style={style}
+                                fetchData={fetchData}
+                                gedung={gedung}
+                            />
                             
                             {/* Delete Gedung */}
                             <HapusGedung 
