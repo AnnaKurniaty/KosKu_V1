@@ -186,6 +186,7 @@ const Inventory = () => {
                                         kamar={kamar}
                                         fasilitasKamarList={fasilitasKamarList}
                                         handleTab={handleTab}
+                                        gedungId={gedungId}
                                     />
                                     <Hapus 
                                         style={style}

@@ -29,6 +29,7 @@ const Detail = ({
   style,
   handleTab,
   fasilitasKamarList,
+  gedungId,
 }) => {
   const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '10em' };
   const [errorMessage, setErrorMessage] = useState('');
@@ -157,6 +158,7 @@ const Detail = ({
                 kamar={kamar}
                 handleTab={handleTab}
                 fasilitasKamarList={fasilitasKamarList}
+                gedungId={gedungId}
               />
               <Button type='submit' style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
             </div>

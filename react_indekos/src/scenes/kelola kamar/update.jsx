@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -37,12 +37,6 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
     gambar_kamar: null,
   });
 
-  const [idFasilitasList, setIdFasilitasList] = useState(Array.isArray(kamar.id_fasilitas_list) ? kamar.id_fasilitas_list : []);
-
-  useEffect(() => {
-    setIdFasilitasList(Array.isArray(kamar.id_fasilitas_list) ? kamar.id_fasilitas_list : []);
-  }, [kamar]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -56,7 +50,6 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
 
   const handleCheckboxChange = (id) => {
     if (selectedFasilitasIds.includes(id)) {
-      console.log("MASUK SINI");
       setSelectedFasilitasIds(selectedFasilitasIds.filter((fid) => fid !== id));
     } else {
       setSelectedFasilitasIds([...selectedFasilitasIds, id]);
@@ -70,7 +63,7 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
     data.append('id_gedung', gedungId);
     data.append('nama_kamar', formData.nama_kamar);
     data.append('biaya_kamar', formData.biaya_kamar);
-    idFasilitasList.forEach(id => {
+    selectedFasilitasIds.forEach(id => {
       data.append('id_fasilitas_list[]', id);
     });
     if (formData.gambar_kamar) {

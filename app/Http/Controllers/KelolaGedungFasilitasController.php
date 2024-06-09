@@ -497,12 +497,14 @@ class KelolaGedungFasilitasController extends Controller
             'gambar_kamar' => $imageUrl,
         ]);
 
-        //insert ke table Fasilitas Kamar
+        //delete all fasilitas ke table Fasilitas Kamar
+        FasilitasKamar::where('id_kamar', $kamar->id_kamar)->delete();
+
         // Iterasi melalui array id_fasilitas
         foreach ($request->input('id_fasilitas_list') as $idFasilitas) {
-            FasilitasKamar::where('id_fasilitas_list', $idFasilitas)([
-                'id_kamar' => $request->input('id_kamar'),
-                'id_fasilitas' => $request->input($idFasilitas),
+            FasilitasKamar::create([
+                'id_kamar' => $kamar->id_kamar,
+                'id_fasilitas' => $idFasilitas,
             ]);
         }
 
