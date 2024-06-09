@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -24,7 +24,7 @@ const FormGroupContainer = styled(FormGroup)({
   gap: '2px',
 });
 
-const UpdateKamar = ({ kamar, style, handleTab, fasilitasKamarList, gedungId }) => {
+const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
@@ -52,12 +52,14 @@ const UpdateKamar = ({ kamar, style, handleTab, fasilitasKamarList, gedungId }) 
     setFormData({ ...formData, [e.target.name]: e.target.files[0] });
   };
 
-  const handleSelectChange = (event) => {
-    const { value, checked } = event.target;
-    if (checked) {
-      setIdFasilitasList((prev) => [...prev, value]);
+  const [selectedFasilitasIds, setSelectedFasilitasIds] = useState(kamar.id_fasilitas_list.split(',').map(item => parseInt(item.trim(), 10)) || []);
+
+  const handleCheckboxChange = (id) => {
+    if (selectedFasilitasIds.includes(id)) {
+      console.log("MASUK SINI");
+      setSelectedFasilitasIds(selectedFasilitasIds.filter((fid) => fid !== id));
     } else {
-      setIdFasilitasList((prev) => prev.filter((id) => id !== value));
+      setSelectedFasilitasIds([...selectedFasilitasIds, id]);
     }
   };
 
@@ -135,8 +137,13 @@ const UpdateKamar = ({ kamar, style, handleTab, fasilitasKamarList, gedungId }) 
               {fasilitasKamarList.map((fs, index) => (
                 <StyledFormControlLabel
                   key={index}
-                  control={<Checkbox color="success" checked={idFasilitasList.includes(fs.id_fasilitas)} onChange={handleSelectChange} />}
-                  value={fs.id_fasilitas}
+                  control={
+                    <Checkbox 
+                      color="success"
+                      checked={selectedFasilitasIds.includes(fs.id_fasilitas)}
+                      onChange={() => handleCheckboxChange(fs.id_fasilitas)}
+                    />
+                  }
                   label={fs.nama_fasilitas}
                 />
               ))}

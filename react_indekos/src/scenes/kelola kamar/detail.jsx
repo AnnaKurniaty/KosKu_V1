@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -49,11 +49,17 @@ const Detail = ({
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.files[0] });
-  };
+  // const handleFileChange = (e) => {
+  //   setFormData({ ...formData, [e.target.name]: e.target.files[0] });
+  // };
 
-  const [idFasilitasList, setIdFasilitasList] = useState(kamar.id_fasilitas_list || []);
+  const [selectedFasilitasIds, setSelectedFasilitasIds] = useState([]);
+
+  useEffect( () => {
+    if (kamar.id_fasilitas_list != null) {
+      setSelectedFasilitasIds(kamar.id_fasilitas_list);
+    }
+  }, []);
 
   return (
     <>
@@ -121,8 +127,7 @@ const Detail = ({
                   key={index}
                   control={<Checkbox
                     color="success"
-                    checked={idFasilitasList.includes(fs.id_fasilitas)}
-                    value={fs.id_fasilitas} 
+                    checked={selectedFasilitasIds.includes(fs.id_fasilitas)}
                     InputProps={{
                       readOnly: true,
                     }}
