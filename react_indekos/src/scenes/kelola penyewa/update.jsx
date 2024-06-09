@@ -2,6 +2,7 @@
 /* eslint-disable react/no-unknown-property */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
+import axiosClient from "../../axios-client";
 
 const Update = ({
   penyewa,
@@ -41,6 +42,7 @@ const Update = ({
     console.log("Data FormData First : ", formData);
 
     const data = new FormData();
+    data.append('id_kamar', penyewa.id_kamar);
     data.append('nama_lengkap', formData.nama_lengkap);
     data.append('alamat_penyewa', formData.alamat_penyewa);
     data.append('nomor_telepon', formData.nomor_telepon);
@@ -52,6 +54,8 @@ const Update = ({
     if (formData.foto_ktp) {
         data.append('foto_ktp', formData.foto_ktp);
     }
+
+    console.log("TEST AMBIL DATA UPDAET : ", penyewa);
 
     try {
         const response = await axiosClient.post(`/edit-penyewa/${penyewa.id_penyewa}`, data, {

@@ -15,6 +15,7 @@ class KelolaPenyewaController extends Controller
         $penyewa = DB::select('
         SELECT 
             p.*,
+            k.id_kamar,
             k.nama_kamar
         FROM 
             penyewa p
@@ -97,7 +98,7 @@ class KelolaPenyewaController extends Controller
     public function updatePenyewa(Request $request, $id_penyewa)
     {   
         $request->validate([
-            'id_kamar' => 'required|exists:kamar,id',
+            'id_kamar' => 'required',
             'nama_lengkap' => 'required|string|max:255',
             'alamat_penyewa' => 'required|string',
             'nomor_telepon' => 'required|string|max:15',
@@ -142,9 +143,8 @@ class KelolaPenyewaController extends Controller
             'alamat_penyewa' => $request->alamat_penyewa,
             'nomor_telepon' => $request->nomor_telepon,
             'no_pj_penyewa' => $request->no_pj_penyewa,
-            'tanggal_mulai_sewa' => $tanggal_mulai_sewa,
-            'tanggal_selesai_sewa' => $tanggal_selesai_sewa,
-            'status_penyewa' => $status_penyewa,
+            'tanggal_mulai_sewa' => $request->tanggal_mulai_sewa,
+            'tanggal_selesai_sewa' => $request->tanggal_selesai_sewa,
             'foto_ktp' => $imageUrl,
         ]);
     

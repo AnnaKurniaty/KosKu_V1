@@ -76,7 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/penyewa/{id_penyewa}', [KelolaPenyewaController::class, 'detailPenyewa']);
     Route::put('/penyewa/update status/{id_penyewa}/{status}', [KelolaPenyewaController::class, 'updateStatusPenyewa']);
     Route::delete('/penyewa/{id_penyewa}', [KelolaPenyewaController::class, 'hapusPenyewa']);
-    Route::delete('/edit-penyewa/{id_penyewa}', [KelolaPenyewaController::class, 'updatePenyewa']);
+    Route::post('/edit-penyewa/{id_penyewa}', [KelolaPenyewaController::class, 'updatePenyewa']);
 });
 Route::post('/tambah fasilitas', [KelolaGedungFasilitasController::class, 'tambahFasilitas']);
 Route::get('/laporan/{userId}', [LaporanController::class, 'laporan']);
