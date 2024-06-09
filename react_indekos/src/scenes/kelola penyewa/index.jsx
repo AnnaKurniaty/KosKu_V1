@@ -1,9 +1,11 @@
-import React from 'react'
-import { Box, useTheme, useMediaQuery, Typography, Button} from '@mui/material'
+import React, { useState, useEffect } from 'react'
+import { Box, useTheme, useMediaQuery, Typography, CircularProgress, Button} from '@mui/material'
 import Modal from '@mui/material/Modal';
 import { useNavigate } from "react-router-dom";
-import Header from '../../components/Header'
+import { useLocation } from 'react-router-dom';
+import axiosClient from "../../axios-client.js";
 import QRCode from 'react-qr-code';
+import DetailPenyewa from './detail.jsx';
 
 const style = {
     position: 'absolute',
@@ -17,10 +19,36 @@ const style = {
     pt: 2,
     px: 4,
     pb: 3,
+    borderRadius: '1em'
   };
 
   export default function Penyewa() {
     const theme = useTheme()
+    const location = useLocation();
+    const [penyewaList, setPenyewaList] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [userId, setUserId] = useState(null);
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            if (location.state && location.state.userId) {
+                setUserId(location.state.userId);
+                const response = await axiosClient.get(`/kelola-penyewa/${location.state.userId}`);
+                const data = response.data;
+                setPenyewaList(data.penyewa);
+            }
+        } catch (error) {
+            console.error("Failed to fetch data", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [location.state]);
+
     const [open, setOpen] = React.useState(false);
     const [open1, setOpen1] = React.useState(false);
     const handleOpen = () => {
@@ -35,466 +63,102 @@ const style = {
     const handleClose1 = () => {
         setOpen1(false);
     };
-    function ChildModal() {
-        const theme = useTheme()
-        const btnstyle={margin:'0.5em', backgroundColor:theme.palette.secondary[500], color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '10em'}
-        const [open2, setOpen2] = React.useState(false);
-        const handleOpen2 = () => {
-          setOpen2(true);
-        };
-        const handleClose2 = () => {
-          setOpen2(false);
-        };
-      
-        return (
-          <React.Fragment>
-            <Button onClick={handleOpen2} style={btnstyle}>Sudah</Button>
-            <Modal
-              open={open2}
-              aria-labelledby="child-modal-title"
-              aria-describedby="child-modal-description"
-            >
-              <Box sx={{ ...style, width: 200 }}>
-                <h2 id="child-modal-title">Masa Perpanjang Sewa</h2>
-                <p id="child-modal-description">
-                  Apakah penyewa akan melakukan perpanjang sewa di bulan depan?
-                </p>
-                <Button type='submit' style={btnstyle} 
-                onClick={handleClose}>Ya, diperpanjang 1 bulan</Button>
-                <Button type='submit' style={btnstyle} 
-                onClick={handleClose}>Tidak</Button>
-              </Box>
-            </Modal>
-          </React.Fragment>
-        );
-      }
     const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
     const navigate = useNavigate();
-    const btnstyle={margin:'0.5em', backgroundColor:theme.palette.secondary[500], color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '10em'}
-    const btnstyle1={margin:'0.5em', backgroundColor:theme.palette.secondary[500], color:"white", padding:'0.5em 0', float:'right', borderRadius: '0.5em', width: '10em'}
+    const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' };
+
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <CircularProgress />
+            </Box>
+        );
+    }
+
     return (
         <Box m='1.5rem 2.5rem'>
-            <Button type='submit' style={btnstyle1} onClick={handleOpen1}>Tambah</Button>
-            <Modal
-                open={open1}
-                onClose={handleClose1}
-                aria-labelledby="parent-modal-title"
-                aria-describedby="parent-modal-description"
-            >
-                <Box sx={{ ...style, width: 400 }} align="center">
-                    <h2 id="parent-modal-title">Tambah Penyewa</h2>
-                    <p id="parent-modal-description">
-                        <QRCode
-                            value="http://localhost:3000/penyewa"
-                            bgColor="#FFFFFF"
-                            fgColor="#000000"
-                        />
-                    </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
+                <Box marginLeft="-20px">
+                    <Typography
+                    variant='h5'
+                    color='white'
+                    fontWeight='bold'
+                    sx={{ mb: '5px' }}
+                    >
+                    Daftar Penyewa Kos
+                    </Typography>
                 </Box>
-            </Modal>
-            <Header title='Daftar Identitas Penyewa' subTitle='List of Penyewa'/>
-            <Box
-                mt="20px"
-                display="grid"
-                gap="20px"
-            >
-                <Box
-                gridColumn="span 4"
-                gridRow="span 1"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                p="1.25rem 1rem"
-                flex="1 1 100%"
-                backgroundColor={theme.palette.background.alt}
-                borderRadius="0.55rem"
+                <Button type='submit' style={btnstyle} onClick={handleOpen1}>Tambah</Button>
+                <Modal
+                    open={open1}
+                    onClose={handleClose1}
+                    aria-labelledby="parent-modal-title"
+                    aria-describedby="parent-modal-description"
                 >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div>
-                            <Typography variant="h3" sx={{ color: theme.palette.secondary[100] }}>
-                                Syahda Dhiya Ulhaq T
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-                                Aktif
-                            </Typography>
-                        </div>
-                        <div style={{marginLeft: 'auto'}}>
-                            <Button type='submit' style={btnstyle} onClick={handleOpen}>Ubah <br /> Status</Button>
-                            <Modal
-                                open={open}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 400 }} align="center">
-                                <h2 id="parent-modal-title">Pembayaran</h2>
-                                <p id="parent-modal-description">
-                                    Apakah penyewa telah melakukan pembayaran atau perpanjangan?
-                                </p>
-                                <ChildModal />
-                                <Button type='submit' style={btnstyle} 
-                                onClick={handleClose}>Belum</Button>
-                                </Box>
-                            </Modal>
-                            <Button type='submit' style={btnstyle} 
-                                onClick={() => {
-                                    navigate('/detail penyewa');
-                                }}>Lihat <br /> Detail</Button>
-                        </div>
-                    </div>
-                </Box>
+                    <Box sx={{ ...style, width: 400 }} align="center">
+                        <h2 id="parent-modal-title">Tambah Penyewa</h2>
+                        <p id="parent-modal-description">
+                            <QRCode
+                                value="http://localhost:3000/penyewa"
+                                bgColor="#FFFFFF"
+                                fgColor="#000000"
+                            />
+                        </p>
+                    </Box>
+                </Modal>
+            </div>
+            {penyewaList.map(penyewa => (
                 <Box
-                gridColumn="span 4"
-                gridRow="span 1"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                p="1.25rem 1rem"
-                flex="1 1 100%"
-                backgroundColor={theme.palette.background.alt}
-                borderRadius="0.55rem"
+                    key={penyewa.id_penyewa}
+                    mt="20px"
+                    display="grid"
+                    gap="15px"
+                    marginLeft="-20px"
+                    marginRight="-20px"
                 >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div>
-                            <Typography variant="h3" sx={{ color: theme.palette.secondary[100] }}>
-                                Syelvie Ira Ratna M
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-                                Aktif
-                            </Typography>
+                    <Box
+                    gridColumn="span 4"
+                    gridRow="span 1"
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="space-between"
+                    p="1.25rem 1rem"
+                    flex="1 1 100%"
+                    backgroundColor={theme.palette.background.alt}
+                    borderRadius="0.55rem"
+                    padding={1}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                            <div>
+                                <img
+                                    alt="No-Img"
+                                    src={`${penyewa.foto_ktp}`}
+                                    height="auto"
+                                    width="70"
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', marginLeft:'8px' }}>
+                                <Typography variant="caption" sx={{ color: theme.palette.secondary[100] }} fontWeight='bold' >
+                                    {penyewa.nama_lengkap}
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: theme.palette.secondary[100] }}>
+                                    Status Penyewa: {penyewa.status_penyewa}
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: theme.palette.secondary[100] }}>
+                                    {penyewa.nama_kamar}
+                                </Typography>
+                            </div>
+                            <div>
+                                <DetailPenyewa 
+                                    style={style}
+                                    fetchData={fetchData}
+                                    penyewa={penyewa}
+                                />
+                            </div>
                         </div>
-                        <div style={{marginLeft: 'auto'}}>
-                            <Button type='submit' style={btnstyle} onClick={handleOpen}>Ubah <br /> Status</Button>
-                            <Modal
-                                open={open}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 400 }} align="center">
-                                <h2 id="parent-modal-title">Pembayaran</h2>
-                                <p id="parent-modal-description">
-                                    Apakah penyewa telah melakukan pembayaran atau perpanjangan?
-                                </p>
-                                <ChildModal />
-                                <Button type='submit' style={btnstyle} 
-                                onClick={handleClose}>Belum</Button>
-                                </Box>
-                            </Modal>
-                            <Button type='submit' style={btnstyle} 
-                                onClick={() => {
-                                    navigate('/detail penyewa');
-                                }}>Lihat <br /> Detail</Button>
-                        </div>
-                    </div>
+                    </Box>
                 </Box>
-                <Box
-                gridColumn="span 4"
-                gridRow="span 1"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                p="1.25rem 1rem"
-                flex="1 1 100%"
-                backgroundColor={theme.palette.background.alt}
-                borderRadius="0.55rem"
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div>
-                            <Typography variant="h3" sx={{ color: theme.palette.secondary[100] }}>
-                                Zahwa Putri Hamida
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-                                Aktif
-                            </Typography>
-                        </div>
-                        <div style={{marginLeft: 'auto'}}>
-                            <Button type='submit' style={btnstyle} onClick={handleOpen}>Ubah <br /> Status</Button>
-                            <Modal
-                                open={open}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 400 }} align="center">
-                                <h2 id="parent-modal-title">Pembayaran</h2>
-                                <p id="parent-modal-description">
-                                    Apakah penyewa telah melakukan pembayaran atau perpanjangan?
-                                </p>
-                                <ChildModal />
-                                <Button type='submit' style={btnstyle} 
-                                onClick={handleClose}>Belum</Button>
-                                </Box>
-                            </Modal>
-                            <Button type='submit' style={btnstyle} 
-                                onClick={() => {
-                                    navigate('/detail penyewa');
-                                }}>Lihat <br /> Detail</Button>
-                        </div>
-                    </div>
-                </Box>
-                <Box
-                gridColumn="span 4"
-                gridRow="span 1"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                p="1.25rem 1rem"
-                flex="1 1 100%"
-                backgroundColor={theme.palette.background.alt}
-                borderRadius="0.55rem"
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div>
-                            <Typography variant="h3" sx={{ color: theme.palette.secondary[100] }}>
-                                Rifatia Yumna Salma
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-                                Aktif
-                            </Typography>
-                        </div>
-                        <div style={{marginLeft: 'auto'}}>
-                            <Button type='submit' style={btnstyle} onClick={handleOpen}>Ubah <br /> Status</Button>
-                            <Modal
-                                open={open}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 400 }} align="center">
-                                <h2 id="parent-modal-title">Pembayaran</h2>
-                                <p id="parent-modal-description">
-                                    Apakah penyewa telah melakukan pembayaran atau perpanjangan?
-                                </p>
-                                <ChildModal />
-                                <Button type='submit' style={btnstyle} 
-                                onClick={handleClose}>Belum</Button>
-                                </Box>
-                            </Modal>
-                            <Button type='submit' style={btnstyle} 
-                                onClick={() => {
-                                    navigate('/detail penyewa');
-                                }}>Lihat <br /> Detail</Button>
-                        </div>
-                    </div>
-                </Box>
-                <Box
-                gridColumn="span 4"
-                gridRow="span 1"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                p="1.25rem 1rem"
-                flex="1 1 100%"
-                backgroundColor={theme.palette.background.alt}
-                borderRadius="0.55rem"
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div>
-                            <Typography variant="h3" sx={{ color: theme.palette.secondary[100] }}>
-                                Fanny Putria Agustina
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-                                Aktif
-                            </Typography>
-                        </div>
-                        <div style={{marginLeft: 'auto'}}>
-                            <Button type='submit' style={btnstyle} onClick={handleOpen}>Ubah <br /> Status</Button>
-                            <Modal
-                                open={open}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 400 }} align="center">
-                                <h2 id="parent-modal-title">Pembayaran</h2>
-                                <p id="parent-modal-description">
-                                    Apakah penyewa telah melakukan pembayaran atau perpanjangan?
-                                </p>
-                                <ChildModal />
-                                <Button type='submit' style={btnstyle} 
-                                onClick={handleClose}>Belum</Button>
-                                </Box>
-                            </Modal>
-                            <Button type='submit' style={btnstyle} 
-                                onClick={() => {
-                                    navigate('/detail penyewa');
-                                }}>Lihat <br /> Detail</Button>
-                        </div>
-                    </div>
-                </Box>
-                <Box
-                gridColumn="span 4"
-                gridRow="span 1"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                p="1.25rem 1rem"
-                flex="1 1 100%"
-                backgroundColor={theme.palette.background.alt}
-                borderRadius="0.55rem"
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div>
-                            <Typography variant="h3" sx={{ color: theme.palette.secondary[100] }}>
-                                Nabiilah Nada Iswari
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-                                Aktif
-                            </Typography>
-                        </div>
-                        <div style={{marginLeft: 'auto'}}>
-                            <Button type='submit' style={btnstyle} onClick={handleOpen}>Ubah <br /> Status</Button>
-                            <Modal
-                                open={open}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 400 }} align="center">
-                                <h2 id="parent-modal-title">Pembayaran</h2>
-                                <p id="parent-modal-description">
-                                    Apakah penyewa telah melakukan pembayaran atau perpanjangan?
-                                </p>
-                                <ChildModal />
-                                <Button type='submit' style={btnstyle} 
-                                onClick={handleClose}>Belum</Button>
-                                </Box>
-                            </Modal>
-                            <Button type='submit' style={btnstyle} 
-                                onClick={() => {
-                                    navigate('/detail penyewa');
-                                }}>Lihat <br /> Detail</Button>
-                        </div>
-                    </div>
-                </Box>
-                <Box
-                gridColumn="span 4"
-                gridRow="span 1"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                p="1.25rem 1rem"
-                flex="1 1 100%"
-                backgroundColor={theme.palette.background.alt}
-                borderRadius="0.55rem"
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div>
-                            <Typography variant="h3" sx={{ color: theme.palette.secondary[100] }}>
-                                Hasanah
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-                                Aktif
-                            </Typography>
-                        </div>
-                        <div style={{marginLeft: 'auto'}}>
-                            <Button type='submit' style={btnstyle} onClick={handleOpen}>Ubah <br /> Status</Button>
-                            <Modal
-                                open={open}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 400 }} align="center">
-                                <h2 id="parent-modal-title">Pembayaran</h2>
-                                <p id="parent-modal-description">
-                                    Apakah penyewa telah melakukan pembayaran atau perpanjangan?
-                                </p>
-                                <ChildModal />
-                                <Button type='submit' style={btnstyle} 
-                                onClick={handleClose}>Belum</Button>
-                                </Box>
-                            </Modal>
-                            <Button type='submit' style={btnstyle} 
-                                onClick={() => {
-                                    navigate('/detail penyewa');
-                                }}>Lihat <br /> Detail</Button>
-                        </div>
-                    </div>
-                </Box>
-                <Box
-                gridColumn="span 4"
-                gridRow="span 1"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                p="1.25rem 1rem"
-                flex="1 1 100%"
-                backgroundColor={theme.palette.background.alt}
-                borderRadius="0.55rem"
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div>
-                            <Typography variant="h3" sx={{ color: theme.palette.secondary[100] }}>
-                                Diana Fauzia
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-                                Aktif
-                            </Typography>
-                        </div>
-                        <div style={{marginLeft: 'auto'}}>
-                            <Button type='submit' style={btnstyle} onClick={handleOpen}>Ubah <br /> Status</Button>
-                            <Modal
-                                open={open}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 400 }} align="center">
-                                <h2 id="parent-modal-title">Pembayaran</h2>
-                                <p id="parent-modal-description">
-                                    Apakah penyewa telah melakukan pembayaran atau perpanjangan?
-                                </p>
-                                <ChildModal />
-                                <Button type='submit' style={btnstyle} 
-                                onClick={handleClose}>Belum</Button>
-                                </Box>
-                            </Modal>
-                            <Button type='submit' style={btnstyle} 
-                                onClick={() => {
-                                    navigate('/detail penyewa');
-                                }}>Lihat <br /> Detail</Button>
-                        </div>
-                    </div>
-                </Box>
-                <Box
-                gridColumn="span 4"
-                gridRow="span 1"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                p="1.25rem 1rem"
-                flex="1 1 100%"
-                backgroundColor={theme.palette.background.alt}
-                borderRadius="0.55rem"
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div>
-                            <Typography variant="h3" sx={{ color: theme.palette.secondary[100] }}>
-                                Anna Kurniaty
-                            </Typography>
-                            <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }}>
-                                Aktif
-                            </Typography>
-                        </div>
-                        <div style={{marginLeft: 'auto'}}>
-                            <Button type='submit' style={btnstyle} onClick={handleOpen}>Ubah <br /> Status</Button>
-                            <Modal
-                                open={open}
-                                aria-labelledby="parent-modal-title"
-                                aria-describedby="parent-modal-description"
-                            >
-                                <Box sx={{ ...style, width: 400 }} align="center">
-                                <h2 id="parent-modal-title">Pembayaran</h2>
-                                <p id="parent-modal-description">
-                                    Apakah penyewa telah melakukan pembayaran atau perpanjangan?
-                                </p>
-                                <ChildModal />
-                                <Button type='submit' style={btnstyle} 
-                                onClick={handleClose}>Belum</Button>
-                                </Box>
-                            </Modal>
-                            <Button type='submit' style={btnstyle} 
-                                onClick={() => {
-                                    navigate('/detail penyewa');
-                                }}>Lihat <br /> Detail</Button>
-                        </div>
-                    </div>
-                </Box>
-            </Box>
+                ))}
         </Box>
     );
 }

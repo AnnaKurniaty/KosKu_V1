@@ -41,7 +41,7 @@ function App() {
                 <Route path='/kelola gedung dan fasilitas/:id' element={<KelolaGedung />} />
                 <Route path='/tambah-gedung' element={<TambahGedung />} />
                 {/* <Route path='/tambah kamar' element={<TambahKamar />} /> */}
-                <Route path='/kelola penyewa' element={<KelolaPenyewa />} />
+                <Route path='/kelola penyewa/:id' element={<KelolaPenyewa />} />
                 <Route path='/tambah-fasilitas' element={<TambahFasilitas />} />
                 {/* <Route path='/detail penyewa' element={<KelolaPenyewaDetail />} /> */}
                 <Route path='/detail-fasilitas-kamar' element={<KelolaFasilitasKamarDetail />} />

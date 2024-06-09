@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useMediaQuery,Button, Typography } from '@mui/material'
-import { useNavigate } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
 import { useLocation } from 'react-router-dom';
 import axiosClient from "../../axios-client.js";
 import Tambah from './tambah.jsx';
@@ -187,8 +184,8 @@ const Inventory = () => {
                                     <Detail
                                         style={style}
                                         kamar={kamar}
-                                        fetchData={fetchData}
-                                        handleTabKamar={handleTabKamar}
+                                        fasilitasKamarList={fasilitasKamarList}
+                                        handleTab={handleTab}
                                     />
                                     <Hapus 
                                         style={style}

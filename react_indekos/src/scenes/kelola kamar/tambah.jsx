@@ -7,6 +7,24 @@ import axiosClient from "../../axios-client";
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { styled } from '@mui/material/styles';
+
+const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
+  margin: theme.spacing(0.2), // Adjust the spacing between items
+  '& .MuiCheckbox-root': {
+    padding: theme.spacing(0.2), // Adjust the padding of the checkbox
+  },
+  '& .MuiTypography-root': {
+    fontSize: '12px', // Adjust the font size of the label text
+  },
+}));
+
+const FormGroupContainer = styled(FormGroup)({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr', // Two columns
+  gap: '2px', // Adjust the gap between the columns
+});
+
 
 const TambahFasilitas = ({
     gedungId,
@@ -51,6 +69,11 @@ const TambahFasilitas = ({
     'nama_kamar': '',
     'biaya_kamar': '',
     'gambar_kamar': null,
+    'nama_fasilitas': '',
+    'jumlah_fasilitas': '',
+    'tanggal_pembelian': '',
+    'biaya_pembelian': '',
+    'gambar_fasilitas': null,
  })
 
  const [idFasilitasList, setIdFasilitasList] = useState([]);
@@ -63,8 +86,7 @@ const TambahFasilitas = ({
       // Jika checkbox tidak dipilih, hapus nilai dari array
       setIdFasilitasList((prev) => prev.filter((id) => id !== value));
     }
-
-};
+    };
 
     const handleSubmitKamar = async (e) => {
         e.preventDefault();
@@ -99,6 +121,73 @@ const TambahFasilitas = ({
         handleOpen();
         }
     };
+
+    const handleSubmitFasilitasKamar = async (e) => {
+        e.preventDefault();
+        // const data = new FormData();
+        console.log('formData ', formData)
+        const data = new FormData();
+        data.append('nama_fasilitas', formData.nama_fasilitas);
+        data.append('jumlah_fasilitas', formData.jumlah_fasilitas);
+        data.append('tanggal_pembelian', formData.tanggal_pembelian);
+        data.append('biaya_pembelian', formData.biaya_pembelian);
+        if (formData.gambar_fasilitas) {
+        data.append('gambar_fasilitas', formData.gambar_fasilitas);
+        }
+
+        try {
+        const response = await axiosClient.post(`/fasilitas-kamar/insert`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        console.log('Response:', response.data);
+        // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        handleClose();
+        handleTabKamar();
+        } catch (error) {
+        console.error('Error:', error.response.data.errors);
+        // Implement logic for handling errors, e.g., showing an error message to the user
+        setErrorMessage(error.response.data.message);
+        handleOpen();
+        }
+    };
+
+    const handleSubmitFasilitasUmum = async (e) => {
+        e.preventDefault();
+        // const data = new FormData();
+        console.log('formData ', formData)
+        const data = new FormData();
+        data.append('nama_fasilitas', formData.nama_fasilitas);
+        data.append('jumlah_fasilitas', formData.jumlah_fasilitas);
+        data.append('tanggal_pembelian', formData.tanggal_pembelian);
+        data.append('biaya_pembelian', formData.biaya_pembelian);
+        if (formData.gambar_fasilitas) {
+        data.append('gambar_fasilitas', formData.gambar_fasilitas);
+        }
+
+        try {
+        const response = await axiosClient.post(`/fasilitas-umum/insert`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        console.log('Response:', response.data);
+        // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        handleClose();
+        handleTabUmum();
+        } catch (error) {
+        console.error('Error:', error.response.data.errors);
+        // Implement logic for handling errors, e.g., showing an error message to the user
+        setErrorMessage(error.response.data.message);
+        handleOpen();
+        }
+    };
+
 
   //STYLE
   const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' };
@@ -168,13 +257,17 @@ const TambahFasilitas = ({
                                      (Pilih dengan menekan fasilitas)
                                 </Typography>
                             </div>
-                            <FormGroup>
+                            <FormGroupContainer>
                                 {fasilitasKamarList.map((fs, index) => (
-                                    <>
-                                        <FormControlLabel key={index} control={<Checkbox color="success"/>} value={fs.id_fasilitas} label={fs.nama_fasilitas} onClick={handleSelectChange} />
-                                    </>
+                                    <StyledFormControlLabel
+                                    key={index}
+                                    control={<Checkbox color="success" />}
+                                    value={fs.id_fasilitas}
+                                    label={fs.nama_fasilitas}
+                                    onClick={handleSelectChange}
+                                    />
                                 ))}
-                            </FormGroup>
+                            </FormGroupContainer>
                             <Typography align='left' marginTop='10px'>
                                     Masukan Gambar / Foto 
                             </Typography>
@@ -209,13 +302,14 @@ const TambahFasilitas = ({
                         <h3 id="parent-modal-title" textStyle="bold">Tambah Fasilitas Umum</h3>
                         <form>
                             <TextField 
-                            label='Nama Gedung' 
+                            label='Nama Fasilitas Umum' 
                             variant='standard'
                             color='warning'
                             fullWidth 
                             required
                             onChange={handleChange}
-                            name="nama_fasilitas_umum"
+                            name='nama_fasilitas'
+                            
                             InputLabelProps={{
                                 style: { color: "black" }
                             }} 
@@ -225,18 +319,72 @@ const TambahFasilitas = ({
                                 },
                             }}
                             />
-                            <TextField
-                            label='Masukan Gambar/Foto' 
+                            <TextField 
+                            label='Jumlah Fasilitas' 
+                            style={{marginTop:'10px'}}
                             variant='standard'
                             color='warning'
-                            fullWidth
-                            disabled />  
+                            fullWidth 
+                            required
+                            onChange={handleChange}
+                            name='jumlah_fasilitas'
+                            
+                            InputLabelProps={{
+                                style: { color: "black" }
+                            }} 
+                            InputProps={{
+                                style: {
+                                    color: "black"
+                                },
+                            }}
+                            />
+                            <TextField 
+                            label='Tanggal Pembelian / Pembuatan' 
+                            style={{marginTop:'10px'}}
+                            type='date'
+                            variant='standard'
+                            color='warning'
+                            fullWidth 
+                            required
+                            onChange={handleChange}
+                            name='tanggal_pembelian'
+                            InputLabelProps={{
+                                // shrink: == '', // Shrink label if value is not empty
+                                style: { color: "black" }
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: "black"
+                                },
+                            }}
+                            />
+                            <TextField 
+                            label='Biaya Pembelian' 
+                            style={{marginTop:'10px'}}
+                            variant='standard'
+                            color='warning'
+                            fullWidth 
+                            required
+                            onChange={handleChange}
+                            name='biaya_pembelian'
+                            
+                            InputLabelProps={{
+                                style: { color: "black" }
+                            }} 
+                            InputProps={{
+                                style: {
+                                    color: "black"
+                                },
+                            }}
+                            />
+                            <Typography align='left' marginTop='10px'>Masukan Gambar/Foto</Typography> 
                             <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
                                 <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
                                     Pilih Gambar
                                     <input
                                     type="file"
                                     accept=".jpg,.png"
+                                    name='gambar_fasilitas'
                                     onChange={handleFileChange}
                                     hidden
                                     />
@@ -246,8 +394,8 @@ const TambahFasilitas = ({
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmitFasilitasUmum}>Ya, simpan</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
                             </div>
                         </form>
                     </Box>
@@ -306,11 +454,10 @@ const TambahFasilitas = ({
                             color='warning'
                             fullWidth 
                             required
-                            value={dateValue}
                             onChange={handleChange}
                             name='tanggal_pembelian'
                             InputLabelProps={{
-                                shrink: dateValue == '', // Shrink label if value is not empty
+                                // shrink: == '', // Shrink label if value is not empty
                                 style: { color: "black" }
                             }}
                             InputProps={{
@@ -355,7 +502,7 @@ const TambahFasilitas = ({
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmitFasilitasKamar}>Ya, simpan</Button>
                                 <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
                             </div>
                         </form>

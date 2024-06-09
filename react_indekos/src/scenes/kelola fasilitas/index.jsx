@@ -131,7 +131,7 @@ const Inventory = () => {
         // const data = new FormData();
         console.log('formData ', formData)
         const data = new FormData();
-        data.append('nama_fasilitas', formData.nama_gedung);
+        data.append('nama_fasilitas', formData.nama_fasilitas);
         data.append('jumlah_fasilitas', formData.jumlah_fasilitas);
         data.append('tanggal_pembelian', formData.tanggal_pembelian);
         data.append('biaya_pembelian', formData.biaya_pembelian);

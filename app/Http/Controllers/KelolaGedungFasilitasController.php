@@ -16,7 +16,30 @@ class KelolaGedungFasilitasController extends Controller
 {
     public function kamarByGedung($id_gedung)
     {
-        $kamar = Kamar::where('id_gedung', $id_gedung)->get();
+        $kamar = DB::select("
+            SELECT 
+                k.id_kamar, 
+                k.nama_kamar, 
+                k.biaya_kamar, 
+                k.status_kamar, 
+                k.gambar_kamar,
+                string_agg(f.id_fasilitas::text, ',') as id_fasilitas_list
+            FROM 
+                kamar k
+            LEFT JOIN 
+                fasilitas_kamar kf ON k.id_kamar = kf.id_kamar
+            LEFT JOIN 
+                fasilitas f ON kf.id_fasilitas = f.id_fasilitas
+            WHERE 
+                k.id_gedung = ?
+            GROUP BY 
+                k.id_kamar, 
+                k.nama_kamar, 
+                k.biaya_kamar, 
+                k.status_kamar, 
+                k.gambar_kamar;
+        ", [$id_gedung]);
+
         $type = 'kamar';
 
         return response()->json(['kamar' => $kamar, 'type' => $type]);
@@ -71,7 +94,6 @@ class KelolaGedungFasilitasController extends Controller
                 'fk.tanggal_perawatan'
             )
             ->get();
-
 
         $type = 'fasilitas_kamar';
 
@@ -439,4 +461,76 @@ class KelolaGedungFasilitasController extends Controller
         return response()->json(['message' => 'Kamar berhasil ditambahkan', 'kamar' => $kamar]);
     }
 
+    public function updateKamar(Request $request, $id_kamar)
+    {
+        $request->validate([
+            'id_gedung' => 'required',
+            'nama_kamar' => 'required|string',
+            'biaya_kamar' => 'required|integer',
+            'gambar_kamar' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'id_fasilitas_list' => 'required|array'
+        ]);
+
+        $kamar = Kamar::findOrFail($id_kamar);
+
+        if (!$kamar) {
+            return response()->json(['error' => 'Kamar not found'], 404);
+        }
+
+        // Hapus file gambar jika ada
+        if ($kamar->gambar_kamar && $request->hasFile('gambar_kamar')) {
+            ImageHelper::deleteImage($kamar->gambar_kamar);
+        }
+        // Mengupload gambar dan simpan ke folder
+        $imageUrl = ImageHelper::uploadImage($request, 'gambar_kamar', 'kamar');
+    
+        if ($imageUrl == null) {
+            //default img url jika tidak ada perubahan
+            $imageUrl = $kamar->gambar_kamar;
+        }
+        // Buat kamar baru dengan menggunakan data dari request
+        $kamar = Kamar::create([
+            'id_gedung' => $request->input('id_gedung'),
+            'nama_kamar' => $request->input('nama_kamar'),
+            'biaya_kamar' => $request->input('biaya_kamar'),
+            'status_kamar' => 'kosong',
+            'gambar_kamar' => $imageUrl,
+        ]);
+
+        //insert ke table Fasilitas Kamar
+        // Iterasi melalui array id_fasilitas
+        foreach ($request->input('id_fasilitas_list') as $idFasilitas) {
+            FasilitasKamar::where('id_fasilitas_list', $idFasilitas)([
+                'id_kamar' => $request->input('id_kamar'),
+                'id_fasilitas' => $request->input($idFasilitas),
+            ]);
+        }
+
+        return response()->json(['message' => 'Kamar berhasil ditambahkan', 'kamar' => $kamar]);
+    }
+
+    public function hapusKamar($id_kamar)
+    {
+        //Mencari kamar berdasarkan ID
+        $kamar = Kamar::find($id_kamar);
+
+        // Jika kamar tidak ditemukan, kembalikan respons 404
+        if (!$kamar) {
+            return response()->json(['error' => 'Kamar not found'], 404);
+        }
+
+        // Hapus file gambar jika ada
+        if ($kamar->gambar_kamar) {
+            ImageHelper::deleteImage($kamar->gambar_kamar);
+        }
+
+        // Hapus dari table fasilitas kamar
+        FasilitasKamar::where('id_kamar', $id_kamar)->delete();
+
+        // Hapus item dari database
+        $kamar->delete();
+
+        // Kembalikan respons sukses
+        return response()->json(['message' => 'Kamar deleted successfully']);
+    }
 }

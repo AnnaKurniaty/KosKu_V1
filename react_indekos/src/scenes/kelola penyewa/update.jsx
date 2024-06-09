@@ -2,11 +2,8 @@
 /* eslint-disable react/no-unknown-property */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-import Edit from './update.jsx';
-import Hapus from './hapus.jsx';
 
-
-const Detail = ({
+const Update = ({
   penyewa,
   style,
   fetchData,
@@ -38,9 +35,45 @@ const Detail = ({
     setFormData({ ...formData, [e.target.name]: e.target.files[0] });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log("Data FormData First : ", formData);
+
+    const data = new FormData();
+    data.append('nama_lengkap', formData.nama_lengkap);
+    data.append('alamat_penyewa', formData.alamat_penyewa);
+    data.append('nomor_telepon', formData.nomor_telepon);
+    data.append('no_pj_penyewa', formData.no_pj_penyewa);
+    data.append('tanggal_mulai_sewa', formData.tanggal_mulai_sewa);
+    data.append('tanggal_selesai_sewa', formData.tanggal_selesai_sewa);
+    data.append('status_penyewa', formData.status_penyewa);
+
+    if (formData.foto_ktp) {
+        data.append('foto_ktp', formData.foto_ktp);
+    }
+
+    try {
+        const response = await axiosClient.post(`/edit-penyewa/${penyewa.id_penyewa}`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        console.log('Response:', response.data);
+        // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        handleClose();
+        fetchData();
+    } catch (error) {
+        setErrorMessage(error.response.data.message);
+        handleOpen();
+    }
+ };
+
   return (
     <>
-      <Button style={btnstyle} onClick={handleOpen}>Lihat Detail</Button>
+      <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleOpen}>Edit</Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -53,13 +86,6 @@ const Detail = ({
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
               {errorMessage}
             </Typography>
-            <img
-              alt="No-Img"
-              src={`${penyewa.foto_ktp}`}
-              style={{ borderRadius: '1rem' }}
-              height="150"
-              width="auto"
-            />
             <TextField
               label='Nama Lengkap'
               variant='standard'
@@ -70,9 +96,6 @@ const Detail = ({
               name='nama_lengkap'
               InputLabelProps={{
                 style: { color: "black" }
-              }}
-              InputProps={{
-                readOnly: true,
               }}
             />
             <TextField
@@ -86,9 +109,6 @@ const Detail = ({
               InputLabelProps={{
                 style: { color: "black" }
               }}
-              InputProps={{
-                readOnly: true,
-              }}
             />
             <TextField
               label='Nomor telepon'
@@ -101,9 +121,6 @@ const Detail = ({
               InputLabelProps={{
                 style: { color: "black" }
               }}
-              InputProps={{
-                readOnly: true,
-              }}
             />
             <TextField
               label='No Hp Penanggung Jawab Penyewa'
@@ -115,9 +132,6 @@ const Detail = ({
               name='no_pj_penyewa'
               InputLabelProps={{
                 style: { color: "black" }
-              }}
-              InputProps={{
-                readOnly: true,
               }}
             />
             <TextField
@@ -132,9 +146,6 @@ const Detail = ({
               InputLabelProps={{
                 style: { color: "black" }
               }}
-              InputProps={{
-                readOnly: true,
-              }}
             />
             <TextField
               label='tanggal Selesai Sewa'
@@ -148,9 +159,6 @@ const Detail = ({
               InputLabelProps={{
                 style: { color: "black" }
               }}
-              InputProps={{
-                readOnly: true,
-              }}
             />
             <TextField
               label='Status Kamar'
@@ -162,22 +170,28 @@ const Detail = ({
               InputLabelProps={{
                 style: { color: "black" }
               }}
-              InputProps={{
-                readOnly: true,
-              }}
             />
-
+            <Typography align='left' marginTop='10px'>
+              Masukan Gambar / Foto
+            </Typography>
+            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding: 2 }}>
+              <Button variant="contained" component="label" size="small" style={{ borderRadius: "2em" }}>
+                Pilih Gambar
+                <input
+                  type="file"
+                  accept=".jpg,.png,.jpeg"
+                  name='foto_ktp'
+                  onChange={handleFileChange}
+                  hidden
+                />
+              </Button>
+              <Typography variant='caption' style={{ marginLeft: 'auto', textAlign: 'left' }}>
+                Silakan unggah gambar (*.jpg, *png)
+              </Typography>
+            </Box>
             <div align="center">
-              <Edit
-                style={style}
-                penyewa={penyewa}
-                fetchData={fetchData}
-              />
-              <Hapus
-                style={style}
-                id_penyewa={penyewa.id_penyewa}
-                fetchData={fetchData}
-              />
+            <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmit}>Ya, Simpan</Button>
+              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
             </div>
           </form>
         </Box>
@@ -186,4 +200,4 @@ const Detail = ({
   );
 }
 
-export default Detail;
+export default Update;
