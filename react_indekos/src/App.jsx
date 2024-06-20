@@ -18,8 +18,9 @@ import TambahGedung from './scenes/kelola gedung/tambah';
 import Laporan from './scenes/laporan';
 import Login from './scenes/login';
 import Register from './scenes/Register';
-import Penyewa from './scenes/Penyewa';
+import Penyewa from './scenes/kelola penyewa/tambah';
 import NoMatch from './scenes/NoMatch';
+import Pemilik from './scenes/Pemilik';
 
 function App() {
   const mode = useSelector((state) => state.global.mode);
@@ -36,16 +37,13 @@ function App() {
               <Route path='/register' element={<Register />} />
               <Route path='/penyewa' element={<Penyewa />} />
               <Route element={<Layout />}>
-                <Route path='/' element={<Navigate to='/dashboard/:id' replace />} />
-                <Route path='/dashboard/:id' element={<InformasiKos />} />
+                <Route path='/' element={<Navigate to='/informasi kos/:id' replace />} />
+                <Route path='/informasi kos/:id' element={<InformasiKos />} />
                 <Route path='/kelola gedung dan fasilitas/:id' element={<KelolaGedung />} />
                 <Route path='/tambah-gedung' element={<TambahGedung />} />
-                {/* <Route path='/tambah kamar' element={<TambahKamar />} /> */}
+                <Route path='/pemilik/:id' element={<Pemilik />} />
                 <Route path='/kelola penyewa/:id' element={<KelolaPenyewa />} />
                 <Route path='/tambah-fasilitas' element={<TambahFasilitas />} />
-                {/* <Route path='/detail penyewa' element={<KelolaPenyewaDetail />} /> */}
-                <Route path='/detail-fasilitas-kamar' element={<KelolaFasilitasKamarDetail />} />
-                <Route path='/detail-fasilitas-umum' element={<KelolaFasilitasUmumDetail />} />
                 <Route path='/kelola fasilitas/:id' element={<KelolaFasilitas />} />
                 <Route path='/Laporan pemasukan & pengeluaran/:id' element={<Laporan />} />
               </Route>

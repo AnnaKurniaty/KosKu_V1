@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Box, useTheme, useMediaQuery, Typography,CircularProgress } from '@mui/material';
+import { Box, useTheme, useMediaQuery, Typography, CircularProgress } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../axios-client.js";
 import { useLocation } from 'react-router-dom';
 import TambahGedung from './tambah.jsx';
 import UpdateGedung from './update.jsx';
 import HapusGedung from './hapus.jsx';
+import { red } from '@mui/material/colors';
 
 const style = {
     position: 'absolute',
@@ -46,15 +47,52 @@ const Gedung = () => {
         fetchData();
     }, [location.state]);
 
-    const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
-
-    // const textStyle = { backgroundColor: theme.palette.background.alt };
-    // const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }; 
+    const isNonMediumScreens = useMediaQuery("(min-width: 1280px)");
 
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
                 <CircularProgress />
+            </Box>
+        );
+    }
+
+    // Menampilkan pesan jika `gedungList` kosong
+    if (gedungList.length === 0) {
+        return (
+            <Box m='1.5rem 2.5rem' textAlign="center">
+                <TambahGedung
+                userId={userId}
+                style={style}
+                fetchData={fetchData}
+                />
+                <Box
+                    mt="20px"
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    height="300px"
+                >
+                    <Box
+                        gridColumn="span 4"
+                        gridRow="span 1"
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        flexDirection="column"
+                        p="1.25rem 1rem"
+                        flex="1 1 100%"
+                        backgroundColor="white"
+                        borderRadius="0.55rem"
+                    >
+                        <Typography variant="h6" sx={{color:'red'}} gutterBottom>
+                            Data Gedung Tidak Tersedia!
+                        </Typography>
+                        <Typography variant="h6">
+                            Silakan Tambah Gedung Kos Anda
+                        </Typography>
+                    </Box>
+                </Box>
             </Box>
         );
     }
@@ -66,19 +104,19 @@ const Gedung = () => {
                 style={style}
                 fetchData={fetchData}
             />
-
-            {gedungList.map(gedung => (
-                <Box
-                    key={gedung.id_gedung}
-                    mt="20px"
-                    display="grid"
-                    gridTemplateColumns="repeat(12, 1fr)"
-                    gap="20px"
-                    sx={{
-                        "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
-                    }}
-                >
+            <Box
+                mt="20px"
+                sx={{
+                    "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
+                    display: "grid",
+                    gridAutoFlow: 'row',
+                    gridTemplateColumns: "repeat(12, 1fr)",
+                    gap: "20px"
+                }}
+            >
+                {gedungList.map(gedung => (
                     <Box
+                        key={gedung.id_gedung}
                         gridColumn="span 4"
                         gridRow="span 1"
                         display="flex"
@@ -89,7 +127,6 @@ const Gedung = () => {
                         backgroundColor="white"
                         borderRadius="0.55rem"
                     >
-                        {/* Display building image */}
                         <img
                             alt="No-Img"
                             src={`${gedung.gambar_gedung}`}
@@ -110,26 +147,26 @@ const Gedung = () => {
                                     Jumlah Kamar : {gedung.jumlah_kamar}
                                 </Typography>
                             </div>
-                            
+
                             {/* Update Gedung */}
-                            <UpdateGedung 
+                            <UpdateGedung
                                 style={style}
                                 fetchData={fetchData}
                                 gedung={gedung}
                             />
-                            
+
                             {/* Delete Gedung */}
-                            <HapusGedung 
+                            <HapusGedung
                                 style={style}
                                 id_gedung={gedung.id_gedung}
                                 fetchData={fetchData}
                             />
                         </div>
                     </Box>
-                </Box>
-            ))}
+                ))}
+            </Box>
         </Box>
     )
 }
 
-export default Gedung
+export default Gedung;

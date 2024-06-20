@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\PengeluaranModels as Pegeluaran;
 use App\Models\FasilitasKamarModels as FasilitasKamar;
 use App\Models\FasilitasUmumModels as FasilitasUmum;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FasilitasModels extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'fasilitas';
     protected $primaryKey = 'id_fasilitas';
@@ -23,8 +25,9 @@ class FasilitasModels extends Model
         'tanggal_perawatan',
         'gambar_fasilitas',
         'biaya_pembelian',
-        'tanggal_pembelian',
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function fasilitasKamar()
     {

@@ -80,8 +80,8 @@ const EditKamar = ({
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
             >
-                <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
-                        <h3 id="parent-modal-title" textStyle="bold">Detail Fasilitas Kamar</h3>
+                <Box sx={{ ...style, width: 350, padding: 2, maxHeight:500, overflow:'auto'  }} align="center">
+                        <h3 id="parent-modal-title" textStyle="bold">Edit Fasilitas Kamar</h3>
                         <form onSubmit={handleSubmit}>
                             <TextField 
                             label='Nama Fasilitas' 
@@ -104,34 +104,6 @@ const EditKamar = ({
                             onChange={handleChange}
                             name='jumlah_fasilitas'
                             value={formData.jumlah_fasilitas}
-                            InputLabelProps={{
-                                style: { color: "black" }
-                            }}
-                            />
-                            <TextField 
-                            label='Tanggal Pembelian / Pembuatan' 
-                            style={{marginTop:'10px'}}
-                            type='date'
-                            variant='standard'
-                            color='warning'
-                            fullWidth 
-                            value={formData.tanggal_pembelian}
-                            onChange={handleChange}
-                            name='tanggal_pembelian'
-                            InputLabelProps={{
-                                // shrink: dateValue == '', // Shrink label if value is not empty
-                                style: { color: "black" }
-                            }}
-                            />
-                            <TextField 
-                            label='Biaya Pembelian' 
-                            style={{marginTop:'10px'}}
-                            variant='standard'
-                            color='warning'
-                            fullWidth 
-                            onChange={handleChange}
-                            name='biaya_pembelian'
-                            value={formData.biaya_pembelian}
                             InputLabelProps={{
                                 style: { color: "black" }
                             }}

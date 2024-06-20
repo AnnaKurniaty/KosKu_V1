@@ -30,7 +30,7 @@ import { useLocation } from 'react-router-dom';
 
 const navItems = [
   {
-    text: "Dashboard",
+    text: "Informasi Kos",
     icon: <HomeOutlined />,
   },
   {
@@ -206,6 +206,9 @@ const SideBar = ({
                   borderRadius="50%"
                   sx={{ objectFit: "cover" }}
                   marginLeft={3}
+                  onClick={() => {
+                    navigate(`/pemilik/${user.id}`, { state: { userId: user.id } });
+                }}
                 />
                 <div>
                   <Typography marginLeft={2} color={"white"}>

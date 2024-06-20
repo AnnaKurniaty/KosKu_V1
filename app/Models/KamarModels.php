@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\GedungModels as Gedung;
 use App\Models\PenyewaModels as Penyewa;
 use App\Models\FasilitasKamarModels as FasilitasKamar;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class KamarModels extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'kamar';
     protected $primaryKey = 'id_kamar';
@@ -22,6 +24,8 @@ class KamarModels extends Model
         'gambar_kamar',
         'status_kamar',
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function gedung()
     {

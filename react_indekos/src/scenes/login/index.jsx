@@ -17,7 +17,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(null);
 
-  // Add these variables to your component to track the state
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
@@ -34,9 +33,9 @@ const Login = () => {
         localStorage.setItem('token', data.authorisation.token);
         setToken(data.authorisation.token);
         setUser(data.user);
-        const userId = data.user.id; // Simpan ID pengguna
+        const userId = data.user.id;
         setUserId(userId);
-        navigate(`/dashboard/${userId}`, { state: { userId } }); // Kirim ID pengguna sebagai state saat navigasi ke dashboard
+        navigate(`/informasi kos/${userId}`, { state: { userId } }); 
       })
       .catch(err => {
         setLoading(false);
@@ -50,7 +49,7 @@ const Login = () => {
       });
   };
 
-  const paperStyle = { padding: 20, height: "auto", width: 350, margin: "9rem auto", backgroundColor: theme.palette.background.alt, borderRadius: '3rem' };
+  const paperStyle = { padding: 20, height: "auto", width: 300, margin: "9rem auto", backgroundColor: theme.palette.background.alt, borderRadius: '3rem' };
   const textStyle1 = { margin: '-20' };
   const btnstyle = { margin: '2em 0 0', backgroundColor: '#FF9900', color: "white", padding: '0.5em 2em', borderRadius: '2em' };
   const btnstyle1 = { margin: '0 0 1em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 2em', borderRadius: '2em' };

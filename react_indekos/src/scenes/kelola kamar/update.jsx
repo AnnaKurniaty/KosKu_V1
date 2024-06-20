@@ -96,8 +96,8 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
-          <h3 id="parent-modal-title" textstyle="bold">Detail Kamar</h3>
+        <Box sx={{ ...style, width: 350, padding: 2, maxHeight:500, overflow:'auto' }} align="center">
+          <h3 id="parent-modal-title" textstyle="bold">Edit Kamar</h3>
           <form onSubmit={handleSubmitKamar}>
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
               {errorMessage}
@@ -126,6 +126,7 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
               <Typography>Fasilitas* </Typography>
               <Typography variant="caption">(Pilih dengan menekan fasilitas)</Typography>
             </div>
+            <Box sx={{ maxHeight: 100, overflow: 'auto', marginTop: '10px' }}>
             <FormGroupContainer>
               {fasilitasKamarList.map((fs, index) => (
                 <StyledFormControlLabel
@@ -141,6 +142,7 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
                 />
               ))}
             </FormGroupContainer>
+            </Box>
             <TextField
               label='Status Kamar'
               variant='standard'

@@ -1,9 +1,5 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/no-unknown-property */
 import { Box, Button, IconButton, Modal, TextField, Typography } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
 import React, { useState } from "react";
-import axiosClient from "../../axios-client";
 import Edit from './update_umum.jsx';
 
 
@@ -47,7 +43,7 @@ const DetailFasilitasUmum = ({
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
             >
-                <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                <Box sx={{ ...style, width: 350, padding: 2, maxHeight:500, overflow:'auto'  }} align="center">
                         <h3 id="parent-modal-title" textStyle="bold">Detail Fasilitas umum</h3>
                         <form>
                             <img

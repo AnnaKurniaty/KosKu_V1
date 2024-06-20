@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\KamarModels as Kamar;
 use App\Models\FasilitasUmumModels as FasilitasUmum;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GedungModels extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'gedung';
     protected $primaryKey = 'id_gedung';
@@ -21,6 +23,8 @@ class GedungModels extends Model
         'jumlah_kamar',
         'gambar_gedung',
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function pemilik()
     {

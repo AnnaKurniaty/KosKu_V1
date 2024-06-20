@@ -190,7 +190,7 @@ const TambahFasilitas = ({
 
 
   //STYLE
-  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' };
+  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em', marginLeft:'auto' };
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
@@ -201,7 +201,7 @@ const TambahFasilitas = ({
           fontWeight='bold'
           sx={{ mb: '5px' }}
         >
-          Daftar Gedung Kos
+          Daftar Fasilitas Kos
         </Typography>
       </Box>
       <Button type='submit' style={btnstyle}
@@ -257,6 +257,7 @@ const TambahFasilitas = ({
                                      (Pilih dengan menekan fasilitas)
                                 </Typography>
                             </div>
+                            <Box sx={{ maxHeight: 100, overflow: 'auto', marginTop: '10px' }}>
                             <FormGroupContainer>
                                 {fasilitasKamarList.map((fs, index) => (
                                     <StyledFormControlLabel
@@ -268,6 +269,7 @@ const TambahFasilitas = ({
                                     />
                                 ))}
                             </FormGroupContainer>
+                            </Box>
                             <Typography align='left' marginTop='10px'>
                                     Masukan Gambar / Foto 
                             </Typography>

@@ -71,7 +71,7 @@ const Detail = ({
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+        <Box sx={{ ...style, width: 300, maxHeight:500, padding: 2, overflow:'auto' }} align="center">
           <h3 id="parent-modal-title" textstyle="bold">Detail Kamar</h3>
           <form>
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
@@ -122,21 +122,23 @@ const Detail = ({
                 (Pilih dengan menekan fasilitas)
               </Typography>
             </div>
-            <FormGroupContainer>
-              {fasilitasKamarList.map((fs, index) => (
-                <StyledFormControlLabel
-                  key={index}
-                  control={<Checkbox
-                    color="success"
-                    checked={selectedFasilitasIds.includes(fs.id_fasilitas)}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />}
-                  label={fs.nama_fasilitas}
-                />
-              ))}
-            </FormGroupContainer>
+            <Box sx={{ maxHeight: 100, overflow: 'auto', marginTop: '10px' }}>
+              <FormGroupContainer>
+                {fasilitasKamarList.map((fs, index) => (
+                  <StyledFormControlLabel
+                    key={index}
+                    control={<Checkbox
+                      color="success"
+                      checked={selectedFasilitasIds.includes(fs.id_fasilitas)}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                    />}
+                    label={fs.nama_fasilitas}
+                  />
+                ))}
+              </FormGroupContainer>
+            </Box>
             <TextField
               label='Status Kamar'
               variant='standard'

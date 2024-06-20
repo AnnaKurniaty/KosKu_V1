@@ -85,7 +85,7 @@ const Update = ({
         aria-describedby="parent-modal-description"
       >
         <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
-          <h3 id="parent-modal-title" textstyle="bold">Detail Penyewa</h3>
+          <h3 id="parent-modal-title" textstyle="bold">Update Penyewa</h3>
           <form>
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
               {errorMessage}
@@ -194,7 +194,7 @@ const Update = ({
               </Typography>
             </Box>
             <div align="center">
-            <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmit}>Ya, Simpan</Button>
+              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmit}>Ya, Simpan</Button>
               <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
             </div>
           </form>

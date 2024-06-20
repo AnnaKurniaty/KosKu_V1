@@ -4,9 +4,9 @@ import axiosClient from "../../axios-client";
 import React from "react";
 
 
-const HapusGedung = ({
+const HapusFasilitas = ({
     style,
-    id_gedung,
+    id_fasilitas,
     fetchData,
 }) => {
     const btnstyle1 = { margin: '0.2em', backgroundColor: '#FF9900', color: "white", borderRadius: '0.5em' };
@@ -17,7 +17,7 @@ const HapusGedung = ({
     const onDelete = async (e) => {
         e.preventDefault();
         try {
-            const response = await axiosClient.delete(`/gedung/${id_gedung}`, {
+            const response = await axiosClient.post(`/fasilitas-kamar/delete/${id_fasilitas}`, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -35,7 +35,7 @@ const HapusGedung = ({
 
     return (
         <>
-            <IconButton style={btnstyle1} onClick={handleOpen}><DeleteIcon /></IconButton>
+            <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleOpen}>Hapus</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -44,7 +44,7 @@ const HapusGedung = ({
             >
                 <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
                     <form onSubmit={onDelete}>
-                        <h3 id="parent-modal-title" textstyle="bold">Hapus Gedung yang Dipilih ?</h3>
+                        <h3 id="parent-modal-title" textstyle="bold">Hapus Fasilitas yang Dipilih ?</h3>
                         <div align="center">
                             <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} >Ya, hapus</Button>
                             <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Kembali</Button>
@@ -56,4 +56,4 @@ const HapusGedung = ({
     );
 }
 
-export default HapusGedung;
+export default HapusFasilitas;

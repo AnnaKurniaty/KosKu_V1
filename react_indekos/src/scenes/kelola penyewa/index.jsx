@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Box, useTheme, useMediaQuery, Typography, CircularProgress, Button} from '@mui/material'
+import { Box, useTheme, useMediaQuery, Paper,Typography, CircularProgress, Button} from '@mui/material'
 import Modal from '@mui/material/Modal';
 import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
@@ -25,6 +25,8 @@ const style = {
   export default function Penyewa() {
     const theme = useTheme()
     const location = useLocation();
+    const isLargeScreen = useMediaQuery("(min-width: 1280px)");
+    const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
     const [penyewaList, setPenyewaList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState(null);
@@ -63,14 +65,78 @@ const style = {
     const handleClose1 = () => {
         setOpen1(false);
     };
-    const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
+
     const navigate = useNavigate();
-    const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' };
+    const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em', marginLeft:'auto' };
 
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
                 <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (penyewaList.length === 0) {
+        return (
+            <Box m='1.5rem 2.5rem' textAlign="center">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
+                <Box marginLeft="-20px">
+                    <Typography
+                    variant='h5'
+                    color='white'
+                    fontWeight='bold'
+                    sx={{ mb: '5px' }}
+                    >
+                    Daftar Penyewa Kos
+                    </Typography>
+                </Box>
+                <Button type='submit' style={btnstyle} onClick={handleOpen1}>Tambah</Button>
+                <Modal
+                    open={open1}
+                    onClose={handleClose1}
+                    aria-labelledby="parent-modal-title"
+                    aria-describedby="parent-modal-description"
+                >
+                    <Box sx={{ ...style, width: 330 }} align="center">
+                        <h2 id="parent-modal-title">Tambah Penyewa</h2>
+                        <p id="parent-modal-description">
+                            <QRCode
+                                value="http://localhost:3000/penyewa"
+                                bgColor="#FFFFFF"
+                                fgColor="#000000"
+                            />
+                        </p>
+                    </Box>
+                </Modal>
+            </div>
+            <Box
+                    mt="20px"
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    height="300px"
+                >
+                    <Box
+                        gridColumn="span 4"
+                        gridRow="span 1"
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        flexDirection="column"
+                        p="1.25rem 1rem"
+                        flex="1 1 100%"
+                        backgroundColor="white"
+                        borderRadius="0.55rem"
+                    >
+                        <Typography variant="h6" sx={{color:'red'}} gutterBottom>
+                            Data Penyewa Tidak Tersedia!
+                        </Typography>
+                        <Typography variant="h6">
+                            Silakan Tambah Penyewa Kos Anda
+                        </Typography>
+                    </Box>
+                </Box>
             </Box>
         );
     }
@@ -95,7 +161,7 @@ const style = {
                     aria-labelledby="parent-modal-title"
                     aria-describedby="parent-modal-description"
                 >
-                    <Box sx={{ ...style, width: 400 }} align="center">
+                    <Box sx={{ ...style, width: 330 }} align="center">
                         <h2 id="parent-modal-title">Tambah Penyewa</h2>
                         <p id="parent-modal-description">
                             <QRCode
@@ -107,14 +173,19 @@ const style = {
                     </Box>
                 </Modal>
             </div>
+            <Box display="grid" gridTemplateColumns={isLargeScreen ? "repeat(3, 1fr)" : "repeat(1, 1fr)"}>
             {penyewaList.map(penyewa => (
                 <Box
                     key={penyewa.id_penyewa}
                     mt="20px"
                     display="grid"
                     gap="15px"
-                    marginLeft="-20px"
-                    marginRight="-20px"
+                    sx={{
+                        "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
+                        boxShadow: '3',
+                        borderRadius: '0.55rem',
+                        backgroundColor: "#F9F4F4",
+                      }}
                 >
                     <Box
                     gridColumn="span 4"
@@ -159,6 +230,7 @@ const style = {
                     </Box>
                 </Box>
                 ))}
+            </Box>
         </Box>
     );
 }

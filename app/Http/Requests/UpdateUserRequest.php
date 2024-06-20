@@ -19,9 +19,11 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$this->id,
+            'nama_lengkap' => 'required|string|max:255',
+            'alamat_pemilik' => 'required|string',
+            'nomor_telepon' => 'required|string|max:15|unique:users',
             'password' => [
+                'required',
                 Password::min(8)
                 ->letters()
             ]

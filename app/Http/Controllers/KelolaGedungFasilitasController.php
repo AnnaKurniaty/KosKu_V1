@@ -182,7 +182,7 @@ class KelolaGedungFasilitasController extends Controller
     public function hapusGedung($id)
     {
         //Mencari gedung berdasarkan ID
-        $gedung = Gedung::find($id);
+        $gedung = Gedung::withTrashed()->find($id);
 
         // Jika gedung tidak ditemukan, kembalikan respons 404
         if (!$gedung) {
@@ -292,7 +292,7 @@ class KelolaGedungFasilitasController extends Controller
     public function hapusFasilitasKamar($id_fasilitas)
     {
         //Mencari fasilitas berdasarkan ID
-        $fasilitas = Fasilitas::find($id_fasilitas);
+        $fasilitas = Fasilitas::withTrashed()->find($id_fasilitas);
 
         // Jika gedung tidak ditemukan, kembalikan respons 404
         if (!$fasilitas) {
@@ -404,7 +404,7 @@ class KelolaGedungFasilitasController extends Controller
     public function hapusFasilitasUmum($id_fasilitas)
     {
         //Mencari fasilitas berdasarkan ID
-        $fasilitas = Fasilitas::find($id_fasilitas);
+        $fasilitas = Fasilitas::withTrashed()->find($id_fasilitas);
 
         // Jika gedung tidak ditemukan, kembalikan respons 404
         if (!$fasilitas) {
@@ -514,7 +514,7 @@ class KelolaGedungFasilitasController extends Controller
     public function hapusKamar($id_kamar)
     {
         //Mencari kamar berdasarkan ID
-        $kamar = Kamar::find($id_kamar);
+        $kamar = Kamar::withTrashed()->find($id_kamar);
 
         // Jika kamar tidak ditemukan, kembalikan respons 404
         if (!$kamar) {

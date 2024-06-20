@@ -8,6 +8,7 @@ use App\Models\PemasukanModels as Pemasukan;
 use App\Models\PengeluaranModels as Pengeluaran;
 use App\Models\PenyewaModels as Penyewa;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -27,22 +28,73 @@ class DashboardController extends Controller
           ->whereBetween('tanggal_selesai_sewa', [Carbon::now()->subWeeks(2), Carbon::now()])
           ->get();
 
-        $pemasukan = Pemasukan::whereHas('penyewa.kamar.gedung', function($query) use ($userId) {
-            $query->where('id_pemilik', $userId);
-        })->sum('biaya_pemasukan');        
+          $currentYear = Carbon::now()->year;
 
-        $pengeluaran = Pengeluaran::whereHas('fasilitasKamar.kamar.gedung', function($query) use ($userId) {
-            $query->where('id_pemilik', $userId);
-        })->orWhereHas('fasilitasUmum.gedung', function($query) use ($userId) {
-            $query->where('id_pemilik', $userId);
-        })->sum('biaya_pengeluaran');
+          // Menghitung pemasukan bulanan
+          $pemasukanBulanan = DB::table('pemasukan')
+              ->select(
+                  DB::raw('EXTRACT(MONTH FROM tgl_pemasukan) as bulan'),
+                  DB::raw('SUM(biaya_pemasukan) as total_pemasukan')
+              )
+              ->whereExists(function($query) use ($userId) {
+                  $query->select(DB::raw(1))
+                      ->from('penyewa')
+                      ->join('kamar', 'penyewa.id_kamar', '=', 'kamar.id_kamar')
+                      ->join('gedung', 'kamar.id_gedung', '=', 'gedung.id_gedung')
+                      ->whereRaw('penyewa.id_penyewa = pemasukan.id_penyewa')
+                      ->where('gedung.id_pemilik', $userId);
+              })
+              ->whereYear('tgl_pemasukan', $currentYear)
+              ->groupBy(DB::raw('EXTRACT(MONTH FROM tgl_pemasukan)'))
+              ->get();
+      
+          // Menghitung pengeluaran bulanan
+          $pengeluaranBulanan = DB::table('pengeluaran')
+              ->select(
+                  DB::raw('EXTRACT(MONTH FROM tanggal_pengeluaran) as bulan'),
+                  DB::raw('SUM(biaya_pengeluaran) as total_pengeluaran')
+              )
+              ->where(function($query) use ($userId) {
+                  $query->whereExists(function($subQuery) use ($userId) {
+                      $subQuery->select(DB::raw(1))
+                          ->from('fasilitas_kamar')
+                          ->join('kamar', 'fasilitas_kamar.id_kamar', '=', 'kamar.id_kamar')
+                          ->join('gedung', 'kamar.id_gedung', '=', 'gedung.id_gedung')
+                          ->whereRaw('fasilitas_kamar.id_fasilitas_kamar = pengeluaran.id_fasilitas_kamar')
+                          ->where('gedung.id_pemilik', $userId);
+                  })
+                  ->orWhereExists(function($subQuery) use ($userId) {
+                      $subQuery->select(DB::raw(1))
+                          ->from('fasilitas_umum')
+                          ->join('gedung', 'fasilitas_umum.id_gedung', '=', 'gedung.id_gedung')
+                          ->whereRaw('fasilitas_umum.id_fasilitas_umum = pengeluaran.id_fasilitas_umum')
+                          ->where('gedung.id_pemilik', $userId);
+                  });
+              })
+              ->whereYear('tanggal_pengeluaran', $currentYear)
+              ->groupBy(DB::raw('EXTRACT(MONTH FROM tanggal_pengeluaran)'))
+              ->get();
+      
+          // Gabungkan data pemasukan dan pengeluaran bulanan
+          $result = collect($pemasukanBulanan)
+              ->merge(collect($pengeluaranBulanan))
+              ->groupBy('bulan')
+              ->map(function($item, $key) {
+                  return [
+                      'bulan' => $key,
+                      'total_pemasukan' => $item->whereNotNull('total_pemasukan')->sum('total_pemasukan'),
+                      'total_pengeluaran' => $item->whereNotNull('total_pengeluaran')->sum('total_pengeluaran')
+                  ];
+              })
+              ->values();
+          
 
         return response()->json([
             'jumlah_kamar_terisi' => $jumlahKamarTerisi,
             'jumlah_kamar_kosong' => $jumlahKamarKosong,
             'penyewa_selesai_sewa_dua_minggu_terakhir' => $penyewaSelesaiSewaDuaMingguTerakhir,
-            'pemasukan' => $pemasukan,
-            'pengeluaran' => $pengeluaran,
+            'pemasukan' => $result,
+            'pengeluaran' => $result,
         ]);
     }
 

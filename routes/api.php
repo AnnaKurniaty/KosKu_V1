@@ -37,6 +37,14 @@ Route::get('/dashboard/{userId}', [DashboardController::class, 'informasiKos']);
 Route::post('/dashboard/pemasukan/{penyewaId}', [DashboardController::class, 'storePemasukan']);
 Route::patch('/dashboard/penyewa/status/{penyewaId}', [DashboardController::class, 'updatePenyewaStatus']);
 
+//PEMILIK
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/edit-pemilik/{userId}', [UserController::class, 'update']);
+    Route::delete('/pemilik/{userId}', [UserController::class, 'hapus']);
+    Route::post('/forgot-password', [UserController::class, 'sendResetLink']);
+
+});
+
 //GEDUNG
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/gedung/{userId}', [KelolaGedungFasilitasController::class, 'gedungByPemilik']);

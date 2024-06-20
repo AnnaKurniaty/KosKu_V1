@@ -1,12 +1,12 @@
 import React from 'react'
 import { LoadingButton } from '@mui/lab'
-import { useTheme, Box, Grid,Paper, TextField } from '@mui/material';
+import { useTheme, Box, Grid,Paper,InputAdornment, TextField, IconButton } from '@mui/material';
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import axiosClient from '../../axios-client';
 import { useSelector } from 'react-redux';
 import logoImage from "../../asset/logo.png";
-import { useStateContext } from "../../context/ContextProvider";
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Register = () => {
     const theme = useTheme();
@@ -15,8 +15,9 @@ const Register = () => {
     const [alamat_pemilik, setAlamat] = useState("");
     const [nomor_telepon, setNomor] = useState("");
     const [password, setPassword] = useState("");
-
     const [errors, setErrors] = useState([]);
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
 
     const submitHandle =  (ev) =>{
         ev.preventDefault();
@@ -37,7 +38,7 @@ const Register = () => {
     }
 
     const loading = useSelector((state) => state.global.loading)
-    const paperStyle={padding :20,height:"auto",width:350, margin:"9rem auto 9rem auto",backgroundColor: theme.palette.background.alt, borderRadius: '3rem'}
+    const paperStyle={padding :20,height:"auto",width:300, margin:"9rem auto 9rem auto",backgroundColor: theme.palette.background.alt, borderRadius: '3rem'}
     const btnstyle={margin:'2em 0', backgroundColor:'#FF9900', color:"white", padding:'0.5em 2em', borderRadius: '2em'}
 
     return(
@@ -129,6 +130,16 @@ const Register = () => {
                         style: {
                             color: "black"
                         },
+                        endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                              >
+                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                              </IconButton>
+                            </InputAdornment>
+                          )
                     }}
                     />
                     <div align="center">

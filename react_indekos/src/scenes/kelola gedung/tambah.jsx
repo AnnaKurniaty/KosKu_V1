@@ -65,7 +65,7 @@ const TambahGedung = ({
   };
 
   //STYLE
-  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' };
+  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em', marginLeft:'auto' };
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PenyewaModels as Penyewa;
+use App\Models\PemasukanModels as Pemasukan;
 use App\Models\KamarModels as Kamar;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -87,10 +88,11 @@ class KelolaPenyewaController extends Controller
 
     public function hapusPenyewa($id_penyewa)
     {
-        $penyewa = Penyewa::find($id_penyewa);
+        $penyewa = Penyewa::withTrashed()->find($id_penyewa);
         if (!$penyewa) {
             return response()->json(['message' => 'Penyewa tidak ditemukan'], 404);
         }
+        Pemasukan::where('id_penyewa', $id_penyewa)->delete();
         $penyewa->delete();
         return response()->json(['message' => 'Penyewa berhasil dihapus']);
     }
