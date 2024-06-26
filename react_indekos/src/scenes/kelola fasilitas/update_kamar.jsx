@@ -1,5 +1,5 @@
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosClient from "../../axios-client";
 import SuccessModal from "../../components/SuccessModal";
 import ErrorModal from "../../components/ErrorModal";
@@ -37,8 +37,7 @@ const EditKamar = ({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // const data = new FormData();
-        console.log('formData ', formData)
+
         const data = new FormData();
         data.append('nama_fasilitas', formData.nama_fasilitas);
         data.append('jumlah_fasilitas', formData.jumlah_fasilitas);

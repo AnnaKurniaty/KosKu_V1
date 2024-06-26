@@ -87,7 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/fasilitas-kamar/{id_kamar}', [FasilitasKamarController::class, 'fasilitasByKamar']);
     Route::post('/fasilitas-kamar/insert', [FasilitasKamarController::class, 'tambahFasilitasKamar']);
-    Route::put('/fasilitas-kamar/update/{id_fasilitas_kamar}', [FasilitasKamarController::class, 'updateFasilitasKamar']);
+    Route::post('/fasilitas-kamar/update/{id_fasilitas_kamar}', [FasilitasKamarController::class, 'updateFasilitasKamar']);
     Route::delete('/fasilitas-kamar/delete/{id_fasilitas_kamar}', [FasilitasKamarController::class, 'hapusFasilitasKamar']);
 });
 

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Box, Typography, TextField, Button, Modal, useMediaQuery, Select, MenuItem } from "@mui/material";
+/* eslint-disable react/prop-types */
+import React, { useState } from "react";
+import { Box, Typography, TextField, Button, Modal, useMediaQuery } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
 import axiosClient from "../../axios-client";
 import Checkbox from '@mui/material/Checkbox';
@@ -32,13 +33,13 @@ const TambahFasilitas = ({
     type,
     fasilitasKamarList,
     kamarList,
+    fetchData,
 }) => {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openAdd1, setOpenAdd1] = React.useState(false);
   const [openAdd2, setOpenAdd2] = React.useState(false);
-  const [dateValue, setDateValue] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [selectedKamar, setSelectedKamar] = useState('');
   const isLargeScreen = useMediaQuery("(min-width: 1280px)")
@@ -122,6 +123,7 @@ const TambahFasilitas = ({
         console.log('Response:', response.data);
         setSuccessMessage('Fasilitas berhasil ditambahkan');
         handleClose();
+        fetchData();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
         setErrorMessage('Fasilitas gagal ditambahkan');
@@ -153,7 +155,7 @@ const TambahFasilitas = ({
         console.log('Response:', response.data);
         setSuccessMessage('Fasilitas berhasil ditambahkan');
         handleClose();
-        handleTabKamar();
+        fetchData();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
         setErrorMessage('Fasilitas gagal ditambahkan');
@@ -186,7 +188,7 @@ const TambahFasilitas = ({
         console.log('Response:', response.data);
         setSuccessMessage('Failitas berhasil ditambahkan');
         handleClose();
-        handleTabUmum();
+        fetchData();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
         setErrorMessage('Fasilitas gagal ditambahkan');
@@ -287,6 +289,7 @@ const TambahFasilitas = ({
                                     type="file"
                                     accept=".jpg,.png"
                                     onChange={handleFileChange}
+                                    name='gambar_kamar'
                                     hidden
                                     />
                                 </Button>

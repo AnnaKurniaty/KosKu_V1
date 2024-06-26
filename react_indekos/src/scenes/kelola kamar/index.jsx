@@ -129,6 +129,7 @@ const Inventory = () => {
                 type={type}
                 fasilitasKamarList={fasilitasKamarList}
                 kamarList={gedungList}
+                fetchData={fetchData}
             />
             <Box sx={{ width: 'auto', typography: 'body1', border:'1px solid #69AC77' }} style={textStyle} borderRadius="0.55rem" backgroundColor="white">
                 <TabContext value={value}>

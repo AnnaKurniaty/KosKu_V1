@@ -24,9 +24,10 @@ class FasilitasKamarController extends Controller
             ->leftJoin('kebutuhan as ku', 'ku.id_fasilitas_kamar', '=', 'fk.id_fasilitas_kamar')
             ->where('g.id_gedung', '=', $id_gedung)
             ->whereNotNull('fk.id_fasilitas_kamar')
-            ->groupBy('fk.id_fasilitas_kamar', 'f.nama_fasilitas', 'ku.biaya_pembelian', 'f.jumlah_fasilitas', 'ku.tanggal_pembelian', 'f.gamabar_fasilitas', 'ku.biaya_perbaikan', 'ku.tanggal_perbaikan')
+            ->groupBy('fk.id_fasilitas_kamar', 'f.id_fasilitas', 'f.nama_fasilitas', 'ku.biaya_pembelian', 'f.jumlah_fasilitas', 'ku.tanggal_pembelian', 'f.gamabar_fasilitas', 'ku.biaya_perbaikan', 'ku.tanggal_perbaikan')
             ->select(
                 'fk.id_fasilitas_kamar', 
+                'f.id_fasilitas',
                 'f.nama_fasilitas', 
                 'f.jumlah_fasilitas',
                 'ku.biaya_pembelian', 
