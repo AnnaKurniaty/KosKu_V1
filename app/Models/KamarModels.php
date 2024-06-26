@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\GedungModels as Gedung;
-use App\Models\PenyewaModels as Penyewa;
+use App\Models\MenyewaModels as Menyewa;
 use App\Models\FasilitasKamarModels as FasilitasKamar;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -30,15 +30,5 @@ class KamarModels extends Model
     public function gedung()
     {
         return $this->belongsTo(Gedung::class, 'id_gedung');
-    }
-
-    public function penyewa()
-    {
-        return $this->hasMany(Penyewa::class, 'id_kamar');
-    }
-
-    public function fasilitasKamar()
-    {
-        return $this->hasMany(FasilitasKamar::class, 'id_kamar');
     }
 }

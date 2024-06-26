@@ -1,29 +1,28 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/no-unknown-property */
-import { Box, Button, IconButton, Modal, TextField, Typography } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import axiosClient from "../../axios-client";
-
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const EditKamar = ({
     style,
     handleTabKamar,
-    fasilitas,
+    fasilitas_kamar,
 }) => {
 
-    const [errorMessage, setErrorMessage] = useState('');
     const [open, setOpen] = React.useState(false);
     const handleClose = () => {setOpen(false)};
     const handleOpen = () => {setOpen(true)};
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const [formData, setFormData] = useState({
-        'nama_fasilitas': fasilitas.nama_fasilitas,
-        'jumlah_fasilitas': fasilitas.jumlah_fasilitas,
-        'tanggal_pembelian': fasilitas.tanggal_pembelian,
-        'biaya_pembelian': fasilitas.biaya_pembelian,
-        'tanggal_perawatan': fasilitas.tanggal_perawatan,
-        'biaya_perawatan': fasilitas.biaya_perawatan,
+        'nama_fasilitas': fasilitas_kamar.nama_fasilitas,
+        'jumlah_fasilitas': fasilitas_kamar.jumlah_fasilitas,
+        'tanggal_pembelian': fasilitas_kamar.tanggal_pembelian,
+        'biaya_pembelian': fasilitas_kamar.biaya_pembelian,
+        'tanggal_perbaikan': fasilitas_kamar.tanggal_perbaikan,
+        'biaya_perbaikan': fasilitas_kamar.biaya_perbaikan,
         'gambar_fasilitas': null,
      })
 
@@ -45,14 +44,14 @@ const EditKamar = ({
         data.append('jumlah_fasilitas', formData.jumlah_fasilitas);
         data.append('tanggal_pembelian', formData.tanggal_pembelian);
         data.append('biaya_pembelian', formData.biaya_pembelian);
-        data.append('tanggal_perawatan', formData.tanggal_perawatan);
-        data.append('biaya_perawatan', formData.biaya_perawatan);
+        data.append('tanggal_perbaikan', formData.tanggal_perbaikan);
+        data.append('biaya_perbaikan', formData.biaya_perbaikan);
         if (formData.gambar_fasilitas) {
         data.append('gambar_fasilitas', formData.gambar_fasilitas);
         }
 
         try {
-        const response = await axiosClient.post(`/fasilitas-kamar/update/${fasilitas.id_fasilitas}`, data, {
+        const response = await axiosClient.post(`/fasilitas-kamar/update/${fasilitas_kamar.id_fasilitas_kamar}`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -60,27 +59,26 @@ const EditKamar = ({
         });
 
         console.log('Response:', response.data);
-        // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        setSuccessMessage('Fasilitas berhasil diubah');
         handleClose();
         handleTabKamar();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
-        // Implement logic for handling errors, e.g., showing an error message to the user
-        setErrorMessage(error.response.data.message);
+        setErrorMessage('Fasilitas gagal diubah');
         handleOpen();
         }
     };
 
     return (
         <>
-            <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleOpen}>Edit</Button>
+            <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleOpen}>Edit</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
             >
-                <Box sx={{ ...style, width: 350, padding: 2, maxHeight:500, overflow:'auto'  }} align="center">
+                <Box sx={{ ...style, width: 320, padding: 2, maxHeight:500, overflow:'auto', border:'1px solid #69AC77'  }} align="center">
                         <h3 id="parent-modal-title" textStyle="bold">Edit Fasilitas Kamar</h3>
                         <form onSubmit={handleSubmit}>
                             <TextField 
@@ -115,23 +113,23 @@ const EditKamar = ({
                             variant='standard'
                             color='warning'
                             fullWidth 
-                            value={formData.tanggal_perawatan}
+                            value={formData.tanggal_perbaikan}
                             onChange={handleChange}
-                            name='tanggal_perawatan'
+                            name='tanggal_perbaikan'
                             InputLabelProps={{
                                 // shrink: dateValue == '', // Shrink label if value is not empty
                                 style: { color: "black" }
                             }}
                             />
                             <TextField 
-                            label='Biaya Perawatan' 
+                            label='Biaya perbaikan' 
                             style={{marginTop:'10px'}}
                             variant='standard'
                             color='warning'
                             fullWidth 
                             onChange={handleChange}
-                            name='biaya_perawatan'
-                            value={formData.biaya_perawatan}
+                            name='biaya_perbaikan'
+                            value={formData.biaya_perbaikan}
                             InputLabelProps={{
                                 style: { color: "black" }
                             }}
@@ -142,7 +140,7 @@ const EditKamar = ({
                             color='warning'
                             fullWidth
                             disabled />
-                        <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding: 2 }}>
+                        <Box sx={{ mt: 2, display: 'flex', border: '1px solid #FF9900', borderRadius: '1em', padding: 2 }}>
                             <Button variant="contained" component="label" size="small" style={{ borderRadius: "2em" }}>
                                 Pilih Gambar
                                 <input
@@ -159,11 +157,17 @@ const EditKamar = ({
                         </Box>
                             <div align="center">
                             <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Ya, simpan</Button>
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleClose}>Kembali</Button>
                             </div>
                         </form>
                     </Box>
             </Modal>
+            <SuccessModal
+                message={successMessage}
+            />
+            <ErrorModal
+                message={errorMessage}
+            />
         </>
     );
 }

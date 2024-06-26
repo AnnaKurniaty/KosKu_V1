@@ -1,10 +1,9 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/no-unknown-property */
 import { Box, Button, IconButton, Modal, TextField, Typography } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import React, { useState } from "react";
 import axiosClient from "../../axios-client";
-
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const UpdateGedung = ({
     style,
@@ -17,10 +16,12 @@ const UpdateGedung = ({
     const [open, setOpen] = React.useState(false);
     const handleClose = () => {setOpen(false)};
     const handleOpen = () => {setOpen(true)};
+    const [successMessage, setSuccessMessage] = useState('');
 
     //For Inpput
     const [formData, setFormData] = useState({
         'nama_gedung': gedung.nama_gedung,
+        'jumlah_kamar': gedung.jumlah_kamar,
         'gambar_gedung': null,
     })
 
@@ -54,11 +55,11 @@ const UpdateGedung = ({
             });
 
             console.log('Response:', response.data);
-            // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+            setSuccessMessage('Gedung berhasil diubah');
             handleClose();
             fetchData();
         } catch (error) {
-            setErrorMessage(error.response.data.message);
+            setErrorMessage('Gedung gagal diubah');
             handleOpen();
         }
     };
@@ -72,7 +73,7 @@ const UpdateGedung = ({
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
             >
-                <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                <Box sx={{ ...style, width: 320, padding: 2, border:'1px solid #69AC77' }} align="center">
                     <h3 id="parent-modal-title" textstyle="bold">Edit Gedung</h3>
                     <form onSubmit={handleSubmit}>
                         <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
@@ -118,7 +119,7 @@ const UpdateGedung = ({
                             color='warning'
                             fullWidth
                             disabled />
-                        <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding: 2 }}>
+                        <Box sx={{ mt: 2, display: 'flex', border: '1px solid #FF9900', borderRadius: '1em', padding: 2 }}>
                             <Button variant="contained" component="label" size="small" style={{ borderRadius: "2em" }}>
                                 Pilih Gambar
                                 <input
@@ -134,12 +135,18 @@ const UpdateGedung = ({
                             </Typography>
                         </Box>
                         <div align="center">
-                            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Ya, simpan</Button>
-                            <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Kembali</Button>
+                            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Ya, simpan</Button>
+                            <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Kembali</Button>
                         </div>
                     </form>
                 </Box>
             </Modal>
+            <SuccessModal
+                message={successMessage}
+            />
+            <ErrorModal
+                message={errorMessage}
+            />
         </>
     );
 }

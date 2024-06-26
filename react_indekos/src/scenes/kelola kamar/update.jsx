@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/no-unknown-property */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import Checkbox from '@mui/material/Checkbox';
@@ -7,6 +5,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { styled } from '@mui/material/styles';
 import axiosClient from '../../axios-client'; // Ensure this path is correct
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   margin: theme.spacing(0.2),
@@ -25,10 +25,11 @@ const FormGroupContainer = styled(FormGroup)({
 });
 
 const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
-  const [errorMessage, setErrorMessage] = useState('');
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [formData, setFormData] = useState({
     nama_kamar: kamar.nama_kamar,
@@ -46,7 +47,9 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
     setFormData({ ...formData, [e.target.name]: e.target.files[0] });
   };
 
-  const [selectedFasilitasIds, setSelectedFasilitasIds] = useState(kamar.id_fasilitas_list.split(',').map(item => parseInt(item.trim(), 10)) || []);
+  const [selectedFasilitasIds, setSelectedFasilitasIds] = useState(
+    (kamar.id_fasilitas_list ? kamar.id_fasilitas_list.split(',').map(item => parseInt(item.trim(), 10)) : [])
+  );
 
   const handleCheckboxChange = (id) => {
     if (selectedFasilitasIds.includes(id)) {
@@ -79,24 +82,25 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
       });
 
       console.log('Response:', response.data);
+      setSuccessMessage('Kamar berhasil diubah');
       handleClose();
     } catch (error) {
       console.error('Error:', error.response.data.errors);
-      setErrorMessage(error.response.data.message);
+      setErrorMessage('Kamar gagal diubah');
       handleOpen();
     }
   };
 
   return (
     <>
-      <Button style={{ margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={handleOpen}>Edit</Button>
+      <Button style={{ margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} onClick={handleOpen}>Edit</Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 350, padding: 2, maxHeight:500, overflow:'auto' }} align="center">
+        <Box sx={{ ...style, width: 320, padding: 2, maxHeight:500, overflow:'auto', border:'1px solid #69AC77' }} align="center">
           <h3 id="parent-modal-title" textstyle="bold">Edit Kamar</h3>
           <form onSubmit={handleSubmitKamar}>
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
@@ -156,7 +160,7 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
             <Typography align='left' marginTop='10px'>
               Masukan Gambar / Foto
             </Typography>
-            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding: 2 }}>
+            <Box sx={{ mt: 2, display: 'flex', border: '1px solid #FF9900', borderRadius: '1em', padding: 2 }}>
               <Button variant="contained" component="label" size="small" style={{ borderRadius: "2em" }}>
                 Pilih Gambar
                   <input
@@ -172,12 +176,18 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
               </Typography>
             </Box>
             <div align="center">
-              <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Ya, simpan</Button>
-              <Button style={{ margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={handleClose}>Kembali</Button>
+              <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Ya, simpan</Button>
+              <Button style={{ margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} onClick={handleClose}>Kembali</Button>
             </div>
           </form>
         </Box>
       </Modal>
+      <SuccessModal
+        message={successMessage}
+      />
+      <ErrorModal
+        message={errorMessage}
+      />
     </>
   );
 }

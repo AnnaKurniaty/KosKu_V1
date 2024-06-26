@@ -30,14 +30,4 @@ class GedungModels extends Model
     {
         return $this->belongsTo(User::class, 'id_pemilik');
     }
-
-    public function kamar()
-    {
-        return $this->hasMany(Kamar::class, 'id_gedung');
-    }
-
-    public function fasilitasUmum()
-    {
-        return $this->hasMany(FasilitasUmum::class, 'id_gedung');
-    }
 }

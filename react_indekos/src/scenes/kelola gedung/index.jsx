@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from "react";
 import { Box, useTheme, useMediaQuery, Typography, CircularProgress } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../axios-client.js";
@@ -6,7 +6,6 @@ import { useLocation } from 'react-router-dom';
 import TambahGedung from './tambah.jsx';
 import UpdateGedung from './update.jsx';
 import HapusGedung from './hapus.jsx';
-import { red } from '@mui/material/colors';
 
 const style = {
     position: 'absolute',
@@ -22,9 +21,9 @@ const style = {
 const Gedung = () => {
     const theme = useTheme();
     const location = useLocation();
-    const [gedungList, setGedungList] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [userId, setUserId] = useState(null);
+    const [gedungList, setGedungList] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [userId, setUserId] = React.useState(null);
     const navigate = useNavigate();
 
     const fetchData = async () => {
@@ -43,7 +42,7 @@ const Gedung = () => {
         }
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         fetchData();
     }, [location.state]);
 
@@ -57,14 +56,13 @@ const Gedung = () => {
         );
     }
 
-    // Menampilkan pesan jika `gedungList` kosong
     if (gedungList.length === 0) {
         return (
             <Box m='1.5rem 2.5rem' textAlign="center">
                 <TambahGedung
-                userId={userId}
-                style={style}
-                fetchData={fetchData}
+                    userId={userId}
+                    style={style}
+                    fetchData={fetchData}
                 />
                 <Box
                     mt="20px"
@@ -84,8 +82,9 @@ const Gedung = () => {
                         flex="1 1 100%"
                         backgroundColor="white"
                         borderRadius="0.55rem"
+                        border='1px solid #69AC77'
                     >
-                        <Typography variant="h6" sx={{color:'red'}} gutterBottom>
+                        <Typography variant="h6" sx={{ color: 'red' }} gutterBottom>
                             Data Gedung Tidak Tersedia!
                         </Typography>
                         <Typography variant="h6">
@@ -107,43 +106,42 @@ const Gedung = () => {
             <Box
                 mt="20px"
                 sx={{
-                    "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
                     display: "grid",
-                    gridAutoFlow: 'row',
-                    gridTemplateColumns: "repeat(12, 1fr)",
+                    gridTemplateColumns: isNonMediumScreens ? "repeat(3, 1fr)" : "1fr", // Mengatur jumlah kolom sesuai layar
                     gap: "20px"
                 }}
             >
                 {gedungList.map(gedung => (
                     <Box
                         key={gedung.id_gedung}
-                        gridColumn="span 4"
-                        gridRow="span 1"
                         display="flex"
                         flexDirection="column"
                         justifyContent="space-between"
                         p="1.25rem 1rem"
-                        flex="1 1 100%"
-                        backgroundColor="white"
-                        borderRadius="0.55rem"
+                        borderRadius="1rem"
+                        border='1px solid #69AC77'
+                        boxShadow="4"
+                        sx={{
+                            width: '100%', // Mengatur lebar agar setiap Box memenuhi kolom grid
+                            maxWidth: isNonMediumScreens ? 'none' : '100%', // Mengatur lebar maksimal untuk layar kecil
+                        }}
                     >
                         <img
                             alt="No-Img"
                             src={`${gedung.gambar_gedung}`}
-                            style={{ borderRadius: '1rem' }}
-                            height="300"
-                            width="auto"
+                            style={{ borderRadius: '1rem', cursor: 'pointer', width: '100%' }}
+                            height="250"
                             onClick={() => {
                                 navigate(`/kelola fasilitas/${gedung.id_gedung}`, { state: { gedungId: gedung.id_gedung } });
                             }}
                         />
 
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '1rem' }}>
                             <div style={{ marginRight: 'auto' }}>
-                                <Typography variant="h5" sx={{ color: theme.palette.secondary[100] }} margin="1em 0 0" fontWeight='bold'>
+                                <Typography variant="h5" sx={{ color: theme.palette.secondary[100], fontWeight: 'bold' }} margin="0 0 0.5rem">
                                     {gedung.nama_gedung}
                                 </Typography>
-                                <Typography variant="h6" sx={{ color: theme.palette.secondary[100] }} margin="0 0 0 0">
+                                <Typography variant="body1" sx={{ color: theme.palette.secondary[100] }} margin="0 0 0">
                                     Jumlah Kamar : {gedung.jumlah_kamar}
                                 </Typography>
                             </div>

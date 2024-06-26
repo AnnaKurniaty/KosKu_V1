@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/no-unknown-property */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import Edit from './update.jsx';
@@ -26,6 +24,7 @@ const Detail = ({
     'tanggal_mulai_sewa': penyewa.tanggal_mulai_sewa,
     'tanggal_selesai_sewa': penyewa.tanggal_selesai_sewa,
     'status_penyewa': penyewa.status_penyewa,
+    'nama_kamar': penyewa.nama_kamar,
     'foto_ktp': null,
   });
 
@@ -47,7 +46,7 @@ const Detail = ({
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+        <Box sx={{ ...style, width: 320, maxHeight:500, padding: 2, overflow:'auto' }} align="center">
           <h3 id="parent-modal-title" textstyle="bold">Detail Penyewa</h3>
           <form>
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
@@ -153,12 +152,26 @@ const Detail = ({
               }}
             />
             <TextField
-              label='Status Kamar'
+              label='Status Penyewa'
               variant='standard'
               color='warning'
               fullWidth
               value={formData.status_penyewa}
               name='status_penyewa'
+              InputLabelProps={{
+                style: { color: "black" }
+              }}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+            <TextField
+              label='Nama Kamar'
+              variant='standard'
+              color='warning'
+              fullWidth
+              value={formData.nama_kamar}
+              name='nama_kamar'
               InputLabelProps={{
                 style: { color: "black" }
               }}
@@ -175,7 +188,7 @@ const Detail = ({
               />
               <Hapus
                 style={style}
-                id_penyewa={penyewa.id_penyewa}
+                id_menyewa={penyewa.id_menyewa}
                 fetchData={fetchData}
               />
             </div>

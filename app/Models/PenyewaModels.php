@@ -4,9 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\KamarModels as Kamar;
-use App\Models\PemasukanModels as Pemasukan;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\MenyewaModels as Menyewa;
 
 class PenyewaModels extends Model
 {
@@ -17,25 +16,13 @@ class PenyewaModels extends Model
     protected $primaryKey = 'id_penyewa';
 
     protected $fillable = [
-        'id_kamar',
         'nama_lengkap',
         'alamat_penyewa',
         'nomor_telepon',
-        'tanggal_mulai_sewa',
-        'tanggal_selesai_sewa',
+        'no_pj_penyewa',
         'status_penyewa',
         'foto_ktp',
     ];
 
     protected $dates = ['deleted_at'];
-
-    public function kamar()
-    {
-        return $this->belongsTo(Kamar::class, 'id_kamar');
-    }
-
-    public function pemasukan()
-    {
-        return $this->hasMany(Pemasukan::class, 'id_penyewa');
-    }
 }

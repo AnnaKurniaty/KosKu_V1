@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\PenyewaModels as Penyewa;
+use App\Models\MenyewaModels as Menyewa;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PemasukanModels extends Model
@@ -16,7 +16,7 @@ class PemasukanModels extends Model
     protected $primaryKey = 'id_pemasukan';
 
     protected $fillable = [
-        'id_penyewa',
+        'id_menyewa',
         'keterangan',
         'biaya_pemasukan',
         'tgl_pemasukan',
@@ -24,9 +24,8 @@ class PemasukanModels extends Model
 
     protected $dates = ['deleted_at'];
 
-    // Relationship with Penyewa
-    public function penyewa()
+    public function menyewa()
     {
-        return $this->belongsTo(Penyewa::class, 'id_penyewa');
+        return $this->belongsTo(Menyewa::class, 'id_menyewa');
     }
 }

@@ -1,9 +1,8 @@
-/* eslint-disable react/no-unknown-property */
-/* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button, Modal } from "@mui/material";
-import "react-datepicker/dist/react-datepicker.css";
 import axiosClient from "../../axios-client";
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const TambahGedung = ({
     userId,
@@ -11,17 +10,22 @@ const TambahGedung = ({
     fetchData,
 }) => {
 
-  const [errorMessage, setErrorMessage] = useState('');
-  const [open, setOpen] = React.useState(false);
-  const handleClose = () => {setOpen(false)};
-  const handleOpen = () => {setOpen(true)};
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
+  const handleOpen = () => setOpen(true);
 
-  //For Inpput
   const [formData, setFormData] = useState({
-    'nama_gedung': '',
-    'jumlah_kamar': '',
-    'gambar_gedung': null,
-  })
+    nama_gedung: "",
+    jumlah_kamar: "",
+    gambar_gedung: null,
+  });
+
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const validateFields = () => {
+    return formData.nama_gedung.trim() !== "" && formData.jumlah_kamar.trim() !== "";
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,9 +37,11 @@ const TambahGedung = ({
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // biar semua element html reset
-
-    console.log("Data FormData First : ", formData);
+    e.preventDefault();
+    if (!validateFields()) {
+      openError('Nama Gedung dan Jumlah Kamar harus diisi');
+      return;
+    }
 
     const data = new FormData();
     data.append('nama_gedung', formData.nama_gedung);
@@ -51,49 +57,69 @@ const TambahGedung = ({
               'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
       });
-
-      console.log('Response:', response.data);
-      // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+      setSuccessMessage('Gedung berhasil ditambahkan');
       handleClose();
       fetchData();
     } catch (error) {
-      console.error('Error:', error.response.data.errors);
-      // Implement logic for handling errors, e.g., showing an error message to the user
-      setErrorMessage(error.response.data.message);
-      handleOpen();
+      if (error.response && error.response.data.errors) {
+        const { errors } = error.response.data;
+        let errorMessage = '';
+        Object.keys(errors).forEach((key) => {
+          errorMessage += `${errors[key][0]} `;
+        });
+        setErrorMessage(errorMessage);
+      } else {
+        setErrorMessage('Terjadi kesalahan saat menambahkan gedung');
+      }
     }
   };
 
-  //STYLE
-  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em', marginLeft:'auto' };
+  const buttonContainerStyle = {
+    backgroundColor: '#FF9900',
+    color: "white",
+    borderRadius: '0.5em',
+    "@media (min-width:600px)": {
+      fontSize: "1rem",
+    },
+    "@media (min-width:960px)": {
+      fontSize: "1rem",
+    },
+    "@media (min-width:1280px)": {
+      fontSize: "1.85rem",
+    },
+  };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <Box>
         <Typography
           variant='h5'
-          color='white'
+          color='#FF9900'
           fontWeight='bold'
           sx={{ mb: '5px' }}
         >
           Daftar Gedung Kos
         </Typography>
       </Box>
-      <Button type='submit' style={btnstyle}
-        onClick={handleOpen}>+ Tambah</Button>
+      <Button
+        type='submit'
+        style={buttonContainerStyle}
+        onClick={handleOpen}
+      >
+        + Tambah
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+        <Box sx={{ ...style, width: 320, padding: 2, border:'1px solid #69AC77' }} align="center">
           <h3 id="parent-modal-title" textstyle="bold">Tambah Gedung</h3>
           <form>
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
                 {errorMessage}
             </Typography>
-            <input type='hidden' name='userId' value={userId} />
             <TextField
               label='Nama Gedung'
               variant='standard'
@@ -105,10 +131,10 @@ const TambahGedung = ({
                 style: { color: "black" }
               }}
               InputProps={{
-                style: {
-                  color: "black"
-                },
+                style: { color: "black" },
               }}
+              error={!!errorMessage && !formData.nama_gedung.trim()}
+              helperText={!!errorMessage && !formData.nama_gedung.trim() && 'Nama Gedung harus diisi'}
             />
             <TextField
               label='Jumlah Kamar'
@@ -121,18 +147,19 @@ const TambahGedung = ({
                 style: { color: "black" }
               }}
               InputProps={{
-                style: {
-                  color: "black"
-                },
+                style: { color: "black" },
               }}
+              error={!!errorMessage && !formData.jumlah_kamar.trim()}
+              helperText={!!errorMessage && !formData.jumlah_kamar.trim() && 'Jumlah Kamar harus diisi'}
             />
             <TextField
               label='Masukan Gambar/Foto'
               variant='standard'
               color='warning'
               fullWidth
-              disabled />
-            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding: 2 }}>
+              disabled
+            />
+            <Box sx={{ mt: 2, display: 'flex', border: '1px solid #FF9900', borderRadius: '1em', padding: 2 }}>
               <Button variant="contained" component="label" size="small" style={{ borderRadius: "2em" }}>
                 Pilih Gambar
                 <input
@@ -148,14 +175,20 @@ const TambahGedung = ({
               </Typography>
             </Box>
             <div align="center">
-              <Button type='submit' onClick={handleSubmit} style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Ya, simpan</Button>
-              <Button type='submit' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Kembali</Button>
+              <Button type='submit' onClick={handleSubmit} style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Ya, simpan</Button>
+              <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Kembali</Button>
             </div>
           </form>
         </Box>
       </Modal>
+      <SuccessModal
+        message={successMessage}
+      />
+      <ErrorModal
+        message={errorMessage}
+      />
     </div>
   );
 };
 
-export default TambahGedung;
+export default TambahGedung

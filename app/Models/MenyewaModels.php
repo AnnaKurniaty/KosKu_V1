@@ -4,23 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\FasilitasModels as Fasilitas;
 use App\Models\KamarModels as Kamar;
+use App\Models\PenyewaModels as Penyewa;
+use App\Models\PemasukanModels as Pemasukan;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FasilitasKamarModels extends Model
+class MenyewaModels extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = 'fasilitas_kamar';
-    protected $primaryKey = 'id_fasilitas_kamar';
+    protected $table = 'menyewa';
+    protected $primaryKey = 'id_menyewa';
 
     protected $fillable = [
         'id_kamar',
-        'id_fasilitas',
+        'id_penyewa',
+        'tanggal_mulai_sewa',
+        'tanggal_selesai_sewa',
     ];
-    
+
     protected $dates = ['deleted_at'];
 
     public function kamar()
@@ -28,8 +31,8 @@ class FasilitasKamarModels extends Model
         return $this->belongsTo(Kamar::class, 'id_kamar');
     }
 
-    public function fasilitas()
+    public function penyewa()
     {
-        return $this->belongsTo(Fasilitas::class, 'id_fasilitas');
+        return $this->belongsTo(Penyewa::class, 'id_penyewa');
     }
 }

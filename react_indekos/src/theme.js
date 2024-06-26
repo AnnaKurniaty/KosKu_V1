@@ -99,7 +99,7 @@
 // color design tokens export
 export const tokensDark = {
     grey: {
-      0: "#69AC77", // manually adjusted
+      0: "#FFFFFF", // manually adjusted
       10: "#f6f6f6", // manually adjusted
       50: "#f0f0f0", // manually adjusted
       100: "#e0e0e0",

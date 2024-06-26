@@ -1,13 +1,13 @@
-/* eslint-disable react/no-unknown-property */
-/* eslint-disable react/prop-types */
-import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Modal } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, TextField, Button, Modal, useMediaQuery, Select, MenuItem } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
 import axiosClient from "../../axios-client";
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { styled } from '@mui/material/styles';
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   margin: theme.spacing(0.2), // Adjust the spacing between items
@@ -31,6 +31,7 @@ const TambahFasilitas = ({
     style,
     type,
     fasilitasKamarList,
+    kamarList,
 }) => {
 
   const [errorMessage, setErrorMessage] = useState('');
@@ -38,6 +39,9 @@ const TambahFasilitas = ({
   const [openAdd1, setOpenAdd1] = React.useState(false);
   const [openAdd2, setOpenAdd2] = React.useState(false);
   const [dateValue, setDateValue] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [selectedKamar, setSelectedKamar] = useState('');
+  const isLargeScreen = useMediaQuery("(min-width: 1280px)")
   const handleOpen = () => {
       if(type === 'kamar'){
           setOpenAdd(true);
@@ -59,6 +63,11 @@ const TambahFasilitas = ({
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleKamarChange = (e) => {
+    setSelectedKamar(e.target.value);
+    setFormData({ ...formData, id_kamar: e.target.value });
   };
 
   const handleFileChange = (e) => {
@@ -95,7 +104,6 @@ const TambahFasilitas = ({
         data.append('id_gedung', gedungId);
         data.append('nama_kamar', formData.nama_kamar);
         data.append('biaya_kamar', formData.biaya_kamar);
-        // Iterasi melalui array dan tambahkan setiap elemen ke FormData
         idFasilitasList.forEach(id => {
             data.append('id_fasilitas_list[]', id);
         });
@@ -112,12 +120,11 @@ const TambahFasilitas = ({
         });
 
         console.log('Response:', response.data);
-        // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        setSuccessMessage('Fasilitas berhasil ditambahkan');
         handleClose();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
-        // Implement logic for handling errors, e.g., showing an error message to the user
-        setErrorMessage(error.response.data.message);
+        setErrorMessage('Fasilitas gagal ditambahkan');
         handleOpen();
         }
     };
@@ -144,13 +151,12 @@ const TambahFasilitas = ({
         });
 
         console.log('Response:', response.data);
-        // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        setSuccessMessage('Fasilitas berhasil ditambahkan');
         handleClose();
         handleTabKamar();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
-        // Implement logic for handling errors, e.g., showing an error message to the user
-        setErrorMessage(error.response.data.message);
+        setErrorMessage('Fasilitas gagal ditambahkan');
         handleOpen();
         }
     };
@@ -160,6 +166,7 @@ const TambahFasilitas = ({
         // const data = new FormData();
         console.log('formData ', formData)
         const data = new FormData();
+        data.append('id_gedung', gedungId);
         data.append('nama_fasilitas', formData.nama_fasilitas);
         data.append('jumlah_fasilitas', formData.jumlah_fasilitas);
         data.append('tanggal_pembelian', formData.tanggal_pembelian);
@@ -177,27 +184,27 @@ const TambahFasilitas = ({
         });
 
         console.log('Response:', response.data);
-        // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        setSuccessMessage('Failitas berhasil ditambahkan');
         handleClose();
         handleTabUmum();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
-        // Implement logic for handling errors, e.g., showing an error message to the user
-        setErrorMessage(error.response.data.message);
+        setErrorMessage('Fasilitas gagal ditambahkan');
         handleOpen();
         }
     };
 
 
   //STYLE
-  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em', marginLeft:'auto' };
+  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em', borderRadius: '0.5em', width: '9em', height: '2em', marginLeft:'auto', 
+    fontSize: isLargeScreen ? '1rem' : '0.9rem',};
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '80px', marginBottom:'1em' }}>
       <Box>
         <Typography
           variant='h5'
-          color='white'
+          color='#FF9900'
           fontWeight='bold'
           sx={{ mb: '5px' }}
         >
@@ -212,7 +219,7 @@ const TambahFasilitas = ({
                     aria-labelledby="parent-modal-title"
                     aria-describedby="parent-modal-description"
                 >
-                    <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                    <Box sx={{ ...style, width: 320, padding: 2, border:'1px solid #69AC77' }} align="center">
                         <h3 id="parent-modal-title" textStyle="bold">Tambah Kamar</h3>
                         <form>
                             <TextField 
@@ -273,7 +280,7 @@ const TambahFasilitas = ({
                             <Typography align='left' marginTop='10px'>
                                     Masukan Gambar / Foto 
                             </Typography>
-                            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
+                            <Box sx={{ mt: 2, display: 'flex', border: '1px solid #FF9900', borderRadius: '1em', padding:2 }}>
                                 <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
                                     Pilih Gambar
                                     <input
@@ -288,8 +295,8 @@ const TambahFasilitas = ({
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' onClick={handleSubmitKamar} style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Ya, simpan</Button>
-                                <Button type='submit' onClick={handleClose} style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}}>Kembali</Button>
+                                <Button type='submit' onClick={handleSubmitKamar} style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}}>Ya, simpan</Button>
+                                <Button type='submit' onClick={handleClose} style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}}>Kembali</Button>
                             </div>
                         </form>
                     </Box>
@@ -300,7 +307,7 @@ const TambahFasilitas = ({
                     aria-labelledby="parent-modal-title"
                     aria-describedby="parent-modal-description"
                 >
-                    <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                    <Box sx={{ ...style, width: 320, padding: 2 }} align="center">
                         <h3 id="parent-modal-title" textStyle="bold">Tambah Fasilitas Umum</h3>
                         <form>
                             <TextField 
@@ -380,7 +387,7 @@ const TambahFasilitas = ({
                             }}
                             />
                             <Typography align='left' marginTop='10px'>Masukan Gambar/Foto</Typography> 
-                            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
+                            <Box sx={{ mt: 2, display: 'flex', border: '1px solid #FF9900', borderRadius: '1em', padding:2 }}>
                                 <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
                                     Pilih Gambar
                                     <input
@@ -396,8 +403,8 @@ const TambahFasilitas = ({
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmitFasilitasUmum}>Ya, simpan</Button>
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleSubmitFasilitasUmum}>Ya, simpan</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleClose}>Kembali</Button>
                             </div>
                         </form>
                     </Box>
@@ -408,7 +415,7 @@ const TambahFasilitas = ({
                     aria-labelledby="parent-modal-title"
                     aria-describedby="parent-modal-description"
                 >
-                   <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                   <Box sx={{ ...style, width: 320, padding: 2 }} align="center">
                         <h3 id="parent-modal-title" textStyle="bold">Tambah Fasilitas Kamar</h3>
                         <form>
                             <TextField 
@@ -488,7 +495,7 @@ const TambahFasilitas = ({
                             }}
                             />
                             <Typography align='left' marginTop='10px'>Masukan Gambar/Foto</Typography> 
-                            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding:2 }}>
+                            <Box sx={{ mt: 2, display: 'flex', border: '1px solid #FF9900', borderRadius: '1em', padding:2 }}>
                                 <Button variant="contained" component="label" size="small" style={{borderRadius:"2em"}}>
                                     Pilih Gambar
                                     <input
@@ -504,12 +511,18 @@ const TambahFasilitas = ({
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmitFasilitasKamar}>Ya, simpan</Button>
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em', borderRadius: '0.5em', width: '9em', fontSize: isLargeScreen ? '1.2rem' : '0.9rem'}} onClick={handleSubmitFasilitasKamar}>Ya, simpan</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em', borderRadius: '0.5em', width: '9em', fontSize: isLargeScreen ? '1.2rem' : '0.9rem'}} onClick={handleClose}>Kembali</Button>
                             </div>
                         </form>
                     </Box>
                 </Modal>
+                <SuccessModal
+                    message={successMessage}
+                />
+                <ErrorModal
+                    message={errorMessage}
+                />
     </div>
   );
 };

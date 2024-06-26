@@ -112,7 +112,7 @@ const SideBar = ({
             width: drawerWidth,
             "& .MuiDrawer-paper": {
               color: theme.palette.secondary[200],
-              backgroundColor: theme.palette.background.alt,
+              backgroundColor: "#69AC77",
               boxSizing: "border-box",
               borderWidth: isNonMobile ? 0 : "2px",
               width: drawerWidth,
@@ -120,10 +120,10 @@ const SideBar = ({
             },
           }}
         >
-          <Box width="100%" borderRadius="10rem" height={"100%"}>
+          <Box width="100%" borderRadius="10rem">
             <Box m="1.5rem 2rem 2rem 3rem">
               <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color={theme.palette.secondary.main}>
-                <Box display="flex" alignItems="center" gap="0.5rem">
+                <Box display="flex" alignItems="center" backgroundColor={theme.palette.background.alt} marginLeft='2em' padding='0.5em' borderRadius='1em'>
                   <Box
                     component="img"
                     alt="logo"
@@ -131,7 +131,6 @@ const SideBar = ({
                     color={"white"}
                     height="58px"
                     width="84px"
-                    marginLeft={"2em"}
                   />
                 </Box>
                 {!isNonMobile && (
@@ -141,6 +140,7 @@ const SideBar = ({
                 )}
               </Box>
             </Box>
+            {/* <Typography>Menu</Typography> */}
             <List>
               {navItems.map(({ text, icon }) => {
                 if (!icon) {
@@ -180,13 +180,13 @@ const SideBar = ({
                           ml: "2rem",
                           color:
                             active === lcText
-                              ? theme.palette.primary[600]
-                              : theme.palette.secondary[200],
+                              ? "white"
+                              : "white",
                         }}
                       >
                         {icon}
                       </ListItemIcon>
-                      <ListItemText primary={text} />
+                      <ListItemText primary={text} sx={{ color: "white" }}/>
                       {active === lcText && (
                         <ChevronRightOutlined sx={{ ml: "auto" }} />
                       )}
@@ -196,7 +196,7 @@ const SideBar = ({
               })}
             </List>
             {!loading && user && (
-              <Box display="flex" alignItems="center" height={80} backgroundColor="#69AC77" borderRadius={3} margin={3}>
+              <Box display="flex" alignItems="center" height={80} backgroundColor={theme.palette.background.alt} borderRadius={3} margin={3}>
                 <Box
                   component="img"
                   alt="profile"
@@ -211,7 +211,7 @@ const SideBar = ({
                 }}
                 />
                 <div>
-                  <Typography marginLeft={2} color={"white"}>
+                  <Typography marginLeft={2} color={"black"}>
                     {user.nama_lengkap}
                   </Typography>
                   <Typography marginLeft={2} variant="subtitle2">

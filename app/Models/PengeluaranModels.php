@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\FasilitasKamarModels as FasilitasKamar;
-use App\Models\FasilitasUmumModels as FasilitasUmum;
+use App\Models\KebutuhanModels as Kebutuhan;
+use App\Models\FasilitasKamarModels as fasilitasKamar;
+use App\Models\FasilitasUmumModels as fasilitasUmum;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PengeluaranModels extends Model
@@ -17,8 +18,7 @@ class PengeluaranModels extends Model
     protected $primaryKey = 'id_pengeluaran';
 
     protected $fillable = [
-        'id_fasilitas_kamar',
-        'id_fasilitas_umum',
+        'id_kebutuhan',
         'biaya_pengeluaran',
         'tanggal_pengeluaran',
         'keterangan',
@@ -26,13 +26,18 @@ class PengeluaranModels extends Model
 
     protected $dates = ['deleted_at'];
 
+    public function kebutuhan()
+    {
+        return $this->belongsTo(Kebutuhan::class, 'id_kebutuhan');
+    }
+
     public function fasilitasKamar()
     {
-        return $this->belongsTo(FasilitasKamar::class, 'id_fasilitas_kamar');
+        return $this->hasMany(fasilitasKamar::class, 'id_fasilitas_kamar');
     }
 
     public function fasilitasUmum()
     {
-        return $this->belongsTo(FasilitasUmum::class, 'id_fasilitas_umum');
+        return $this->hasMany(fasilitasUmum::class, 'id_fasilitas_umum');
     }
 }

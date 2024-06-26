@@ -14,8 +14,8 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 400,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
+    border: '1px solid #69AC77',
+    boxShadow: 4,
     pt: 2,
     px: 4,
     pb: 3,
@@ -51,23 +51,16 @@ const style = {
         fetchData();
     }, [location.state]);
 
-    const [open, setOpen] = React.useState(false);
     const [open1, setOpen1] = React.useState(false);
-    const handleOpen = () => {
-        setOpen(true);
-    };
     const handleOpen1 = () => {
         setOpen1(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
     };
     const handleClose1 = () => {
         setOpen1(false);
     };
 
     const navigate = useNavigate();
-    const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em', marginLeft:'auto' };
+    const btnstyle = { margin: '0.5em 0.5em 1.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em', marginLeft:'auto' };
 
     if (loading) {
         return (
@@ -84,9 +77,9 @@ const style = {
                 <Box marginLeft="-20px">
                     <Typography
                     variant='h5'
-                    color='white'
+                    color='#FF9900'
                     fontWeight='bold'
-                    sx={{ mb: '5px' }}
+                    sx={{ mb: '1em' }}
                     >
                     Daftar Penyewa Kos
                     </Typography>
@@ -102,7 +95,7 @@ const style = {
                         <h2 id="parent-modal-title">Tambah Penyewa</h2>
                         <p id="parent-modal-description">
                             <QRCode
-                                value="http://localhost:3000/penyewa"
+                                value={`http://localhost:3000/penyewa/${userId}`}
                                 bgColor="#FFFFFF"
                                 fgColor="#000000"
                             />
@@ -128,6 +121,7 @@ const style = {
                         flex="1 1 100%"
                         backgroundColor="white"
                         borderRadius="0.55rem"
+                        border= '1px solid #69AC77'
                     >
                         <Typography variant="h6" sx={{color:'red'}} gutterBottom>
                             Data Penyewa Tidak Tersedia!
@@ -147,9 +141,9 @@ const style = {
                 <Box marginLeft="-20px">
                     <Typography
                     variant='h5'
-                    color='white'
+                    color='#FF9900'
                     fontWeight='bold'
-                    sx={{ mb: '5px' }}
+                    sx={{ mb: '20px' }}
                     >
                     Daftar Penyewa Kos
                     </Typography>
@@ -173,13 +167,13 @@ const style = {
                     </Box>
                 </Modal>
             </div>
-            <Box display="grid" gridTemplateColumns={isLargeScreen ? "repeat(3, 1fr)" : "repeat(1, 1fr)"}>
+            <Box display="grid" gridTemplateColumns={isLargeScreen ? "repeat(3, 1fr)" : "repeat(1, 1fr)"} gap={isLargeScreen ? "2em" : "0.5em"}>
             {penyewaList.map(penyewa => (
                 <Box
-                    key={penyewa.id_penyewa}
-                    mt="20px"
+                    key={penyewa.id_menyewa}
                     display="grid"
-                    gap="15px"
+                    border= '1px solid #69AC77'
+                    mb={isLargeScreen ? "0" : "0.5em"}
                     sx={{
                         "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
                         boxShadow: '3',

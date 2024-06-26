@@ -1,8 +1,9 @@
-import { Box, Button, IconButton, Modal } from "@mui/material";
+import { Box, Button, IconButton, Modal, Typography } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import axiosClient from "../../axios-client";
-import React from "react";
-
+import React, { useState } from "react";
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const HapusGedung = ({
     style,
@@ -13,6 +14,8 @@ const HapusGedung = ({
     const [open, setOpen] = React.useState(false);
     const handleClose = () => {setOpen(false)};
     const handleOpen = () => {setOpen(true)};
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const onDelete = async (e) => {
         e.preventDefault();
@@ -24,12 +27,11 @@ const HapusGedung = ({
                 }
             });
             console.log('Response:', response.data);
-            // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
-            handleClose();
+            setSuccessMessage('Gedung berhasil dihapus');
             fetchData();
         } catch (error) {
             console.error('Error:', error.response.data);
-            // Implement logic for handling errors, e.g., showing an error message to the user
+            setErrorMessage('Gedung gagal dihapus');
         }
     }
 
@@ -42,16 +44,22 @@ const HapusGedung = ({
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
             >
-                <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                <Box sx={{ ...style, width: 320, padding: 2, border:'1px solid #69AC77' }} align="center">
                     <form onSubmit={onDelete}>
                         <h3 id="parent-modal-title" textstyle="bold">Hapus Gedung yang Dipilih ?</h3>
                         <div align="center">
-                            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} >Ya, hapus</Button>
-                            <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Kembali</Button>
+                            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} >Ya, hapus</Button>
+                            <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Kembali</Button>
                         </div>
                     </form>
                 </Box>
             </Modal>
+            <SuccessModal
+                message={successMessage}
+            />
+            <ErrorModal
+                message={errorMessage}
+            />
         </>
     );
 }

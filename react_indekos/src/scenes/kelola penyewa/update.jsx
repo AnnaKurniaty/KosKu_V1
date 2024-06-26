@@ -1,19 +1,19 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/no-unknown-property */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import axiosClient from "../../axios-client";
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const Update = ({
   penyewa,
   style,
   fetchData,
 }) => {
-  // const btnstyle = { marginLeft:'2px', backgroundColor: '#FF9900', color: "white", padding: '0.2em 0', borderRadius: '0.5em', width: '8em' };
-  const [errorMessage, setErrorMessage] = useState('');
   const [open, setOpen] = React.useState(false);
   const handleClose = () => { setOpen(false); };
   const handleOpen = () => { setOpen(true); };
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   //For Input
   const [formData, setFormData] = useState({
@@ -66,25 +66,25 @@ const Update = ({
         });
 
         console.log('Response:', response.data);
-        // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+        setSuccessMessage('Penyewa berhasil diubah');
         handleClose();
         fetchData();
     } catch (error) {
-        setErrorMessage(error.response.data.message);
+        setErrorMessage('Penyewa gagal diubah');
         handleOpen();
     }
  };
 
   return (
     <>
-      <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleOpen}>Edit</Button>
+      <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleOpen}>Edit</Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+        <Box sx={{ ...style, width: 320, maxHeight:500, padding: 2, overflow:'auto' }} align="center">
           <h3 id="parent-modal-title" textstyle="bold">Update Penyewa</h3>
           <form>
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
@@ -164,21 +164,10 @@ const Update = ({
                 style: { color: "black" }
               }}
             />
-            <TextField
-              label='Status Kamar'
-              variant='standard'
-              color='warning'
-              fullWidth
-              value={formData.status_penyewa}
-              name='status_penyewa'
-              InputLabelProps={{
-                style: { color: "black" }
-              }}
-            />
             <Typography align='left' marginTop='10px'>
               Masukan Gambar / Foto
             </Typography>
-            <Box sx={{ mt: 2, display: 'flex', border: '2px solid #FF9900', borderRadius: '1em', padding: 2 }}>
+            <Box sx={{ mt: 2, display: 'flex', border: '1px solid #FF9900', borderRadius: '1em', padding: 2 }}>
               <Button variant="contained" component="label" size="small" style={{ borderRadius: "2em" }}>
                 Pilih Gambar
                 <input
@@ -194,12 +183,18 @@ const Update = ({
               </Typography>
             </Box>
             <div align="center">
-              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleSubmit}>Ya, Simpan</Button>
-              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
+              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleSubmit}>Ya, Simpan</Button>
+              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleClose}>Kembali</Button>
             </div>
           </form>
         </Box>
       </Modal>
+      <SuccessModal
+        message={successMessage}
+      />
+      <ErrorModal
+        message={errorMessage}
+      />
     </>
   );
 }

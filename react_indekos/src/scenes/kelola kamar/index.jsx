@@ -24,7 +24,7 @@ const style = {
     bgcolor: 'background.paper',
     boxShadow: 24,
     width: 'auto',
-    borderRadius: '1em'
+    borderRadius: '1em',
 };
 
 const Inventory = () => {
@@ -59,10 +59,10 @@ const Inventory = () => {
         try {
             if (location.state && location.state.gedungId) {
                 setGedungId(location.state.gedungId);
-                const response = await axiosClient.get(`/fasilitas umum/${location.state.gedungId}`);
+                const response = await axiosClient.get(`/fasilitas-umum/${location.state.gedungId}`);
                 const data = response.data;
                 setType(data.type);
-                setFasilitasUmum(data.fasilitas || []);
+                setFasilitasUmum(data.fasilitas_umum || []);
             }
         } catch (error) {
             console.error("Failed to fetch data", error);
@@ -76,10 +76,10 @@ const Inventory = () => {
         try {
             if (location.state && location.state.gedungId) {
                 setGedungId(location.state.gedungId);
-                const response = await axiosClient.get(`/fasilitas kamar/${location.state.gedungId}`);
+                const response = await axiosClient.get(`/fasilitas-kamar/${location.state.gedungId}`);
                 const data = response.data;
                 setType(data.type);
-                setFasilitasKamar(data.fasilitas || []);
+                setFasilitasKamar(data.fasilitas_kamar || []);
             }
         } catch (error) {
             console.error("Failed to fetch data", error);
@@ -128,8 +128,9 @@ const Inventory = () => {
                 style={style}
                 type={type}
                 fasilitasKamarList={fasilitasKamarList}
+                kamarList={gedungList}
             />
-            <Box sx={{ width: 'auto', typography: 'body1' }} style={textStyle} borderRadius="0.55rem" backgroundColor="white">
+            <Box sx={{ width: 'auto', typography: 'body1', border:'1px solid #69AC77' }} style={textStyle} borderRadius="0.55rem" backgroundColor="white">
                 <TabContext value={value}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', '& .MuiTab-root.Mui-selected': { color: theme.palette.secondary[500] } }}>
                         <TabList onChange={handleChangeTab}
@@ -138,16 +139,22 @@ const Inventory = () => {
                             sx={{
                                 width: '100%',
                                 display: 'flex',
-                                justifyContent: 'space-evenly', // Mengatur ruang ekstra antara tab
+                                justifyContent: 'space-evenly',
+                                "& .MuiTabs-scroller": {
+                                    flexGrow: 1
+                                },
+                                '& .MuiTabs-flexContainer': {
+                                    justifyContent: 'space-around',
+                                },
                             }}
                             TabIndicatorProps={{
                                 style: {
                                     backgroundColor: theme.palette.secondary[500],
                                 }
                             }}>
-                            <Tab label="Tipe Kamar" value="1" onClick={handleTab} sx={{ width: '33%' }} />
-                            <Tab label="Fasilitas Umum" value="2" onClick={handleTabUmum} sx={{ width: '33%' }} />
-                            <Tab label="Fasilitas Kamar" value="3" onClick={handleTabKamar} sx={{ width: '33%' }} />
+                            <Tab label="Kamar" value="1" onClick={handleTab} />
+                            <Tab label="Fasilitas Umum" value="2" onClick={handleTabUmum} />
+                            <Tab label="Fasilitas Kamar" value="3" onClick={handleTabKamar} />
                         </TabList>
                     </Box>
                     <TabPanel value="1">
@@ -191,6 +198,7 @@ const Inventory = () => {
                                         p="1.25rem 1rem"
                                         flex="1 1 100%"
                                         backgroundColor="white"
+                                        border='1px solid #69AC77'
                                         borderRadius="0.55rem"
                                         sx={{
                                             boxShadow: '3'
@@ -254,9 +262,9 @@ const Inventory = () => {
                                     "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
                                 }}
                             >
-                                {fasilitasUmumList.length > 0 && fasilitasUmumList.map(fasilitas => (
+                                {fasilitasUmumList.length > 0 && fasilitasUmumList.map(fasilitas_umum => (
                                     <Box
-                                        key={fasilitas.id_fasilitas}
+                                        key={fasilitas_umum.id_fasilitas_umum}
                                         gridColumn="span 4"
                                         gridRow="span 1"
                                         display="flex"
@@ -265,6 +273,7 @@ const Inventory = () => {
                                         p="1.25rem 1rem"
                                         flex="1 1 100%"
                                         backgroundColor="white"
+                                        border='1px solid #69AC77'
                                         borderRadius="0.55rem"
                                         sx={{
                                             boxShadow: '3'
@@ -272,22 +281,22 @@ const Inventory = () => {
                                     >
                                         <Box
                                             component="img"
-                                            alt={`${fasilitas.gambar_fasilitas}`}
-                                            src={`${fasilitas.gambar_fasilitas}`}
+                                            alt={`${fasilitas_umum.gambar_fasilitas}`}
+                                            src={`${fasilitas_umum.gambar_fasilitas}`}
                                             style={{ height: '150px', width: 'auto', borderRadius: '1rem' }}
                                         ></Box>
                                         <Typography variant="h3" align='center' sx={{ color: theme.palette.secondary[100] }}>
-                                            {fasilitas.nama_fasilitas}
+                                            {fasilitas_umum.nama_fasilitas}
                                         </Typography>
                                         <div align="center">
                                             <EditFasilitasUmum
                                                 style={style}
-                                                fasilitas={fasilitas}
+                                                fasilitas_umum={fasilitas_umum}
                                                 handleTabUmum={handleTabUmum}
                                             />
                                             <HapusFasilitasUmum
                                                 style={style}
-                                                id_fasilitas={fasilitas.id_fasilitas}
+                                                id_fasilitas_umum={fasilitas_umum.id_fasilitas_umum}
                                                 handleTabUmum={handleTabUmum}
                                             />
                                         </div>
@@ -326,9 +335,9 @@ const Inventory = () => {
                                     "& > div": { gridColumn: isNonMediumScreens ? undefined : "span 12" },
                                 }}
                             >
-                                {fasilitasKamarList.map(fasilitas => (
+                                {fasilitasKamarList.map(fasilitas_kamar => (
                                     <Box
-                                        key={fasilitas.id_fasilitas}
+                                        key={fasilitas_kamar.id_fasilitas_kamar}
                                         gridColumn="span 4"
                                         gridRow="span 1"
                                         display="flex"
@@ -336,6 +345,7 @@ const Inventory = () => {
                                         justifyContent="space-between"
                                         p="1.25rem 1rem"
                                         flex="1 1 100%"
+                                        border='1px solid #69AC77'
                                         backgroundColor="white"
                                         borderRadius="0.55rem"
                                         sx={{
@@ -344,22 +354,22 @@ const Inventory = () => {
                                     >
                                         <Box
                                             component="img"
-                                            alt={`${fasilitas.gambar_fasilitas}`}
-                                            src={`${fasilitas.gambar_fasilitas}`}
+                                            alt={`${fasilitas_kamar.gambar_fasilitas}`}
+                                            src={`${fasilitas_kamar.gambar_fasilitas}`}
                                             style={{ height: '150px', width: 'auto', borderRadius: '1rem' }}
                                         ></Box>
                                         <Typography variant="h3" align='center' sx={{ color: theme.palette.secondary[100] }}>
-                                            {fasilitas.nama_fasilitas}
+                                            {fasilitas_kamar.nama_fasilitas}
                                         </Typography>
                                         <div align="center">
                                             <EditFasilitasKamar
                                                 style={style}
-                                                fasilitas={fasilitas}
+                                                fasilitas_kamar={fasilitas_kamar}
                                                 handleTabKamar={handleTabKamar}
                                             />
                                             <HapusFasilitasKamar
                                                 style={style}
-                                                id_fasilitas={fasilitas.id_fasilitas}
+                                                id_fasilitas_kamar={fasilitas_kamar.id_fasilitas_kamar}
                                                 handleTabKamar={handleTabKamar}
                                             />
                                         </div>

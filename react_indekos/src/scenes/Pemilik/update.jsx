@@ -52,14 +52,14 @@ const Update = ({ user, style, fetchData }) => {
 
   return (
     <>
-      <Button style={{ margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={handleOpen}>Edit</Button>
+      <Button style={{ margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} onClick={handleOpen}>Edit</Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+        <Box sx={{ ...style, width: 320, padding: 2, border: '1px solid #69AC77' }} align="center">
           <h3 id="parent-modal-title" textstyle="bold">Update Pemilik</h3>
           <form onSubmit={handleSubmit}>
             <TextField
@@ -145,8 +145,8 @@ const Update = ({ user, style, fetchData }) => {
               }}
             />
             <div align="center">
-              <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Ya, Simpan</Button>
-              <Button type='button' style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={handleClose}>Kembali</Button>
+              <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Ya, Simpan</Button>
+              <Button type='button' style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} onClick={handleClose}>Kembali</Button>
             </div>
           </form>
         </Box>

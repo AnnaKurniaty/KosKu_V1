@@ -19,8 +19,6 @@ class FasilitasUmumModels extends Model
     protected $fillable = [
         'id_gedung',
         'id_fasilitas',
-        'biaya_perawatan',
-        'tanggal_perawatan',
     ];
 
     protected $dates = ['deleted_at'];

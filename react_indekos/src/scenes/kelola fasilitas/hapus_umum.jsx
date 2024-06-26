@@ -1,50 +1,50 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/no-unknown-property */
-import { Box, Button, IconButton, Modal } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Button, Modal, Typography } from "@mui/material";
 import axiosClient from "../../axios-client";
-import React from "react";
-
+import React, { useState } from "react";
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const HapusFasilitas = ({
     style,
-    id_fasilitas,
+    id_fasilitas_umum,
     fetchData,
 }) => {
     const btnstyle1 = { margin: '0.2em', backgroundColor: '#FF9900', color: "white", borderRadius: '0.5em' };
     const [open, setOpen] = React.useState(false);
     const handleClose = () => {setOpen(false)};
     const handleOpen = () => {setOpen(true)};
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const onDelete = async (e) => {
         e.preventDefault();
         try {
-            const response = await axiosClient.post(`/fasilitas-umum/delete/${id_fasilitas}`, {
+            const response = await axiosClient.delete(`/fasilitas-umum/delete/${id_fasilitas_umum}`, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
             console.log('Response:', response.data);
-            // Implement logic for handling successful submission, e.g., showing a success message or redirecting to another page
+            setSuccessMessage('Fasilitas berhasil dihapus');
             handleClose();
             fetchData();
         } catch (error) {
             console.error('Error:', error.response.data);
-            // Implement logic for handling errors, e.g., showing an error message to the user
+            setErrorMessage('Fasilitas gagal diubah');
         }
     }
 
     return (
         <>
-            <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleOpen}>Hapus</Button>
+            <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleOpen}>Hapus</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
             >
-                <Box sx={{ ...style, width: 350, padding: 2 }} align="center">
+                <Box sx={{ ...style, width: 320, padding: 2, border:'1px solid #69AC77' }} align="center">
                     <form onSubmit={onDelete}>
                         <h3 id="parent-modal-title" textstyle="bold">Hapus Fasilitas yang Dipilih ?</h3>
                         <div align="center">
@@ -54,6 +54,12 @@ const HapusFasilitas = ({
                     </form>
                 </Box>
             </Modal>
+            <SuccessModal
+                message={successMessage}
+            />
+            <ErrorModal
+                message={errorMessage}
+            />
         </>
     );
 }

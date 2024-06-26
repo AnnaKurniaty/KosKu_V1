@@ -5,6 +5,7 @@ import axiosClient from "../../axios-client.js";
 import { useLocation } from 'react-router-dom';
 import Edit from './update.jsx';
 import logoImage from "../../asset/profile.jpeg";
+import { BorderColor } from '@mui/icons-material';
 
 const style = {
     position: 'absolute',
@@ -19,7 +20,7 @@ const style = {
 
 const Pemilik = () => {
     const theme = useTheme();
-    const paperStyle = { padding: 20, height: "400px", width: "auto", margin: "100px auto 25px auto", backgroundColor: theme.palette.background.alt, borderRadius: '1em' };
+    const paperStyle = { padding: 20, height: "400px", width: "auto", margin: "100px auto 25px auto", backgroundColor: theme.palette.background.alt, borderRadius: '3em', borderColor: '#69AC77', borderStyle: 'solid' };
     const location = useLocation();
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState(null);

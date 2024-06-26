@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/no-unknown-property */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Checkbox from '@mui/material/Checkbox';
@@ -71,7 +69,7 @@ const Detail = ({
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 300, maxHeight:500, padding: 2, overflow:'auto' }} align="center">
+        <Box sx={{ ...style, width: 300, maxHeight:500, padding: 2, overflow:'auto', border:'1px solid #69AC77' }} align="center">
           <h3 id="parent-modal-title" textstyle="bold">Detail Kamar</h3>
           <form>
             <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
@@ -162,7 +160,7 @@ const Detail = ({
                 fasilitasKamarList={fasilitasKamarList}
                 gedungId={gedungId}
               />
-              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'2em'}} onClick={handleClose}>Kembali</Button>
+              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleClose}>Kembali</Button>
             </div>
           </form>
         </Box>

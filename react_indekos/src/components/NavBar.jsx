@@ -36,7 +36,7 @@ const NavBar = ({ user, isSideBarOpen, setIsSideBarOpen }) => {
     <AppBar
       sx={{
         position: "static",
-        background: "none",
+        backgroundColor: "white",
         boxShadow: "none",
       }}
     >
@@ -44,7 +44,7 @@ const NavBar = ({ user, isSideBarOpen, setIsSideBarOpen }) => {
         {/* LEFT SIDE */}
         <FlexBetween>
           <IconButton onClick={() => setIsSideBarOpen(!isSideBarOpen)} sx={{
-                          color:"white"
+                          color:"black"
                         }}>
             <span>Menu</span><MenuIcon />
           </IconButton>

@@ -10,9 +10,6 @@ import InformasiKos from './scenes/informasi kos';
 import KelolaFasilitas from './scenes/kelola kamar';
 import KelolaPenyewa from './scenes/kelola penyewa';
 import KelolaGedung from './scenes/kelola gedung';
-// import KelolaPenyewaDetail from './scenes/kelola penyewa/detail';
-import KelolaFasilitasKamarDetail from './scenes/kelola fasilitas/detail_kamar';
-import KelolaFasilitasUmumDetail from './scenes/kelola fasilitas/detail_umum';
 import TambahFasilitas from './scenes/kelola kamar/tambah';
 import TambahGedung from './scenes/kelola gedung/tambah';
 import Laporan from './scenes/laporan';
@@ -35,7 +32,7 @@ function App() {
             <Routes>
               <Route path='/login' element={<Login />} />
               <Route path='/register' element={<Register />} />
-              <Route path='/penyewa' element={<Penyewa />} />
+              <Route path='/penyewa/:id' element={<Penyewa />} />
               <Route element={<Layout />}>
                 <Route path='/' element={<Navigate to='/informasi kos/:id' replace />} />
                 <Route path='/informasi kos/:id' element={<InformasiKos />} />
