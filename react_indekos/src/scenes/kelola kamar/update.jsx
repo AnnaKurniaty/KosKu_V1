@@ -30,6 +30,8 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
   const handleOpen = () => setOpen(true);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const [formData, setFormData] = useState({
     nama_kamar: kamar.nama_kamar,
@@ -83,10 +85,12 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
 
       console.log('Response:', response.data);
       setSuccessMessage('Kamar berhasil diubah');
+      setOpenSuccessModal(true);
       handleClose();
     } catch (error) {
       console.error('Error:', error.response.data.errors);
       setErrorMessage('Kamar gagal diubah');
+      setOpenErrorModal(true);
       handleOpen();
     }
   };
@@ -183,9 +187,13 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
         </Box>
       </Modal>
       <SuccessModal
+        open={openSuccessModal}
+        handleClose={() => setOpenSuccessModal(false)}
         message={successMessage}
       />
       <ErrorModal
+        open={openErrorModal}
+        handleClose={() => setOpenErrorModal(false)}
         message={errorMessage}
       />
     </>

@@ -131,21 +131,32 @@ class PenyewaController extends Controller
     }
 
 
-    public function updatePenyewa(Request $request, $id_penyewa)
+    public function updatePenyewa(Request $request, $id_menyewa)
     {   
         $request->validate([
-            'id_kamar' => 'required',
+            'id_kamar' => 'required|exists:kamar,id_kamar',
             'nama_lengkap' => 'required|string|max:255',
             'alamat_penyewa' => 'required|string',
             'nomor_telepon' => 'required|string|max:15',
             'no_pj_penyewa' => 'required|string|max:15',
-            'foto_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'foto_ktp' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        //Mencari gedung berdasarkan ID
-        $penyewa = Penyewa::findOrFail($id_penyewa);
+        // Mencari data menyewa berdasarkan ID menyewa
+        $menyewa = Menyewa::findOrFail($id_menyewa);
 
-        // Jika gedung tidak ditemukan, kembalikan respons 404
+        // Jika data menyewa tidak ditemukan, kembalikan respons 404
+        if (!$menyewa) {
+            return response()->json(['error' => 'Data menyewa not found'], 404);
+        }
+
+        // Simpan ID kamar sebelumnya dari data menyewa
+        $previousKamarId = $menyewa->id_kamar;
+
+        // Mencari penyewa berdasarkan ID penyewa dari data menyewa
+        $penyewa = Penyewa::findOrFail($menyewa->id_penyewa);
+
+        // Jika penyewa tidak ditemukan, kembalikan respons 404
         if (!$penyewa) {
             return response()->json(['error' => 'Penyewa not found'], 404);
         }
@@ -160,7 +171,7 @@ class PenyewaController extends Controller
             }
         }
 
-        //default img url jika tidak ada perubahan
+        // Default image URL jika tidak ada perubahan
         $imageUrl = $penyewa->foto_ktp;
 
         // Mengupload gambar dan simpan ke folder
@@ -170,19 +181,37 @@ class PenyewaController extends Controller
             $imagePath = $image->storeAs('penyewa', $imageName, 'public');
             $imageUrl = asset('storage/'.$imagePath);
         }
-    
+
+        // Update data penyewa
         $penyewa->update([
-            'id_kamar' => $request->id_kamar,
             'nama_lengkap' => $request->nama_lengkap,
             'alamat_penyewa' => $request->alamat_penyewa,
             'nomor_telepon' => $request->nomor_telepon,
             'no_pj_penyewa' => $request->no_pj_penyewa,
-            'foto_ktp' => $imageUrl,
+            'foto_ktp' => $imageUrl
         ]);
-    
+
+        // Update data menyewa dengan id_kamar baru
+        $menyewa->update([
+            'id_kamar' => $request->id_kamar,
+        ]);
+
+        // Mengubah status kamar baru menjadi terisi
+        $kamarBaru = Kamar::findOrFail($request->id_kamar);
+        $kamarBaru->update(['status_kamar' => 'terisi']);
+
+        // Mengubah status kamar sebelumnya menjadi kosong jika berbeda dengan kamar baru
+        if ($previousKamarId != $request->id_kamar) {
+            // Memastikan kamar sebelumnya ada
+            $kamarSebelumnya = Kamar::find($previousKamarId);
+            if ($kamarSebelumnya) {
+                $kamarSebelumnya->update(['status_kamar' => 'kosong']);
+            }
+        }
+
         return response()->json(['message' => 'Penyewa berhasil diubah', 'penyewa' => $penyewa]);
     }
-
+    
     public function penyewaJatuhTempo($userId){
         $penyewaSelesaiSewaDuaMingguTerakhir = Menyewa::whereHas('kamar', function($query) use ($userId) {
             $query->whereHas('gedung', function($queryGedung) use ($userId) {

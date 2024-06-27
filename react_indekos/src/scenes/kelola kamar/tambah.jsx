@@ -36,11 +36,13 @@ const TambahFasilitas = ({
     fetchData,
 }) => {
 
-  const [errorMessage, setErrorMessage] = useState('');
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openAdd1, setOpenAdd1] = React.useState(false);
   const [openAdd2, setOpenAdd2] = React.useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
   const [selectedKamar, setSelectedKamar] = useState('');
   const isLargeScreen = useMediaQuery("(min-width: 1280px)")
   const handleOpen = () => {
@@ -121,12 +123,14 @@ const TambahFasilitas = ({
         });
 
         console.log('Response:', response.data);
-        setSuccessMessage('Fasilitas berhasil ditambahkan');
+        setSuccessMessage('Kamar berhasil ditambahkan');
+        setOpenSuccessModal(true);
         handleClose();
         fetchData();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
-        setErrorMessage('Fasilitas gagal ditambahkan');
+        setErrorMessage('Kamar gagal ditambahkan');
+        setOpenErrorModal(true);
         handleOpen();
         }
     };
@@ -136,6 +140,7 @@ const TambahFasilitas = ({
         // const data = new FormData();
         console.log('formData ', formData)
         const data = new FormData();
+        data.append('id_gedung', gedungId);
         data.append('nama_fasilitas', formData.nama_fasilitas);
         data.append('jumlah_fasilitas', formData.jumlah_fasilitas);
         data.append('tanggal_pembelian', formData.tanggal_pembelian);
@@ -154,11 +159,13 @@ const TambahFasilitas = ({
 
         console.log('Response:', response.data);
         setSuccessMessage('Fasilitas berhasil ditambahkan');
+        setOpenSuccessModal(true);
         handleClose();
         fetchData();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
         setErrorMessage('Fasilitas gagal ditambahkan');
+        setOpenErrorModal(true);
         handleOpen();
         }
     };
@@ -187,11 +194,13 @@ const TambahFasilitas = ({
 
         console.log('Response:', response.data);
         setSuccessMessage('Failitas berhasil ditambahkan');
+        setOpenSuccessModal(true);
         handleClose();
         fetchData();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
         setErrorMessage('Fasilitas gagal ditambahkan');
+        setOpenErrorModal(true);
         handleOpen();
         }
     };
@@ -361,7 +370,7 @@ const TambahFasilitas = ({
                             onChange={handleChange}
                             name='tanggal_pembelian'
                             InputLabelProps={{
-                                // shrink: == '', // Shrink label if value is not empty
+                                shrink: true,
                                 style: { color: "black" }
                             }}
                             InputProps={{
@@ -469,7 +478,7 @@ const TambahFasilitas = ({
                             onChange={handleChange}
                             name='tanggal_pembelian'
                             InputLabelProps={{
-                                // shrink: == '', // Shrink label if value is not empty
+                                shrink: true,
                                 style: { color: "black" }
                             }}
                             InputProps={{
@@ -521,9 +530,13 @@ const TambahFasilitas = ({
                     </Box>
                 </Modal>
                 <SuccessModal
+                    open={openSuccessModal}
+                    handleClose={() => setOpenSuccessModal(false)}
                     message={successMessage}
                 />
                 <ErrorModal
+                    open={openErrorModal}
+                    handleClose={() => setOpenErrorModal(false)}
                     message={errorMessage}
                 />
     </div>

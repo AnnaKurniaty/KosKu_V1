@@ -1,5 +1,5 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Button, Modal, TextField, Typography, Select, MenuItem } from "@mui/material";
+import React, { useState, useEffect } from "react";
 import axiosClient from "../../axios-client";
 import SuccessModal from "../../components/SuccessModal";
 import ErrorModal from "../../components/ErrorModal";
@@ -8,14 +8,15 @@ const Update = ({
   penyewa,
   style,
   fetchData,
+  userId,
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleClose = () => { setOpen(false); };
   const handleOpen = () => { setOpen(true); };
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  //For Input
+  // For Input
   const [formData, setFormData] = useState({
     'nama_lengkap': penyewa.nama_lengkap,
     'alamat_penyewa': penyewa.alamat_penyewa,
@@ -24,6 +25,7 @@ const Update = ({
     'tanggal_mulai_sewa': penyewa.tanggal_mulai_sewa,
     'tanggal_selesai_sewa': penyewa.tanggal_selesai_sewa,
     'status_penyewa': penyewa.status_penyewa,
+    'nama_kamar': penyewa.nama_kamar,
     'foto_ktp': null,
   });
 
@@ -36,13 +38,35 @@ const Update = ({
     setFormData({ ...formData, [e.target.name]: e.target.files[0] });
   };
 
+  const handleKamarChange = (e) => {
+    setSelectedKamar(e.target.value);
+    setFormData({ ...formData, id_kamar: e.target.value });
+  };
+
+  const [kamarList, setKamarList] = useState([]);
+  const [selectedKamar, setSelectedKamar] = useState(formData.nama_kamar);
+
+  useEffect(() => {
+    const fetchKamar = async () => {
+      try {
+        const response = await axiosClient.get(`/kamar-kosong/${userId}`);
+        setKamarList(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+        setErrorMessage("Failed to fetch room data.");
+        handleOpen();
+      }
+    };
+
+    fetchKamar();
+  }, [userId]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Data FormData First : ", formData);
-
     const data = new FormData();
-    data.append('id_kamar', penyewa.id_kamar);
+    data.append('id_kamar', selectedKamar);
     data.append('nama_lengkap', formData.nama_lengkap);
     data.append('alamat_penyewa', formData.alamat_penyewa);
     data.append('nomor_telepon', formData.nomor_telepon);
@@ -52,42 +76,39 @@ const Update = ({
     data.append('status_penyewa', formData.status_penyewa);
 
     if (formData.foto_ktp) {
-        data.append('foto_ktp', formData.foto_ktp);
+      data.append('foto_ktp', formData.foto_ktp);
     }
-
-    console.log("TEST AMBIL DATA UPDAET : ", penyewa);
 
     try {
-        const response = await axiosClient.post(`/edit-penyewa/${penyewa.id_penyewa}`, data, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        });
+      const response = await axiosClient.post(`/edit-penyewa/${penyewa.id_menyewa}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
 
-        console.log('Response:', response.data);
-        setSuccessMessage('Penyewa berhasil diubah');
-        handleClose();
-        fetchData();
+      setSuccessMessage('Penyewa berhasil diubah');
+      handleClose();
+      fetchData();
     } catch (error) {
-        setErrorMessage('Penyewa gagal diubah');
-        handleOpen();
+      setErrorMessage('Penyewa gagal diubah');
+      handleOpen();
     }
- };
+  };
 
   return (
     <>
-      <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleOpen}>Edit</Button>
+      <Button style={{ margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} onClick={handleOpen}>Edit</Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 320, maxHeight:500, padding: 2, overflow:'auto' }} align="center">
-          <h3 id="parent-modal-title" textstyle="bold">Update Penyewa</h3>
-          <form>
-            <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
+        <Box sx={{ ...style, width: 320, maxHeight: 500, padding: 2, overflow: 'auto' }} align="center">
+          <h3 id="parent-modal-title" style={{ fontWeight: 'bold' }}>Update Penyewa</h3>
+          <form onSubmit={handleSubmit}>
+            <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.75rem' }}>
               {errorMessage}
             </Typography>
             <TextField
@@ -147,12 +168,15 @@ const Update = ({
               value={formData.tanggal_mulai_sewa}
               onChange={handleChange}
               name='tanggal_mulai_sewa'
+              InputProps={{
+                readOnly: true,
+              }}
               InputLabelProps={{
                 style: { color: "black" }
               }}
             />
             <TextField
-              label='tanggal Selesai Sewa'
+              label='Tanggal Selesai Sewa'
               variant='standard'
               color='warning'
               type='date'
@@ -160,10 +184,33 @@ const Update = ({
               value={formData.tanggal_selesai_sewa}
               onChange={handleChange}
               name='tanggal_selesai_sewa'
+              InputProps={{
+                readOnly: true,
+              }}
               InputLabelProps={{
                 style: { color: "black" }
               }}
             />
+            <Typography align='left' marginTop='10px'>
+              Pilih Kamar
+            </Typography>
+            <Select
+              value={selectedKamar}
+              onChange={handleKamarChange}
+              fullWidth
+              displayEmpty
+              variant="outlined"
+              style={{ marginTop: '10px', marginBottom: '10px' }}
+            >
+              <MenuItem value="" disabled>
+                Pilih Kamar
+              </MenuItem>
+              {kamarList.map((kamar) => (
+                <MenuItem key={kamar.id_kamar} value={kamar.id_kamar}>
+                  {kamar.nama_kamar}
+                </MenuItem>
+              ))}
+            </Select>
             <Typography align='left' marginTop='10px'>
               Masukan Gambar / Foto
             </Typography>
@@ -179,12 +226,12 @@ const Update = ({
                 />
               </Button>
               <Typography variant='caption' style={{ marginLeft: 'auto', textAlign: 'left' }}>
-                Silakan unggah gambar (*.jpg, *png)
+                Silakan unggah gambar (*.jpg, *.png)
               </Typography>
             </Box>
             <div align="center">
-              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleSubmit}>Ya, Simpan</Button>
-              <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleClose}>Kembali</Button>
+              <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Ya, Simpan</Button>
+              <Button style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} onClick={handleClose}>Kembali</Button>
             </div>
           </form>
         </Box>

@@ -4,12 +4,7 @@ import axiosClient from "../../axios-client";
 import SuccessModal from "../../components/SuccessModal";
 import ErrorModal from "../../components/ErrorModal";
 
-const TambahGedung = ({
-    userId,
-    style,
-    fetchData,
-}) => {
-
+const TambahGedung = ({ userId, style, fetchData }) => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
@@ -22,6 +17,8 @@ const TambahGedung = ({
 
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const validateFields = () => {
     return formData.nama_gedung.trim() !== "" && formData.jumlah_kamar.trim() !== "";
@@ -39,7 +36,8 @@ const TambahGedung = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateFields()) {
-      openError('Nama Gedung dan Jumlah Kamar harus diisi');
+      setErrorMessage('Terjadi kesalahan saat menambahkan gedung');
+      setOpenErrorModal(true);
       return;
     }
 
@@ -52,12 +50,13 @@ const TambahGedung = ({
 
     try {
       const response = await axiosClient.post(`/tambah-gedung/${userId}`, data, {
-          headers: {
-              'Content-Type': 'multipart/form-data',
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
       setSuccessMessage('Gedung berhasil ditambahkan');
+      setOpenSuccessModal(true);
       handleClose();
       fetchData();
     } catch (error) {
@@ -71,6 +70,7 @@ const TambahGedung = ({
       } else {
         setErrorMessage('Terjadi kesalahan saat menambahkan gedung');
       }
+      setOpenErrorModal(true);
     }
   };
 
@@ -102,7 +102,7 @@ const TambahGedung = ({
         </Typography>
       </Box>
       <Button
-        type='submit'
+        type='button'
         style={buttonContainerStyle}
         onClick={handleOpen}
       >
@@ -114,11 +114,11 @@ const TambahGedung = ({
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 320, padding: 2, border:'1px solid #69AC77' }} align="center">
-          <h3 id="parent-modal-title" textstyle="bold">Tambah Gedung</h3>
-          <form>
-            <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.5rem' }}>
-                {errorMessage}
+        <Box sx={{ ...style, width: 320, padding: 2, border: '1px solid #69AC77' }} align="center">
+          <h3 id="parent-modal-title" style={{ fontWeight: 'bold' }}>Tambah Gedung</h3>
+          <form onSubmit={handleSubmit}>
+            <Typography id="error-modal-description" sx={{ mt: 2, color: 'red', fontSize: '0.8rem' }}>
+              {errorMessage}
             </Typography>
             <TextField
               label='Nama Gedung'
@@ -171,24 +171,28 @@ const TambahGedung = ({
                 />
               </Button>
               <Typography variant='caption' style={{ marginLeft: 'auto', textAlign: 'left' }}>
-                Silakan unggah gambar (*.jpg, *png)
+                Silakan unggah gambar (*.jpg, *.png)
               </Typography>
             </Box>
             <div align="center">
-              <Button type='submit' onClick={handleSubmit} style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Ya, simpan</Button>
+              <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Ya, simpan</Button>
               <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Kembali</Button>
             </div>
           </form>
         </Box>
       </Modal>
       <SuccessModal
+        open={openSuccessModal}
+        handleClose={() => setOpenSuccessModal(false)}
         message={successMessage}
       />
       <ErrorModal
+        open={openErrorModal}
+        handleClose={() => setOpenErrorModal(false)}
         message={errorMessage}
       />
     </div>
   );
 };
 
-export default TambahGedung
+export default TambahGedung;

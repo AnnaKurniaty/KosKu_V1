@@ -1,26 +1,13 @@
 import React, { useState } from 'react';
 import { LoadingButton } from '@mui/lab';
-import { useTheme, Box, Grid, Paper, InputAdornment, TextField, IconButton, Link, Modal, Typography, Button } from '@mui/material';
+import { useTheme, Box, Grid, Paper, InputAdornment, TextField, IconButton, Link } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import axiosClient from '../../axios-client';
 import { useSelector } from 'react-redux';
 import logoImage from '../../asset/logo.png';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '1px solid #69AC77',
-  boxShadow: 4,
-  pt: 2,
-  px: 4,
-  pb: 3,
-  borderRadius: '1em'
-};
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const Register = () => {
   const theme = useTheme();
@@ -202,31 +189,17 @@ const Register = () => {
         </Paper>
       </Grid>
 
-      <Modal
+      <SuccessModal
         open={openSuccessModal}
-        onClose={closeSuccess}
-        aria-labelledby="success-modal-title"
-        aria-describedby="success-modal-description"
-      >
-        <Box sx={{ ...style, width: 320, padding: 2 }} align="center">
-          <h3 id="success-modal-title" style={{ fontWeight: 'bold' }}>Sukses</h3>
-          <Typography>{successMessage}</Typography>
-          <Button style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={closeSuccess}>Tutup</Button>
-        </Box>
-      </Modal>
+        handleClose={closeSuccess}
+        message={successMessage}
+      />
 
-      <Modal
+      <ErrorModal
         open={openErrorModal}
-        onClose={closeError}
-        aria-labelledby="error-modal-title"
-        aria-describedby="error-modal-description"
-      >
-        <Box sx={{ ...style, width: 320, padding: 2 }} align="center">
-          <h3 id="error-modal-title" style={{ fontWeight: 'bold' }}>Error</h3>
-          <Typography>{errorMessage}</Typography>
-          <Button style={{ margin: '0.5em', backgroundColor: '#FF0000', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={closeError}>Tutup</Button>
-        </Box>
-      </Modal>
+        handleClose={closeError}
+        message={errorMessage}
+      />
     </>
   );
 };

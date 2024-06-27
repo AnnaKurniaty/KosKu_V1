@@ -218,6 +218,7 @@ const style = {
                                     style={style}
                                     fetchData={fetchData}
                                     penyewa={penyewa}
+                                    userId={userId}
                                 />
                             </div>
                         </div>

@@ -46,7 +46,7 @@ const EditUmum = ({
         data.append('biaya_pembelian', formData.biaya_pembelian);
         data.append('tanggal_perbaikan', formData.tanggal_perbaikan);
         data.append('biaya_perbaikan', formData.biaya_perbaikan);
-        if (formData.gambar_gedung) {
+        if (formData.gambar_fasilitas) {
         data.append('gambar_fasilitas', formData.gambar_fasilitas);
         }
 
@@ -117,7 +117,7 @@ const EditUmum = ({
                             onChange={handleChange}
                             name='tanggal_perbaikan'
                             InputLabelProps={{
-                                // shrink: dateValue == '', // Shrink label if value is not empty
+                                shrink: true,
                                 style: { color: "black" }
                             }}
                             />

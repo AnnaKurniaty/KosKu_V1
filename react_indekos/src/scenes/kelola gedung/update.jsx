@@ -11,12 +11,13 @@ const UpdateGedung = ({
     gedung,
 }) => {
     const btnstyle1 = { margin: '0.2em', backgroundColor: '#FF9900', color: "white", borderRadius: '0.5em' };
-
-    const [errorMessage, setErrorMessage] = useState('');
     const [open, setOpen] = React.useState(false);
     const handleClose = () => {setOpen(false)};
     const handleOpen = () => {setOpen(true)};
     const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [openSuccessModal, setOpenSuccessModal] = useState(false);
+    const [openErrorModal, setOpenErrorModal] = useState(false);
 
     //For Inpput
     const [formData, setFormData] = useState({
@@ -56,10 +57,12 @@ const UpdateGedung = ({
 
             console.log('Response:', response.data);
             setSuccessMessage('Gedung berhasil diubah');
+            setOpenSuccessModal(true);
             handleClose();
             fetchData();
         } catch (error) {
-            setErrorMessage('Gedung gagal diubah');
+            setErrorMessage('Terjadi kesalahan saat menambahkan gedung');
+            setOpenErrorModal(true);
             handleOpen();
         }
     };
@@ -142,9 +145,13 @@ const UpdateGedung = ({
                 </Box>
             </Modal>
             <SuccessModal
+                open={openSuccessModal}
+                handleClose={() => setOpenSuccessModal(false)}
                 message={successMessage}
             />
             <ErrorModal
+                open={openErrorModal}
+                handleClose={() => setOpenErrorModal(false)}
                 message={errorMessage}
             />
         </>

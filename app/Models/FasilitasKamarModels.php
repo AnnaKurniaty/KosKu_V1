@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\FasilitasModels as Fasilitas;
 use App\Models\KamarModels as Kamar;
+use App\Models\GedungModels as Gedung;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FasilitasKamarModels extends Model
@@ -19,6 +20,7 @@ class FasilitasKamarModels extends Model
     protected $fillable = [
         'id_kamar',
         'id_fasilitas',
+        'id_gedung',
     ];
     
     protected $dates = ['deleted_at'];
@@ -31,5 +33,10 @@ class FasilitasKamarModels extends Model
     public function fasilitas()
     {
         return $this->belongsTo(Fasilitas::class, 'id_fasilitas');
+    }
+
+    public function gedung()
+    {
+        return $this->belongsTo(Gedung::class, 'id_gedung');
     }
 }

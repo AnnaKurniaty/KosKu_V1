@@ -20,7 +20,7 @@ const Dashboard = () => {
   const theme = useTheme();
   const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
   const isLargeScreen = useMediaQuery("(min-width: 1280px)");
-  const [penyewa, setPenyewaList] = useState([]);
+  const [penyewaList, setPenyewaList] = useState([]);
   const [roomData, setRoomData] = useState({ occupied: 0, vacant: 0 });
   const [financialData, setFinancialData] = useState({ income: [], expense: [] });
   const [loading, setLoading] = useState(true);
@@ -70,8 +70,7 @@ const Dashboard = () => {
             occupied: terisiData.jumlah_kamar_terisi,
             vacant: kosongData.jumlah_kamar_kosong,
           });
-          setPenyewaList(penyewaData.penyewa_jatuh_tempo);
-          console.log(penyewaData);
+          setPenyewaList({penyewaList: penyewaData.penyewa_jatuh_tempo});
 
           const income = Array(12).fill(0);
           const expense = Array(12).fill(0);
@@ -109,40 +108,34 @@ const Dashboard = () => {
 
   const handleLanjutClick = async (id_menyewa) => {
     try {
-        setLoading(true);
-        const response = await axiosClient.post(`/informasi-kos/update_lanjut/${id_menyewa}`);
-        const newMenyewa = response.data.menyewa; 
-        
-        // Memperbarui state penyewa setelah menambahkan data baru
-        setPenyewaList([...menyewa, newMenyewa]); // Tambahkan data baru ke state penyewa
+      setLoading(true);
+      const response = await axiosClient.post(`/informasi-kos/update_lanjut/${id_menyewa}`);
+      const newMenyewa = response.data.menyewa;
+      
+      // Memperbarui state penyewa setelah menambahkan data baru
+      setPenyewaList([...penyewaList, newMenyewa]); // Perbaiki penggunaan penyewaList di sini
     } catch (error) {
-        console.error("Gagal menambahkan data baru", error);
-        // Handle error state di sini jika diperlukan
+      console.error("Gagal menambahkan data baru", error);
+      // Handle error state di sini jika diperlukan
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-  } ;
+  };
 
   const handleTidakClick = async (id_menyewa) => {
     try {
-        setLoading(true);
-        const response = await axiosClient.post(`/informasi-kos/update_tidak/${id_menyewa}`);
-        const newMenyewa = response.data.menyewa; 
-        
-        // Memperbarui state penyewa setelah menambahkan data baru
-        setPenyewaList([...menyewa, newMenyewa]); // Tambahkan data baru ke state penyewa
+      setLoading(true);
+      const response = await axiosClient.post(`/informasi-kos/update_tidak/${id_menyewa}`);
+      const newMenyewa = response.data.menyewa;
+      
+      // Memperbarui state penyewa setelah menambahkan data baru
+      setPenyewaList([...penyewaList, newMenyewa]); // Perbaiki penggunaan penyewaList di sini
     } catch (error) {
-        console.error("Gagal menambahkan data baru", error);
-        // Handle error state di sini jika diperlukan
+      console.error("Gagal menambahkan data baru", error);
+      // Handle error state di sini jika diperlukan
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-  } ;
-
-  const calculateNextMonth = (currentDate) => {
-    const date = new Date(currentDate);
-    date.setMonth(date.getMonth() + 1);
-    return date.toISOString().split('T')[0];
   };
 
   if (loading) {
@@ -181,7 +174,6 @@ const Dashboard = () => {
                 gridRow="span 3"
                 backgroundColor={theme.palette.background.alt}
                 p="1.5rem"
-                pt={0}
                 borderRadius="0.55rem"
               >
                 <Typography variant="h5" sx={{ color: theme.palette.secondary[100] }} align="center" fontWeight="bold">
@@ -200,174 +192,169 @@ const Dashboard = () => {
                     slotProps={{
                       legend: {
                         direction: "row",
-                        position: { vertical: "bottom", horizontal: "center" },
+                        position: { vertical: "bottom", horizontal: "middle" },
                       },
                     }}
-                    height={isLargeScreen ? 400 : 350} // Adjust height based on screen size
-                    width={isLargeScreen ? 400 : 280} // Adjust width based on screen size
-                  />
+                    height={isLargeScreen ? 400 : 350}
+                    width={isLargeScreen ? 400 : 280} 
+                    />
+                    </Box>
+                  </Box>
+                )}
+              </Paper>
+            )}
+            {activeStep === 1 && (
+              <Box
+                gridColumn="span 12"
+                gridRow="span 3"
+                backgroundColor={theme.palette.background.alt}
+                p="1.5rem"
+                border= '1px solid #69AC77'
+                boxShadow='3'
+                borderRadius="2rem"
+                marginTop={2}
+                sx={{ maxHeight: 500, overflowY: "auto" }}
+              >
+                <Typography
+                  variant="h5"
+                  paddingTop="20px"
+                  sx={{ color: theme.palette.secondary[100] }}
+                  align="center"
+                  fontWeight="bold"
+                >
+                  Pengingat Jatuh Tempo
+                </Typography>
+                <Box
+                  mt="20px"
+                  display="grid"
+                  sx={{
+                    gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+                    gap: "20px"
+                  }}
+                >
+                  {penyewaList.length === 0 ? (
+                    <Typography
+                      variant="body1"
+                      sx={{ color: theme.palette.secondary[100], textAlign: "center" }}
+                    >
+                      Tidak ada penyewa yang jatuh tempo.
+                    </Typography>
+                  ) : (
+                    penyewaList.map((penyewa_jatuh_tempo) => (
+                      <Box
+                        key={penyewa_jatuh_tempo.id_menyewa}
+                        sx={{
+                          padding: isLargeScreen ? "1.5em" : "1em",
+                          gridColumn: isNonMediumScreens ? undefined : "span 12",
+                          boxShadow: "3",
+                          borderRadius: "2em",
+                          backgroundColor: "#F9F4F4",
+                          "@media (minWidth:600px)": {
+                            height: "100px",
+                          },
+                          "@media (minWidth:960px)": {
+                            height: "110px",
+                          },
+                          "@media (minWidth:1280px)": {
+                            height: "110px",
+                            paddingRight: "3em",
+                          },
+                        }}
+                        marginBottom={2}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto", marginBottom: "auto" }}>
+                          <div style={{ display: 'flex', flexDirection: 'row', alignItems:'center'}}>
+                            <AccountCircleOutlinedIcon sx={{fontSize: 42, color: '#black'}}/>
+                            <div style={{ display: 'flex', flexDirection: 'column', marginLeft:'1em'}}>
+                              <Typography
+                                variant="subtitle1"
+                                sx={{
+                                  color: theme.palette.secondary[100],
+                                  fontSize: isLargeScreen ? '2rem' : '1rem',
+                                }}
+                              >
+                                {penyewa_jatuh_tempo.nama_lengkap}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: theme.palette.secondary[100],
+                                  fontSize: isLargeScreen ? '1rem' : '0.80rem',
+                                }}
+                              >
+                                {penyewa_jatuh_tempo.tanggal_selesai_sewa}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: theme.palette.secondary[100],
+                                  fontSize: isLargeScreen ? '1rem' : '0.80rem',
+                                }}
+                              >
+                                Rp.{penyewa_jatuh_tempo.biaya_kamar}
+                              </Typography>
+                            </div>
+                          </div>
+                          <div style={buttonContainerStyle}>
+                            <Button type="submit" style={btnStyle} onClick={() => handleLanjutClick(penyewa_jatuh_tempo.id_menyewa)}>
+                              Lanjut
+                            </Button>
+                            <Button type="submit" style={btnStyle} onClick={() => handleTidakClick(penyewa_jatuh_tempo.id_menyewa)}>
+                              Tidak
+                            </Button>
+                          </div>
+                        </div>
+                      </Box>
+                    ))
+                  )}
                 </Box>
               </Box>
             )}
-          </Paper>
-        )}
-        {activeStep === 1 && (
-          <Box
-            gridColumn="span 12"
-            gridRow="span 3"
-            backgroundColor={theme.palette.background.alt}
-            p="1.5rem"
-            border= '1px solid #69AC77'
-            boxShadow='3'
-            borderRadius="2rem"
-            marginTop={2}
-            sx={{ maxHeight: 500, overflowY: "auto" }}
-          >
-            <Typography
-              variant="h5"
-              paddingTop="20px"
-              sx={{ color: theme.palette.secondary[100] }}
-              align="center"
-              fontWeight="bold"
-            >
-              Pengingat Jatuh Tempo
-            </Typography>
-            <Box
-              mt="20px"
-              display="grid"
-              sx={{
-                gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
-                gap: "20px"
-              }}
-            >
-              {penyewa.length === 0 ? (
-                <Typography
-                  variant="body1"
-                  sx={{ color: theme.palette.secondary[100], textAlign: "center" }}
-                >
-                  Tidak ada penyewa yang jatuh tempo.
-                </Typography>
-              ) : (
-                Array.isArray(penyewa) && penyewa.map((item) => (
-                  <Box
-                    key={item.id_menyewa}
-                    sx={{
-                      padding: isLargeScreen ? "1.5em" : "1em",
-                      gridColumn: isNonMediumScreens ? undefined : "span 12",
-                      boxShadow: "3",
-                      borderRadius: "2em",
-                      backgroundColor: "#F9F4F4",
-                      "@media (minWidth:600px)": {
-                        height: "100px",
+            {activeStep === 2 && (
+              <Paper style={{ ...paperStyle}}>
+                <Box gridColumn="span 12" gridRow="span 3" backgroundColor={theme.palette.background.alt} borderRadius="1em">
+                  <Typography variant="h5" sx={{ color: theme.palette.secondary[100] }} align="center" fontWeight="bold">
+                    Grafik Pemasukan dan Pengeluaran
+                  </Typography>
+                  <LineChart
+                    xAxis={[
+                      {
+                        scaleType: "point",
+                        data: xLabels,
                       },
-                      "@media (minWidth:960px)": {
-                        height: "110px",
+                    ]}
+                    series={[
+                      {
+                        id: "Pemasukan",
+                        label: "Pemasukan",
+                        data: financialData.income,
+                        color: "#F2CA25",
                       },
-                      "@media (minWidth:1280px)": {
-                        height: "110px",
-                        paddingRight: "3em",
+                      {
+                        id: "Pengeluaran",
+                        label: "Pengeluaran",
+                        data: financialData.expense,
+                        color: "#FF5B45",
                       },
-                    }}
-                    marginBottom={2}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto", marginBottom: "auto" }}>
-                      <div style={{ display: 'flex', flexDirection: 'row', alignItems:'center'}}>
-                        <AccountCircleOutlinedIcon sx={{fontSize: 42, color: '#black'}}/>
-                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft:'1em'}}>
-                          <Typography
-                            variant="subtitle1"
-                            sx={{
-                              color: theme.palette.secondary[100],
-                              fontSize: isLargeScreen ? '2rem' : '1rem',
-                            }}
-                          >
-                            {item.nama_lengkap}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: theme.palette.secondary[100],
-                              fontSize: isLargeScreen ? '1rem' : '0.80rem',
-                            }}
-                          >
-                            {item.tanggal_selesai_sewa}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: theme.palette.secondary[100],
-                              fontSize: isLargeScreen ? '1rem' : '0.80rem',
-                            }}
-                          >
-                            Rp.{item.biaya_kamar}
-                          </Typography>
-                        </div>
-                      </div>
-                      <div style={buttonContainerStyle}>
-                        <Button type="submit" style={btnStyle} onClick={() => handleLanjutClick(item.id_menyewa)}>
-                          Lanjut
-                        </Button>
-                        <Button type="submit" style={btnStyle} onClick={() => handleTidakClick(item.id_menyewa)}>
-                          Tidak
-                        </Button>
-                      </div>
-                    </div>
-                  </Box>
-                ))
-              )}
-            </Box>
+                    ]}
+                    height={410}
+                    width={400}
+                    margin={{ left: 70 }}
+                    position="relative"
+                  />
+                </Box>
+              </Paper>
+            )}
           </Box>
-        )}
-        {activeStep === 2 && (
-          <Paper style={{ ...paperStyle}}>
-            <Box gridColumn="span 12" gridRow="span 3" backgroundColor={theme.palette.background.alt} borderRadius="1em">
-              <Typography variant="h5" sx={{ color: theme.palette.secondary[100] }} align="center" fontWeight="bold">
-                Grafik Pemasukan dan Pengeluaran
-              </Typography>
-              <LineChart
-                xAxis={[
-                  {
-                    scaleType: "point",
-                    data: xLabels,
-                    labels: {
-                      angle: -270,
-                      align: "right",
-                      verticalAlign: "middle",
-                      offset: 10,
-                    },
-                  },
-                ]}
-                series={[
-                  {
-                    id: "Pemasukan",
-                    label: "Pemasukan",
-                    data: financialData.income,
-                    color: "#F2CA25",
-                  },
-                  {
-                    id: "Pengeluaran",
-                    label: "Pengeluaran",
-                    data: financialData.expense,
-                    color: "#FF5B45",
-                  },
-                ]}
-                height={410}
-                width={400}
-                margin={{ left: 70 }}
-                position="relative"
-              />
-            </Box>
-          </Paper>
-        )}
-      </Box>
-      <Box display="flex" justifyContent="space-between" mt={3}>
-        <ArrowCircleLeftIcon sx={{fontSize: 42, color: '#69AC77'}} disabled={activeStep === 0} onClick={handleBack} variant="contained">
-        </ArrowCircleLeftIcon>
-        <ArrowCircleRightIcon sx={{fontSize: 42, color: '#69AC77'}} disabled={activeStep === steps.length - 1} onClick={handleNext} variant="contained">
-        </ArrowCircleRightIcon>
-      </Box>
-    </Box>
-  );
-};
-
-export default Dashboard;
+          <Box display="flex" justifyContent="space-between" mt={3}>
+            <ArrowCircleLeftIcon sx={{fontSize: 42, color: '#69AC77'}} disabled={activeStep === 0} onClick={handleBack} variant="contained">Sebelumnya
+            </ArrowCircleLeftIcon>
+            <ArrowCircleRightIcon sx={{fontSize: 42, color: '#69AC77'}} disabled={activeStep === steps.length - 1} onClick={handleNext} variant="contained">Selanjutnya
+            </ArrowCircleRightIcon>
+          </Box>
+        </Box>
+      );
+    };
+    
+    export default Dashboard;
+    

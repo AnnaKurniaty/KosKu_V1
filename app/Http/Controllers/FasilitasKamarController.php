@@ -16,26 +16,31 @@ class FasilitasKamarController extends Controller
     {
         $fasilitas_kamar = DB::table('gedung as g')
             ->leftJoin('kamar as k', 'k.id_gedung', '=', 'g.id_gedung')
-            ->leftJoin('fasilitas_kamar as fk', function($join) {
+            ->leftJoin('fasilitas_kamar as fk', function($join) use ($id_gedung) {
                 $join->on('fk.id_kamar', '=', 'k.id_kamar')
-                    ->whereNull('fk.deleted_at');
+                    ->orwhere('fk.id_gedung', '=', $id_gedung);
             })
             ->leftJoin('fasilitas as f', 'f.id_fasilitas', '=', 'fk.id_fasilitas')
-            ->leftJoin('kebutuhan as ku', 'ku.id_fasilitas_kamar', '=', 'fk.id_fasilitas_kamar')
+            ->leftJoin('kebutuhan as ku', function($join) {
+                $join->on('ku.id_fasilitas_kamar', '=', 'fk.id_fasilitas_kamar');
+            })
             ->where('g.id_gedung', '=', $id_gedung)
+            ->whereNull('fk.deleted_at') // Hanya ambil yang tidak dihapus
             ->whereNotNull('fk.id_fasilitas_kamar')
-            ->groupBy('fk.id_fasilitas_kamar', 'f.id_fasilitas', 'f.nama_fasilitas', 'ku.biaya_pembelian', 'f.jumlah_fasilitas', 'ku.tanggal_pembelian', 'f.gamabar_fasilitas', 'ku.biaya_perbaikan', 'ku.tanggal_perbaikan')
             ->select(
-                'fk.id_fasilitas_kamar', 
+                'fk.id_fasilitas_kamar',
                 'f.id_fasilitas',
-                'f.nama_fasilitas', 
+                'f.nama_fasilitas',
                 'f.jumlah_fasilitas',
-                'ku.biaya_pembelian', 
-                'ku.tanggal_pembelian', 
-                'f.gamabar_fasilitas as gambar_fasilitas', 
-                'ku.biaya_perbaikan', 
-                'ku.tanggal_perbaikan'
+                'fk.id_gedung',
+                DB::raw('MAX(ku.biaya_pembelian) as biaya_pembelian'),
+                DB::raw('MAX(ku.tanggal_pembelian) as tanggal_pembelian'),
+                'f.gambar_fasilitas',
+                DB::raw('MAX(ku.biaya_perbaikan) as biaya_perbaikan'),
+                DB::raw('MAX(ku.tanggal_perbaikan) as tanggal_perbaikan')
             )
+            ->groupBy('fk.id_fasilitas_kamar', 'f.id_fasilitas', 'f.nama_fasilitas', 'f.jumlah_fasilitas', 'f.gambar_fasilitas', 'fk.id_gedung')
+            ->havingRaw('fk.id_fasilitas IS NOT NULL')
             ->get();
 
         $type = 'fasilitas_kamar';
@@ -43,7 +48,7 @@ class FasilitasKamarController extends Controller
         // Return the facilities as a JSON response
         return response()->json(['fasilitas_kamar' => $fasilitas_kamar, 'type' => $type]);
     }
-
+    
     public function tambahFasilitasKamar(Request $request)
     {
         $request->validate([
@@ -52,6 +57,7 @@ class FasilitasKamarController extends Controller
             'tanggal_pembelian' => 'required|date',
             'gambar_fasilitas' => 'image|mimes:jpeg,png,jpg|max:2048',
             'biaya_pembelian' => 'required|integer',
+            'id_gedung' => 'required|integer|exists:gedung,id_gedung'
         ]);
 
         // Mengupload gambar dan simpan ke folder
@@ -68,12 +74,14 @@ class FasilitasKamarController extends Controller
         $fasilitas = Fasilitas::create([
             'nama_fasilitas' => $request->input('nama_fasilitas'),
             'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
-            'gamabar_fasilitas' => $imageUrl,
+            'gambar_fasilitas' => $imageUrl,
         ]);
 
         // Insert into fasilitas_kamar with the id_fasilitas
         $fasilitas_kamar = FasilitasKamar::create([
+            'id_gedung' => $request->input('id_gedung'),
             'id_fasilitas' => $fasilitas->id_fasilitas,
+            'id_kamar' => $request->input('id_kamar'),  // assuming id_kamar is provided in the request
         ]);
 
         // Insert into kebutuhan with the id_fasilitas_kamar
@@ -87,7 +95,7 @@ class FasilitasKamarController extends Controller
     }
 
     public function updateFasilitasKamar(Request $request, $id_fasilitas_kamar)
-    {   
+    {
         $request->validate([
             'nama_fasilitas' => 'required|string|max:255',
             'jumlah_fasilitas' => 'required|integer',
@@ -116,7 +124,7 @@ class FasilitasKamarController extends Controller
         $fasilitas->update([
             'nama_fasilitas' => $request->input('nama_fasilitas'),
             'jumlah_fasilitas' => $request->input('jumlah_fasilitas'),
-            'gamabar_fasilitas' => $imageUrl,
+            'gambar_fasilitas' => $imageUrl,
         ]);
 
         // Insert or update the kebutuhan record for perbaikan
@@ -131,17 +139,15 @@ class FasilitasKamarController extends Controller
 
     public function hapusFasilitasKamar($id_fasilitas_kamar)
     {
-        $fasilitas_kamar = FasilitasKamar::findOrFail($id_fasilitas_kamar);
+        $fasilitas_kamar = FasilitasKamar::withTrashed()->find($id_fasilitas_kamar);
 
         if (!$fasilitas_kamar) {
-            return response()->json(['error' => 'Fasilitas kamar not found'], 404);
+            return response()->json(['error' => 'Gedung not found'], 404);
         }
 
-        // Soft delete the fasilitas_kamar
         $fasilitas_kamar->delete();
 
-        return response()->json(['message' => 'Fasilitas kamar deleted successfully']);
+        return response()->json(['message' => 'Fasilitas deleted successfully']);
     }
-
 
 }

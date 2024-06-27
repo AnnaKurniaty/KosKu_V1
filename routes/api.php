@@ -69,10 +69,12 @@ Route::middleware('auth:sanctum')->group(function () {
 // Routes for Kamar
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/kamar/{id_gedung}', [KamarController::class, 'kamarByGedung']);
+    Route::get('/kamar/detail/{id_kamar}', [KamarController::class, 'getKamar']);
     Route::post('/kamar/insert', [KamarController::class, 'tambahKamar']);
     Route::post('/kamar/update/{id_kamar}', [KamarController::class, 'updateKamar']);
     Route::delete('/kamar/delete/{id_kamar}', [KamarController::class, 'hapusKamar']);
     Route::get('/kamar-kosong', [KamarController::class, 'getListKosong']);
+    Route::get('/kamar-kosong/{id_pemilik}', [KamarController::class, 'getListKamarKosong']);
 });
 
 // Routes for Fasilitas Umum

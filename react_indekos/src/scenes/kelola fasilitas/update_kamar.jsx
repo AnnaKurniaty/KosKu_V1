@@ -107,6 +107,7 @@ const EditKamar = ({
                             />
                             <TextField 
                             label='Tanggal Perawatan / Perbaikan' 
+                            views='Tanggal Perawatan / Perbaikan'
                             style={{marginTop:'10px'}}
                             type='date'
                             variant='standard'
@@ -116,9 +117,9 @@ const EditKamar = ({
                             onChange={handleChange}
                             name='tanggal_perbaikan'
                             InputLabelProps={{
-                                // shrink: dateValue == '', // Shrink label if value is not empty
+                                shrink: true,
                                 style: { color: "black" }
-                            }}
+                              }}
                             />
                             <TextField 
                             label='Biaya perbaikan' 

@@ -8,6 +8,7 @@ const Detail = ({
   penyewa,
   style,
   fetchData,
+  userId,
 }) => {
   const btnstyle = { marginLeft:'2px', backgroundColor: '#FF9900', color: "white", padding: '0.2em 0', borderRadius: '0.5em', width: '8em' };
   const [errorMessage, setErrorMessage] = useState('');
@@ -185,6 +186,7 @@ const Detail = ({
                 style={style}
                 penyewa={penyewa}
                 fetchData={fetchData}
+                userId={userId}
               />
               <Hapus
                 style={style}

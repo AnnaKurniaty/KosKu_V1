@@ -29,15 +29,44 @@ class KamarController extends Controller
         return response()->json(['jumlah_kamar_kosong' => $jumlahKamarKosong]);
     }
 
-    public function getKamar($id_gedung)
+    public function getKamar($id_kamar)
     {
-        $kamar = Kamar::where('id_gedung', $id_gedung)->get();
-        return response()->json($kamar);
+        $kamar = DB::table('kamar as k')
+            ->leftJoin('fasilitas_kamar as kf', 'k.id_kamar', '=', 'kf.id_kamar')
+            ->where('k.id_kamar', '=', $id_kamar)
+            ->whereNull('k.deleted_at')
+            ->groupBy('k.id_kamar', 'k.nama_kamar', 'k.biaya_kamar', 'k.status_kamar', 'k.gambar_kamar')
+            ->select(
+                'k.id_kamar',
+                'k.nama_kamar',
+                'k.biaya_kamar',
+                'k.status_kamar',
+                'k.gambar_kamar',
+                DB::raw('STRING_AGG(kf.id_fasilitas_kamar::text, \',\') as id_fasilitas_list')
+            )
+            ->get();
+
+        $type = 'kamar';
+
+        return response()->json(['kamar' => $kamar, 'type' => $type]);
     }
 
     public function getListKosong()
     {
-        $kamar = Kamar::where('status_kamar', 'kosong')->get();
+        $kamar = Kamar::where('status_kamar', 'kosong')
+                    ->get();
+
+        return response()->json($kamar);
+    }
+
+    public function getListKamarKosong($id_pemilik)
+    {
+        $kamar = Kamar::where('status_kamar', 'kosong')
+                    ->whereHas('gedung', function ($query) use ($id_pemilik) {
+                        $query->where('id_pemilik', $id_pemilik);
+                    })
+                    ->get();
+
         return response()->json($kamar);
     }
 
