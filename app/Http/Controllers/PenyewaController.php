@@ -222,7 +222,7 @@ class PenyewaController extends Controller
         })->whereDate('tanggal_selesai_sewa', '<=', now()->subWeeks(2)->format('Y-m-d'))
           ->orderBy('tanggal_selesai_sewa', 'desc')
           ->get()
-          ->unique('id_penyewa');       
+          ->unique('id_penyewa');
     
         // Mengambil biaya kamar dari kamar yang sesuai
         foreach ($penyewaSelesaiSewaDuaMingguTerakhir as $item) {
@@ -231,9 +231,7 @@ class PenyewaController extends Controller
         foreach ($penyewaSelesaiSewaDuaMingguTerakhir as $item) {
             $item->nama_lengkap = $item->penyewa->nama_lengkap;
         }
-        return response()->json([
-            'penyewa_jatuh_tempo' => $penyewaSelesaiSewaDuaMingguTerakhir,
-        ]);
+        return response()->json($penyewaSelesaiSewaDuaMingguTerakhir);
     }
 
     public function lanjutSewa($id_menyewa)

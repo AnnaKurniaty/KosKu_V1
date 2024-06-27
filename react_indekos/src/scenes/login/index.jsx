@@ -69,7 +69,7 @@ const Login = () => {
         setUser(data.user);
         const userId = data.user.id;
         setUserId(userId);
-        navigate(`/informasi kos/${userId}`);
+        navigate(`/informasi kos/${userId}`, { state: { userId:userId } });
       })
       .catch(err => {
         setLoading(false);

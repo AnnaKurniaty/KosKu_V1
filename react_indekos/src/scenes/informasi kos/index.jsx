@@ -70,7 +70,7 @@ const Dashboard = () => {
             occupied: terisiData.jumlah_kamar_terisi,
             vacant: kosongData.jumlah_kamar_kosong,
           });
-          setPenyewaList({penyewaList: penyewaData.penyewa_jatuh_tempo});
+          setPenyewaList(Object.values(penyewaData));
 
           const income = Array(12).fill(0);
           const expense = Array(12).fill(0);
@@ -240,9 +240,11 @@ const Dashboard = () => {
                       Tidak ada penyewa yang jatuh tempo.
                     </Typography>
                   ) : (
-                    penyewaList.map((penyewa_jatuh_tempo) => (
+                    penyewaList.map((penyewaObj) => {
+                      const penyewaDetails = penyewaObj;
+                      return (
                       <Box
-                        key={penyewa_jatuh_tempo.id_menyewa}
+                        key={penyewaDetails.id_menyewa}
                         sx={{
                           padding: isLargeScreen ? "1.5em" : "1em",
                           gridColumn: isNonMediumScreens ? undefined : "span 12",
@@ -273,7 +275,7 @@ const Dashboard = () => {
                                   fontSize: isLargeScreen ? '2rem' : '1rem',
                                 }}
                               >
-                                {penyewa_jatuh_tempo.nama_lengkap}
+                                {penyewaDetails.nama_lengkap}
                               </Typography>
                               <Typography
                                 variant="caption"
@@ -282,7 +284,7 @@ const Dashboard = () => {
                                   fontSize: isLargeScreen ? '1rem' : '0.80rem',
                                 }}
                               >
-                                {penyewa_jatuh_tempo.tanggal_selesai_sewa}
+                                {penyewaDetails.tanggal_selesai_sewa}
                               </Typography>
                               <Typography
                                 variant="caption"
@@ -291,21 +293,22 @@ const Dashboard = () => {
                                   fontSize: isLargeScreen ? '1rem' : '0.80rem',
                                 }}
                               >
-                                Rp.{penyewa_jatuh_tempo.biaya_kamar}
+                                Rp.{penyewaDetails.biaya_kamar}
                               </Typography>
                             </div>
                           </div>
                           <div style={buttonContainerStyle}>
-                            <Button type="submit" style={btnStyle} onClick={() => handleLanjutClick(penyewa_jatuh_tempo.id_menyewa)}>
+                            <Button type="submit" style={btnStyle} onClick={() => handleLanjutClick(penyewaDetails.id_menyewa)}>
                               Lanjut
                             </Button>
-                            <Button type="submit" style={btnStyle} onClick={() => handleTidakClick(penyewa_jatuh_tempo.id_menyewa)}>
+                            <Button type="submit" style={btnStyle} onClick={() => handleTidakClick(penyewaDetails.id_menyewa)}>
                               Tidak
                             </Button>
                           </div>
                         </div>
                       </Box>
-                    ))
+                      )
+                    })
                   )}
                 </Box>
               </Box>

@@ -1,5 +1,5 @@
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axiosClient from "../../axios-client";
 import SuccessModal from "../../components/SuccessModal";
 import ErrorModal from "../../components/ErrorModal";
