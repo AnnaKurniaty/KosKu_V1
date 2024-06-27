@@ -44,7 +44,7 @@ const Update = ({
   };
 
   const [kamarList, setKamarList] = useState([]);
-  const [selectedKamar, setSelectedKamar] = useState(formData.nama_kamar);
+  const [selectedKamar, setSelectedKamar] = useState('');
 
   useEffect(() => {
     const fetchKamar = async () => {
@@ -61,6 +61,13 @@ const Update = ({
 
     fetchKamar();
   }, [userId]);
+
+  let selectOptions = [{ id_kamar: '', nama_kamar: formData.nama_kamar }, ...kamarList.map(kamar => ({
+    id_kamar: kamar.id_kamar.toString(),
+    nama_kamar: kamar.nama_kamar,
+  }))];
+
+  console.log("INI KAMAR ", selectOptions);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -205,7 +212,7 @@ const Update = ({
               <MenuItem value="" disabled>
                 Pilih Kamar
               </MenuItem>
-              {kamarList.map((kamar) => (
+              {selectOptions.map((kamar) => (
                 <MenuItem key={kamar.id_kamar} value={kamar.id_kamar}>
                   {kamar.nama_kamar}
                 </MenuItem>
