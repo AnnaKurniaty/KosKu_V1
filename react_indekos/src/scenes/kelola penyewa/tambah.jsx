@@ -58,9 +58,9 @@ const Tambah = () => {
       try {
         // if (location.state && location.state.userId) {
         //   setUserId(location.state.userId);
-          const response = await axiosClient.get(`/kamar-kosong`);
+          let id_penyewa = location.pathname.split('/')[2]
+          const response = await axiosClient.get(`/kamar-kosong/`+id_penyewa);
           setKamarList(response.data);
-          console.log(response.data);
         // }
       } catch (error) {
         console.error("Failed to fetch data", error);
@@ -70,7 +70,7 @@ const Tambah = () => {
     };
 
     fetchKamar();
-  }, [location.state]); // Tambahkan location.state sebagai dependency
+  }, [location.pathname]); // Tambahkan location.state sebagai dependency
 
   const handleChange = (e) => {
     const { name, value } = e.target;

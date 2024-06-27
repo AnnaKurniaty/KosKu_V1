@@ -25,6 +25,7 @@ const Update = ({
     'tanggal_mulai_sewa': penyewa.tanggal_mulai_sewa,
     'tanggal_selesai_sewa': penyewa.tanggal_selesai_sewa,
     'status_penyewa': penyewa.status_penyewa,
+    'id_kamar': penyewa.nama_kamar,
     'nama_kamar': penyewa.nama_kamar,
     'foto_ktp': null,
   });
@@ -44,7 +45,7 @@ const Update = ({
   };
 
   const [kamarList, setKamarList] = useState([]);
-  const [selectedKamar, setSelectedKamar] = useState('');
+  const [selectedKamar, setSelectedKamar] = useState(formData.id_kamar);
 
   useEffect(() => {
     const fetchKamar = async () => {
@@ -62,12 +63,10 @@ const Update = ({
     fetchKamar();
   }, [userId]);
 
-  let selectOptions = [{ id_kamar: '', nama_kamar: formData.nama_kamar }, ...kamarList.map(kamar => ({
+  let selectOptions = [{ id_kamar: formData.id_kamar, nama_kamar: formData.nama_kamar }, ...kamarList.map(kamar => ({
     id_kamar: kamar.id_kamar.toString(),
     nama_kamar: kamar.nama_kamar,
   }))];
-
-  console.log("INI KAMAR ", selectOptions);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
