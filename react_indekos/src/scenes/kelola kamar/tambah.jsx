@@ -98,7 +98,7 @@ const TambahFasilitas = ({
       // Jika checkbox tidak dipilih, hapus nilai dari array
       setIdFasilitasList((prev) => prev.filter((id) => id !== value));
     }
-    };
+};
 
     const handleSubmitKamar = async (e) => {
         e.preventDefault();

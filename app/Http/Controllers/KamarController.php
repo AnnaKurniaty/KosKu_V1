@@ -42,7 +42,7 @@ class KamarController extends Controller
                 'k.biaya_kamar',
                 'k.status_kamar',
                 'k.gambar_kamar',
-                DB::raw('STRING_AGG(kf.id_fasilitas_kamar::text, \',\') as id_fasilitas_list')
+                DB::raw('STRING_AGG(kf.id_fasilitas::text, \',\') as id_fasilitas_list')
             )
             ->get();
 
@@ -83,7 +83,7 @@ class KamarController extends Controller
                 'k.biaya_kamar',
                 'k.status_kamar',
                 'k.gambar_kamar',
-                DB::raw('STRING_AGG(kf.id_fasilitas_kamar::text, \',\') as id_fasilitas_list')
+                DB::raw('STRING_AGG(kf.id_fasilitas::text, \',\') as id_fasilitas_list')
             )
             ->get();
 
@@ -96,7 +96,7 @@ class KamarController extends Controller
     public function tambahKamar(Request $request)
     {
         $request->validate([
-            'id_gedung' => 'required',
+            'id_gedung' => 'required|integer',
             'nama_kamar' => 'required|string',
             'biaya_kamar' => 'required|integer',
             'gambar_kamar' => 'image|mimes:jpeg,png,jpg|max:2048',
@@ -123,6 +123,7 @@ class KamarController extends Controller
             FasilitasKamar::create([
                 'id_kamar' => $kamar->id_kamar,
                 'id_fasilitas' => $idFasilitas,
+                'id_gedung' => $request->input('id_gedung'),
             ]);
         }
 
@@ -165,12 +166,13 @@ class KamarController extends Controller
             'gambar_kamar' => $imageUrl,
         ]);
 
-        FasilitasKamar::where('id_kamar', $id_kamar)->delete();
+        FasilitasKamar::where('id_kamar', $kamar->id_kamar)->forceDelete();
 
         foreach ($request->input('id_fasilitas_list') as $idFasilitas) {
             FasilitasKamar::create([
-                'id_kamar' => $id_kamar,
-                'id_fasilitas_kamar' => $idFasilitas,
+                'id_kamar' => $kamar->id_kamar,
+                'id_fasilitas' => $idFasilitas,
+                'id_gedung' => $request->input('id_gedung'),
             ]);
         }
 

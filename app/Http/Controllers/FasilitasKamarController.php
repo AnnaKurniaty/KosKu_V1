@@ -48,6 +48,38 @@ class FasilitasKamarController extends Controller
         // Return the facilities as a JSON response
         return response()->json(['fasilitas_kamar' => $fasilitas_kamar, 'type' => $type]);
     }
+
+    public function fasilitasKamarV2($id_gedung) 
+    {
+        $fasilitas_kamar = DB::table('gedung as g')
+            ->leftJoin('fasilitas_kamar as fk', 'fk.id_gedung', '=', 'g.id_gedung')
+            ->leftJoin('fasilitas as f', 'f.id_fasilitas', '=', 'fk.id_fasilitas')
+            ->leftJoin('kebutuhan as ku', function($join) {
+                $join->on('ku.id_fasilitas_kamar', '=', 'fk.id_fasilitas_kamar');
+            })
+            ->where('g.id_gedung', '=', $id_gedung)
+            ->whereNull('fk.deleted_at') // Hanya ambil yang tidak dihapus
+            ->whereNull('fk.id_kamar')
+            ->select(
+                'fk.id_fasilitas_kamar',
+                'f.id_fasilitas',
+                'f.nama_fasilitas',
+                'f.jumlah_fasilitas',
+                'fk.id_gedung',
+                DB::raw('MAX(ku.biaya_pembelian) as biaya_pembelian'),
+                DB::raw('MAX(ku.tanggal_pembelian) as tanggal_pembelian'),
+                'f.gambar_fasilitas',
+                DB::raw('MAX(ku.biaya_perbaikan) as biaya_perbaikan'),
+                DB::raw('MAX(ku.tanggal_perbaikan) as tanggal_perbaikan')
+            )
+            ->groupBy('fk.id_fasilitas_kamar', 'f.id_fasilitas', 'f.nama_fasilitas', 'f.jumlah_fasilitas', 'f.gambar_fasilitas', 'fk.id_gedung')
+            ->get();
+
+        $type = 'fasilitas_kamar';
+
+        // Return the facilities as a JSON response
+        return response()->json(['fasilitas_kamar' => $fasilitas_kamar, 'type' => $type]);
+    }
     
     public function tambahFasilitasKamar(Request $request)
     {

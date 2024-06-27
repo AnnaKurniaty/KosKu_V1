@@ -88,6 +88,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Routes for Fasilitas Kamar
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/fasilitas-kamar/{id_kamar}', [FasilitasKamarController::class, 'fasilitasByKamar']);
+    Route::get('/fasilitas-kamar-v2/{id_gedung}', [FasilitasKamarController::class, 'fasilitasKamarV2']);
     Route::post('/fasilitas-kamar/insert', [FasilitasKamarController::class, 'tambahFasilitasKamar']);
     Route::post('/fasilitas-kamar/update/{id_fasilitas_kamar}', [FasilitasKamarController::class, 'updateFasilitasKamar']);
     Route::delete('/fasilitas-kamar/delete/{id_fasilitas_kamar}', [FasilitasKamarController::class, 'hapusFasilitasKamar']);

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Checkbox from '@mui/material/Checkbox';
@@ -40,6 +41,7 @@ const Detail = ({
     'nama_kamar': kamar.nama_kamar,
     'biaya_kamar': kamar.biaya_kamar,
     'status_kamar': kamar.status_kamar,
+    'id_fasilitas_list': kamar.id_fasilitas_list,
     'gambar_kamar': null,
   });
 
@@ -55,10 +57,13 @@ const Detail = ({
   const [selectedFasilitasIds, setSelectedFasilitasIds] = useState([]);
 
   useEffect( () => {
-    if (kamar.id_fasilitas_list != null) {
-      setSelectedFasilitasIds(kamar.id_fasilitas_list);
+    if (formData.id_fasilitas_list != null) {
+      setSelectedFasilitasIds(formData.id_fasilitas_list);
     }
-  }, []);
+  }, [formData.id_fasilitas_list]);
+
+  console.log("INI fasilitas : ", kamar);
+  console.log("INI KAMAR FASILITAS : ", fasilitasKamarList);
 
   return (
     <>

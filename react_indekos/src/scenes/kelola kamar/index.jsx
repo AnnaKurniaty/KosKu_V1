@@ -76,7 +76,7 @@ const Inventory = () => {
         try {
             if (location.state && location.state.gedungId) {
                 setGedungId(location.state.gedungId);
-                const response = await axiosClient.get(`/fasilitas-kamar/${location.state.gedungId}`);
+                const response = await axiosClient.get(`/fasilitas-kamar-v2/${location.state.gedungId}`);
                 const data = response.data;
                 setType(data.type);
                 setFasilitasKamar(data.fasilitas_kamar || []);

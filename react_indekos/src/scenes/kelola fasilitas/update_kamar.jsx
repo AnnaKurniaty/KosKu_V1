@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import axiosClient from "../../axios-client";
@@ -6,8 +7,8 @@ import ErrorModal from "../../components/ErrorModal";
 
 const EditKamar = ({
     style,
-    handleTabKamar,
     fasilitas_kamar,
+    handleTabKamar,
 }) => {
 
     const [open, setOpen] = React.useState(false);
