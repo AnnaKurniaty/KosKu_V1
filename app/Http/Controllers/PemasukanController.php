@@ -37,9 +37,14 @@ class PemasukanController extends Controller
 
     public function getPemasukan($userId)
     {
-        $pemasukan = Pemasukan::whereHas('menyewa.kamar.gedung', function($query) use ($userId) {
-            $query->where('id_pemilik', $userId);
-        })->get()->toArray();          
+        $pemasukan = DB::select('
+        SELECT p.*
+        FROM Pemasukan p
+        JOIN Menyewa m ON p.id_menyewa = m.id_menyewa
+        JOIN Kamar k ON m.id_kamar = k.id_kamar
+        JOIN Gedung g ON k.id_gedung = g.id_gedung
+        WHERE g.id_pemilik = :userId;
+        ', ['userId' => $userId]);         
 
         return response()->json(['pemasukan' => $pemasukan]);
     }

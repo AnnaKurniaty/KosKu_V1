@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Modal } from "@mui/material";
+import { Box, Typography, TextField, Button, Modal, useMediaQuery } from "@mui/material";
 import axiosClient from "../../axios-client";
 import SuccessModal from "../../components/SuccessModal";
 import ErrorModal from "../../components/ErrorModal";
@@ -8,6 +8,7 @@ const TambahGedung = ({ userId, style, fetchData }) => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
+  const isLargeScreen = useMediaQuery("(min-width: 1280px)");
 
   const [formData, setFormData] = useState({
     nama_gedung: "",
@@ -78,15 +79,7 @@ const TambahGedung = ({ userId, style, fetchData }) => {
     backgroundColor: '#FF9900',
     color: "white",
     borderRadius: '0.5em',
-    "@media (min-width:600px)": {
-      fontSize: "1rem",
-    },
-    "@media (min-width:960px)": {
-      fontSize: "1rem",
-    },
-    "@media (min-width:1280px)": {
-      fontSize: "1.85rem",
-    },
+    fontSize: isLargeScreen ? '0.95rem' : '0.9rem',
   };
 
   return (
@@ -96,7 +89,7 @@ const TambahGedung = ({ userId, style, fetchData }) => {
           variant='h5'
           color='#FF9900'
           fontWeight='bold'
-          sx={{ mb: '5px' }}
+          sx={{ mb: '5px', fontSize:isLargeScreen ? '2em' : '1.4em' }}
         >
           Daftar Gedung Kos
         </Typography>

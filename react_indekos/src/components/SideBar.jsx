@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Drawer,
@@ -10,6 +10,7 @@ import {
   ListItemText,
   Typography,
   useTheme,
+  useMediaQuery
 } from "@mui/material";
 import {
   SettingsOutlined,
@@ -57,13 +58,15 @@ const SideBar = ({
   setIsSideBarOpen,
   isNonMobile,
 }) => {
-  // const { pathname } = useLocation();
+  const sidebarRef = useRef(null); // Ref untuk sidebar element
+  const { pathname } = useLocation();
   const active = useSelector((state) => state.activePage);
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
+  const isLargeScreen = useMediaQuery("(min-width: 1280px)");
 
   useEffect(() => {
     const getUser = async () => {
@@ -84,6 +87,23 @@ const SideBar = ({
     };
     getUser();
   }, []);
+
+  useEffect(() => {
+    // Fungsi untuk menangkap klik di luar sidebar
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setIsSideBarOpen(false);
+      }
+    };
+
+    // Menambah event listener saat komponen dimount
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Membersihkan event listener saat komponen di-unmount
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [setIsSideBarOpen]);
 
   const handleLogout = async () => {
     try {
@@ -108,6 +128,7 @@ const SideBar = ({
           onClose={() => setIsSideBarOpen(false)}
           variant="persistent"
           anchor="left"
+          ref={sidebarRef} // Menghubungkan ref dengan sidebar element
           sx={{
             width: drawerWidth,
             "& .MuiDrawer-paper": {

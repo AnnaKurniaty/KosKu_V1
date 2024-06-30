@@ -43,7 +43,7 @@ Route::post('register',[AuthController::class,'register']);
 //Pemilik
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pemilik/{userId}', [UserController::class, 'showPemilik']);
-    Route::put('/pemilik/{userId}', [UserController::class, 'updatePemilik']);
+    Route::post('/edit-pemilik/{userId}', [UserController::class, 'updatePemilik']);
     Route::delete('/pemilik/{userId}', [UserController::class, 'hapusPemilik']);
 });
 
@@ -88,7 +88,6 @@ Route::middleware('auth:sanctum')->group(function () {
 // Routes for Fasilitas Kamar
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/fasilitas-kamar/{id_kamar}', [FasilitasKamarController::class, 'fasilitasByKamar']);
-    Route::get('/fasilitas-kamar-v2/{id_gedung}', [FasilitasKamarController::class, 'fasilitasKamarV2']);
     Route::post('/fasilitas-kamar/insert', [FasilitasKamarController::class, 'tambahFasilitasKamar']);
     Route::post('/fasilitas-kamar/update/{id_fasilitas_kamar}', [FasilitasKamarController::class, 'updateFasilitasKamar']);
     Route::delete('/fasilitas-kamar/delete/{id_fasilitas_kamar}', [FasilitasKamarController::class, 'hapusFasilitasKamar']);
@@ -109,4 +108,11 @@ Route::middleware('auth:sanctum')->group(function () {
 // Laporan
 Route::get('/laporan/pemasukan/{userId}', [PemasukanController::class, 'getPemasukan']);
 Route::get('/laporan/pengeluaran/{userId}', [PengeluaranController::class, 'getPengeluaran']);
+
+//forgot password
+Route::post('forgot-password', [UserController::class, 'forgotPassword']);
+Route::put('/reset-password/{userId}', [UserController::class, 'resetPassword']);
+
+Route::get('/fasilitasKamar/{id_kamar}', [FasilitasKamarController::class, 'fasilitasKamar']);
+Route::get('/fasilitasUmum/{id_kamar}', [FasilitasUmumController::class, 'fasilitasUmum']);
 

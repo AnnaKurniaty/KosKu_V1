@@ -7,6 +7,7 @@ import {
   Paper,
   Typography,
   Button,
+  Modal,
   CircularProgress,
 } from "@mui/material";
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
@@ -15,6 +16,21 @@ import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { LineChart } from "@mui/x-charts/LineChart";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { useLocation } from "react-router-dom";
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '1px solid #69AC77',
+  boxShadow: 4,
+  pt: 2,
+  px: 4,
+  pb: 3,
+  borderRadius: '1em'
+};
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -26,6 +42,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalAction, setModalAction] = useState(null);
+  const [currentPenyewaId, setCurrentPenyewaId] = useState(null);
 
   const location = useLocation();
 
@@ -106,19 +125,30 @@ const Dashboard = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const handleOpenModal = (action, id_menyewa) => {
+    setModalAction(action);
+    setCurrentPenyewaId(id_menyewa);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setModalAction(null);
+    setCurrentPenyewaId(null);
+  };
+
   const handleLanjutClick = async (id_menyewa) => {
     try {
       setLoading(true);
       const response = await axiosClient.post(`/informasi-kos/update_lanjut/${id_menyewa}`);
       const newMenyewa = response.data.menyewa;
-      
-      // Memperbarui state penyewa setelah menambahkan data baru
-      setPenyewaList([...penyewaList, newMenyewa]); // Perbaiki penggunaan penyewaList di sini
+
+      setPenyewaList([...penyewaList, newMenyewa]);
     } catch (error) {
       console.error("Gagal menambahkan data baru", error);
-      // Handle error state di sini jika diperlukan
     } finally {
       setLoading(false);
+      handleCloseModal();
     }
   };
 
@@ -127,14 +157,21 @@ const Dashboard = () => {
       setLoading(true);
       const response = await axiosClient.post(`/informasi-kos/update_tidak/${id_menyewa}`);
       const newMenyewa = response.data.menyewa;
-      
-      // Memperbarui state penyewa setelah menambahkan data baru
-      setPenyewaList([...penyewaList, newMenyewa]); // Perbaiki penggunaan penyewaList di sini
+
+      setPenyewaList([...penyewaList, newMenyewa]); 
     } catch (error) {
       console.error("Gagal menambahkan data baru", error);
-      // Handle error state di sini jika diperlukan
     } finally {
       setLoading(false);
+      handleCloseModal();
+    }
+  };
+
+  const handleConfirmAction = () => {
+    if (modalAction === 'Lanjut') {
+      handleLanjutClick(currentPenyewaId);
+    } else if (modalAction === 'Tidak') {
+      handleTidakClick(currentPenyewaId);
     }
   };
 
@@ -298,10 +335,10 @@ const Dashboard = () => {
                             </div>
                           </div>
                           <div style={buttonContainerStyle}>
-                            <Button type="submit" style={btnStyle} onClick={() => handleLanjutClick(penyewaDetails.id_menyewa)}>
+                            <Button type="submit" style={btnStyle} onClick={() => handleOpenModal('Lanjut', penyewaDetails.id_menyewa)}>
                               Lanjut
                             </Button>
-                            <Button type="submit" style={btnStyle} onClick={() => handleTidakClick(penyewaDetails.id_menyewa)}>
+                            <Button type="submit" style={btnStyle} onClick={() => handleOpenModal('Tidak', penyewaDetails.id_menyewa)}>
                               Tidak
                             </Button>
                           </div>
@@ -355,6 +392,19 @@ const Dashboard = () => {
             <ArrowCircleRightIcon sx={{fontSize: 42, color: '#69AC77'}} disabled={activeStep === steps.length - 1} onClick={handleNext} variant="contained">Selanjutnya
             </ArrowCircleRightIcon>
           </Box>
+          <Modal
+            open={modalOpen}
+            onClose={handleCloseModal}
+            aria-labelledby="success-modal-title"
+            aria-describedby="success-modal-description"
+          >
+            <Box sx={{ ...style, width: 320, padding: 2 }} align="center">
+              <Typography variant="h6" id="success-modal-title" style={{ fontWeight: 'bold' }}>{`Konfirmasi Aksi ${modalAction}`}</Typography>
+              <Typography>{`Apakah Anda yakin ingin melanjutkan dengan aksi ini?`}</Typography>
+              <Button style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={handleConfirmAction}>Ya, Simpan</Button>
+              <Button style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={handleCloseModal}>Tutup</Button>
+            </Box>
+          </Modal>
         </Box>
       );
     };

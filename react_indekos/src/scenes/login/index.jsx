@@ -24,107 +24,109 @@ const style = {
 
 const Login = () => {
   const theme = useTheme();
-  const [nomor_telepon, setNomor] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-  const [errors, setErrors] = useState([]);
-  const { setUser, setToken } = useStateContext();
-  const [loading, setLoading] = useState(false);
-  const [userId, setUserId] = useState(null);
+    const [nomor_telepon, setNomor] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+    const [errors, setErrors] = useState([]);
+    const { setUser, setToken } = useStateContext();
+    const [loading, setLoading] = useState(false);
+    const [userId, setUserId] = useState(null);
+    const [verificationCode, setVerificationCode] = useState(""); 
+    const [kamarList, setKamarList] = useState([]);
+    const [selectedKamar, setSelectedKamar] = useState('');
 
-  const [showPassword, setShowPassword] = useState(false);
-  const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
 
-  const [openModal, setOpenModal] = useState(false); // State untuk mengontrol visibilitas modal
-  const [verifyingUser, setVerifyingUser] = useState(false); // State untuk menunjukkan status verifikasi pengguna
-  const [namaLengkap, setNamaLengkap] = useState(""); // State untuk menyimpan nama lengkap pengguna
-  const [nomorTelepon, setNomorTelepon] = useState(""); // State untuk menyimpan nomor telepon pengguna
-  const [email, setEmail] = useState(""); // State untuk menyimpan email
-  const [resettingPassword, setResettingPassword] = useState(false); // State untuk menunjukkan status mengatur ulang password
-  const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const openError = (message) => {
-    setErrorMessage(message);
-    setOpenErrorModal(true);
-  };
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setVerifyingUser(false); // Reset status verifikasi saat menutup modal
-    setResettingPassword(false); // Reset status reset password saat menutup modal
-  };
+    const [openModal, setOpenModal] = useState(false);
+    const [verifyingUser, setVerifyingUser] = useState(false);
+    const [nomorTelepon, setNomorTelepon] = useState("");
+    const [resettingPassword, setResettingPassword] = useState(false);
+    const [openErrorModal, setOpenErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
-  const submitHandle = (ev) => {
-    ev.preventDefault();
-    const payload = {
-      nomor_telepon,
-      password,
+    const openError = (message) => {
+        setErrorMessage(message);
+        setOpenErrorModal(true);
     };
-    setLoading(true);
-    axiosClient.post("/login", payload)
-      .then(({ data }) => {
-        console.log("Login successful: ", data);
-        localStorage.setItem('token', data.authorisation.token);
-        setToken(data.authorisation.token);
-        setUser(data.user);
-        const userId = data.user.id;
-        setUserId(userId);
-        navigate(`/informasi kos/${userId}`, { state: { userId:userId } });
-      })
-      .catch(err => {
-        setLoading(false);
-        const response = err.response;
-        if (response && response.status === 422) {
-          setErrors(response.data.errors);
-        }
-        openError('Pastikan Semua Terisi Dengan Benar');
-      });
-  };
-
-  const closeError = () => {
-    setOpenErrorModal(false);
-  };
-  
-  const handleForgotPassword = () => {
-    setLoading(true);
-
-    axiosClient.post("/verify-user", { nomor_telepon: nomorTelepon })
-      .then(({ data }) => {
-        setLoading(false);
-        setVerifyingUser(true);
-        setUserId(data.userId); 
-      })
-      .catch(err => {
-        setLoading(false);
-        const response = err.response;
-        if (response && response.status === 404) {
-          setErrors({ general: 'Pengguna tidak ditemukan!' });
-        } else {
-          setErrors({ general: 'Terjadi kesalahan saat verifikasi pengguna.' });
-        }
-      });
-  };  
-
-  const handleResetPassword = (ev) => {
-    ev.preventDefault();
-    const payload = {
-      email,
-      password,
+    const handleOpenModal = () => setOpenModal(true);
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setVerifyingUser(false);
+        setResettingPassword(false);
     };
-    setLoading(true);
-    axiosClient.put(`/reset-password/${userId}`, payload)
-      .then(({ data }) => {
-        setLoading(false);
 
-        console.log("Password berhasil diubah: ", data);
-        handleCloseModal();
-      })
-      .catch(err => {
-        setLoading(false);
+    const submitHandle = (ev) => {
+        ev.preventDefault();
+        const payload = {
+            nomor_telepon,
+            password,
+        };
+        setLoading(true);
+        axiosClient.post("/login", payload)
+            .then(({ data }) => {
+                console.log("Login successful: ", data);
+                localStorage.setItem('token', data.authorisation.token);
+                setToken(data.authorisation.token);
+                setUser(data.user);
+                const userId = data.user.id;
+                setUserId(userId);
+                navigate(`/informasi kos/${userId}`, { state: { userId: userId } });
+            })
+            .catch(err => {
+                setLoading(false);
+                const response = err.response;
+                if (response && response.status === 422) {
+                    setErrors(response.data.errors);
+                }
+                openError('Pastikan Semua Terisi Dengan Benar');
+            });
+    };
 
-        console.error("Gagal mengubah password: ", err);
-      });
-  };
+    const closeError = () => {
+        setOpenErrorModal(false);
+    };
+
+    const handleForgotPassword = () => {
+        setLoading(true);
+
+        axiosClient.post("/forgot-password", { nomor_telepon: nomorTelepon })
+            .then(({ data }) => {
+                setLoading(false);
+                setVerifyingUser(true);
+                setUserId(data.userId);
+                handleOpenModal(); // Buka modal reset password setelah mengirim SMS verifikasi
+            })
+            .catch(err => {
+                setLoading(false);
+                const response = err.response;
+                if (response && response.status === 404) {
+                    setErrors({ general: 'Pengguna tidak ditemukan!' });
+                } else {
+                    setErrors({ general: 'Terjadi kesalahan saat verifikasi pengguna.' });
+                }
+            });
+    };
+
+    const handleResetPassword = (ev) => {
+        ev.preventDefault();
+        const payload = {
+            password,
+        };
+        setLoading(true);
+        axiosClient.put(`/reset-password/${userId}`, payload)
+            .then(({ data }) => {
+                setLoading(false);
+
+                console.log("Password berhasil diubah: ", data);
+                handleCloseModal();
+            })
+            .catch(err => {
+                setLoading(false);
+
+                console.error("Gagal mengubah password: ", err);
+            });
+    };
 
   const paperStyle = { padding: 20, height: "auto", width: 300, backgroundColor: theme.palette.background.alt, borderRadius: '3rem', borderColor: '#69AC77', borderStyle: 'solid', position: 'absolute',
     top: '50%',
@@ -224,7 +226,7 @@ const Login = () => {
         <Box sx={{ ...style, width: 320, padding: 2 }} align="center">
           <Typography variant="h6" id="success-modal-title" style={{ fontWeight: 'bold' }}>Error</Typography>
           <Typography>{errorMessage}</Typography>
-          <Button style={{ margin: '0.5em', backgroundColor: '#FF0000', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={closeError}>Tutup</Button>
+          <Button style={{ margin: '0.5em', backgroundColor: '#FF0000', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} onClick={closeError}>Tutup</Button>
         </Box>
       </Modal>
       <Modal
@@ -233,7 +235,7 @@ const Login = () => {
         aria-labelledby="modal-lupa-password-title"
         aria-describedby="modal-lupa-password-description"
       >
-      <Paper elevation={10} style={{ ...paperStyle, width: 400 }}>
+      <Paper elevation={10} style={{ ...paperStyle, width: 320 }}>
       {!verifyingUser && !resettingPassword && (
         <>
         <h2 id="modal-lupa-password-title" align="center">Lupa Password</h2>
@@ -263,21 +265,6 @@ const Login = () => {
       <>
         <h2 id="modal-lupa-password-title" align="center">Ubah Password</h2>
           <form onSubmit={handleResetPassword}>
-            <TextField
-              label='Email'
-              variant='standard'
-              color='warning'
-              fullWidth
-              required
-              value={email}
-              onChange={(v) => setEmail(v.target.value)}
-              InputLabelProps={{
-                style: { color: "black" }
-              }}
-              InputProps={{
-                style: { color: "black" },
-              }}
-            />
             <TextField
               label='Password Baru'
               variant='standard'

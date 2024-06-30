@@ -8,7 +8,7 @@ import axiosClient from "../../axios-client";
 
 const Layout = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
-  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const { user, token, setUser, setToken } = useStateContext();
   const [loading, setLoading] = useState(true);
 
@@ -44,10 +44,10 @@ const Layout = () => {
   return (
     <Box display={isNonMobile ? "flex" : "block"} width="100%" height="100%">
       <SideBar
-        isNonMobile={isNonMobile}
-        drawerWidth="250px"
+        drawerWidth='250px'
         isSideBarOpen={isSideBarOpen}
         setIsSideBarOpen={setIsSideBarOpen}
+        isNonMobile={isNonMobile}
       />
       <Box flexGrow={1}>
         <NavBar

@@ -24,7 +24,7 @@ const FormGroupContainer = styled(FormGroup)({
   gap: '2px',
 });
 
-const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
+const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId, fetchData }) => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
@@ -87,6 +87,7 @@ const UpdateKamar = ({ kamar, style, fasilitasKamarList, gedungId }) => {
       setSuccessMessage('Kamar berhasil diubah');
       setOpenSuccessModal(true);
       handleClose();
+      fetchData();
     } catch (error) {
       console.error('Error:', error.response.data.errors);
       setErrorMessage('Kamar gagal diubah');

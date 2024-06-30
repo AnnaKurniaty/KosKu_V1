@@ -10,15 +10,22 @@ class PengeluaranController extends Controller
 {
     public function getPengeluaran($userId)
     {      
-        $pengeluaran = Pengeluaran::whereHas('fasilitasKamar.kamar.gedung', function($query) use ($userId) {
-            $query->where('id_pemilik', $userId);
-        })->orWhereHas('fasilitasUmum.gedung', function($query) use ($userId) {
-            $query->where('id_pemilik', $userId);
-        })->get()->toArray();
-
-        return response()->json(['pengeluaran' => $pengeluaran]);
+        $pengeluaran = DB::select('
+        SELECT p.*
+        FROM Pengeluaran p
+        JOIN Kebutuhan k ON p.id_kebutuhan = k.id_kebutuhan
+        LEFT JOIN Fasilitas_Kamar fk ON k.id_fasilitas_kamar = fk.id_fasilitas_kamar
+        LEFT JOIN Kamar ka ON fk.id_kamar = ka.id_kamar
+        LEFT JOIN Gedung gk ON ka.id_gedung = gk.id_gedung
+        LEFT JOIN Gedung gfk ON fk.id_gedung = gfk.id_gedung
+        LEFT JOIN Fasilitas_Umum fu ON k.id_fasilitas_umum = fu.id_fasilitas_umum
+        LEFT JOIN Gedung gfu ON fu.id_gedung = gfu.id_gedung
+        WHERE gk.id_pemilik = :userId
+        OR gfk.id_pemilik = :userId
+        OR gfu.id_pemilik = :userId', ['userId' => $userId]);
+        
+        return response()->json(['pengeluaran' => $pengeluaran]);        
     }
-
      
     public function pengeluaranBulanan($userId)
     {

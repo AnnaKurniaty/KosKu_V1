@@ -60,7 +60,7 @@ const style = {
     };
 
     const navigate = useNavigate();
-    const btnstyle = { margin: '0.5em 0.5em 1.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em', marginLeft:'auto' };
+    const btnstyle = { margin: '0.5em 0.5em 1.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em', marginLeft:'auto', fontSize: isLargeScreen ? '0.95rem' : '0.9rem' };
 
     if (loading) {
         return (
@@ -73,13 +73,12 @@ const style = {
     if (penyewaList.length === 0) {
         return (
             <Box m='1.5rem 2.5rem' textAlign="center">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
-                <Box marginLeft="-20px">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent:'space-between' }}>
+                <Box>
                     <Typography
-                    variant='h5'
                     color='#FF9900'
                     fontWeight='bold'
-                    sx={{ mb: '1em' }}
+                    sx={{ mb: '1em', fontSize:isLargeScreen ? '2em' : '1.4em' }}
                     >
                     Daftar Penyewa Kos
                     </Typography>
@@ -137,13 +136,12 @@ const style = {
 
     return (
         <Box m='1.5rem 2.5rem'>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
-                <Box marginLeft="-20px">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent:'space-between' }}>
+                <Box>
                     <Typography
-                    variant='h5'
                     color='#FF9900'
                     fontWeight='bold'
-                    sx={{ mb: '20px' }}
+                    sx={{ mb: '1em', fontSize:isLargeScreen ? '2em' : '1.4em', mr:'0.5em' }}
                     >
                     Daftar Penyewa Kos
                     </Typography>
@@ -194,22 +192,22 @@ const style = {
                     padding={1}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                            <div>
+                            <div sx={{width:'auto', height:isLargeScreen ? '70px' : '50px', }}>
                                 <img
                                     alt="No-Img"
                                     src={`${penyewa.foto_ktp}`}
                                     height="auto"
-                                    width="70"
+                                    width={isLargeScreen ? '150' : '70'}
                                 />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', marginLeft:'8px' }}>
-                                <Typography variant="caption" sx={{ color: theme.palette.secondary[100] }} fontWeight='bold' >
+                                <Typography sx={{ color: theme.palette.secondary[100], fontSize:isLargeScreen ? '1em' : '0.7em' }} fontWeight='bold' >
                                     {penyewa.nama_lengkap}
                                 </Typography>
-                                <Typography variant="caption" sx={{ color: theme.palette.secondary[100] }}>
+                                <Typography variant="caption" sx={{ color: theme.palette.secondary[100], fontSize:isLargeScreen ? '1em' : '0.7em' }}>
                                     Status Penyewa: {penyewa.status_penyewa}
                                 </Typography>
-                                <Typography variant="caption" sx={{ color: theme.palette.secondary[100] }}>
+                                <Typography variant="caption" sx={{ color: theme.palette.secondary[100], fontSize:isLargeScreen ? '1em' : '0.7em' }}>
                                     {penyewa.nama_kamar}
                                 </Typography>
                             </div>

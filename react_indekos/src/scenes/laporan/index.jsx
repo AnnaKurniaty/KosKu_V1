@@ -7,7 +7,7 @@ import {
   Menu,
   MenuItem,
   Modal,
-  colors,
+  useMediaQuery
 } from "@mui/material";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -32,6 +32,7 @@ const CustomToolbar = () => {
 const Laporan = () => {
   const theme = useTheme();
   const [financialData, setFinancialData] = useState({ income: [], expense: [] });
+  const [filteredData, setFilteredData] = useState({ income: [], expense: [] });
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -41,7 +42,8 @@ const Laporan = () => {
   const [selectedYear, setSelectedYear] = useState(selectedDate.year());
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [detailType, setDetailType] = useState(""); // 'income' atau 'expense'
+  const [detailType, setDetailType] = useState(""); 
+  const isLargeScreen = useMediaQuery("(min-width: 1280px)");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,13 +51,14 @@ const Laporan = () => {
       try {
         if (location.state && location.state.userId) {
           const pemasukanResponse = await axiosClient.get(`/laporan/pemasukan/${location.state.userId}`);
-          const pengeluaranresponse = await axiosClient.get(`/laporan/pengeluaran/${location.state.userId}`);
-          const pemasukandata = pemasukanResponse.data;
-          const pengeluarandata = pengeluaranresponse.data;
+          const pengeluaranResponse = await axiosClient.get(`/laporan/pengeluaran/${location.state.userId}`);
+          const pemasukanData = pemasukanResponse.data;
+          const pengeluaranData = pengeluaranResponse.data;
           setFinancialData({
-            income: pemasukandata.pemasukan || [],
-            expense: pengeluarandata.pengeluaran || [],
+            income: pemasukanData.pemasukan || [],
+            expense: pengeluaranData.pengeluaran || [],
           });
+          filterData(pemasukanData.pemasukan || [], pengeluaranData.pengeluaran || []);
         }
       } catch (error) {
         console.error("Failed to fetch data", error);
@@ -67,26 +70,44 @@ const Laporan = () => {
     fetchData();
   }, [location.state]);
 
-  const rows = [...(financialData.income || []), ...(financialData.expense || [])].map((item, index) => ({
+  const filterData = (incomeData, expenseData) => {
+    const filteredIncome = incomeData.filter(item =>
+      dayjs(item.tgl_pemasukan).month() + 1 === selectedMonth && dayjs(item.tgl_pemasukan).year() === selectedYear
+    );
+    const filteredExpense = expenseData.filter(item =>
+      dayjs(item.tgl_pengeluaran).month() + 1 === selectedMonth && dayjs(item.tgl_pengeluaran).year() === selectedYear
+    );
+
+    setFilteredData({
+      income: filteredIncome,
+      expense: filteredExpense,
+    });
+  };
+
+  useEffect(() => {
+    filterData(financialData.income, financialData.expense);
+  }, [selectedMonth, selectedYear, financialData]);
+
+  const rows = [...(filteredData.income || []), ...(filteredData.expense || [])].map((item, index) => ({
     id: index + 1,
     tgl_pemasukan: item.tgl_pemasukan ? dayjs(item.tgl_pemasukan).format('DD/MM/YY') : '-',
     pemasukan: item.biaya_pemasukan ? parseFloat(item.biaya_pemasukan) : '-',
     tgl_pengeluaran: item.tgl_pengeluaran ? dayjs(item.tgl_pengeluaran).format('DD/MM/YY') : '-',
     pengeluaran: item.biaya_pengeluaran ? parseFloat(item.biaya_pengeluaran) : '-',
-    keterangan: item.keterangan || '-', 
+    keterangan: item.keterangan || '-',
   }));
 
   const incomeRows = rows.filter(item => item.pemasukan !== '-');
   const expenseRows = rows.filter(item => item.pengeluaran !== '-');
 
   const incomeColumns = [
-    { field: 'tgl_pemasukan', headerName: 'Tanggal Pemasukan', flex: 1 },
-    { field: 'pemasukan', headerName: 'Pemasukan', flex: 1 },
+    { field: 'tgl_pemasukan', headerName: 'Tanggal Pemasukan', flex: 1, minWidth: 150 },
+    { field: 'pemasukan', headerName: 'Pemasukan', flex: 1, minWidth: 150 },
   ];
 
   const expenseColumns = [
-    { field: 'tgl_pengeluaran', headerName: 'Tanggal Pengeluaran', flex: 1 },
-    { field: 'pengeluaran', headerName: 'Pengeluaran', flex: 1 },
+    { field: 'tgl_pengeluaran', headerName: 'Tanggal Pengeluaran', flex: 1, minWidth: 150 },
+    { field: 'pengeluaran', headerName: 'Pengeluaran', flex: 1, minWidth: 150 },
   ];
 
   const handleDateChange = (newValue) => {
@@ -212,16 +233,15 @@ const Laporan = () => {
       </Box>
     );
   };
-  
+
   return (
     <Box m="1.5rem 2.5rem">
-      <Box width='200px' sx={{ margin: '0 auto', textAlign: 'center' }}>
+      <Box sx={{ margin: '0 auto', textAlign: 'center', width:isLargeScreen ? '400px' : '200px' }}>
         <Typography
           variant='h5'
           color='#FF9900'
           fontWeight='bold'
-          font
-          sx={{ mb: '5px', textAlign:'center'}}
+          sx={{ mb: '5px', textAlign:'center', fontSize:isLargeScreen ? '2em' : '1.4em' }}
         >
           Tabel Pemasukan dan Pengeluaran Kos
         </Typography>
@@ -276,20 +296,16 @@ const Laporan = () => {
         >
           <MenuItem onClick={handleMenuClose}>
             <CSVLink data={rows} filename={"financial_report.csv"} style={{ textDecoration: 'none', color: 'inherit' }}>
-              .csv
+              .excel
             </CSVLink>
           </MenuItem>
           <MenuItem onClick={() => { exportPDF(); handleMenuClose(); }}>
-           
-          .pdf
+            .pdf
           </MenuItem>
         </Menu>
       </Box>
-
-      {/* Income and Expense DataGrids */}
-      <Box sx={{ display: 'flex', flexDirection: 'row'}}>
-        {/* Income DataGrid */}
-        <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', overflowX: 'auto' }}>
+        <Box sx={{ flexGrow: 1, minWidth: 280 }}>
           <Box sx={{ height: 500 }}>
             <DataGrid
               rows={incomeRows}
@@ -312,7 +328,7 @@ const Laporan = () => {
         </Box>
 
         {/* Expense DataGrid */}
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1, minWidth: 280 }}>
           <Box sx={{ height: 500 }}>
             <DataGrid
               rows={expenseRows}

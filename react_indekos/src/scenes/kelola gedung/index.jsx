@@ -25,7 +25,7 @@ const Gedung = () => {
     const [loading, setLoading] = React.useState(true);
     const [userId, setUserId] = React.useState(null);
     const navigate = useNavigate();
-
+    const isLargeScreen = useMediaQuery("(min-width: 1280px)");
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -129,7 +129,7 @@ const Gedung = () => {
                         <img
                             alt="No-Img"
                             src={`${gedung.gambar_gedung}`}
-                            style={{ borderRadius: '1rem', cursor: 'pointer', width: '100%' }}
+                            style={{ borderRadius: '1rem', cursor: 'pointer', width: 'auto', height:isLargeScreen ? '300px' : '180px', }}
                             height="250"
                             onClick={() => {
                                 navigate(`/kelola fasilitas/${gedung.id_gedung}`, { state: { gedungId: gedung.id_gedung } });
@@ -138,10 +138,10 @@ const Gedung = () => {
 
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '1rem' }}>
                             <div style={{ marginRight: 'auto' }}>
-                                <Typography variant="h5" sx={{ color: theme.palette.secondary[100], fontWeight: 'bold' }} margin="0 0 0.5rem">
+                                <Typography sx={{ color: theme.palette.secondary[100], fontWeight: 'bold', fontSize:isLargeScreen ? '2em' : '1.5em' }} margin="0 0 0.5rem">
                                     {gedung.nama_gedung}
                                 </Typography>
-                                <Typography variant="body1" sx={{ color: theme.palette.secondary[100] }} margin="0 0 0">
+                                <Typography sx={{ color: theme.palette.secondary[100], fontSize:isLargeScreen ? '1.5em' : '1em' }} margin="0 0 0">
                                     Jumlah Kamar : {gedung.jumlah_kamar}
                                 </Typography>
                             </div>

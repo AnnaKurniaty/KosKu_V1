@@ -37,6 +37,7 @@ const Inventory = () => {
     const [fasilitasKamarList, setFasilitasKamar] = useState([]);
     const [loading, setLoading] = useState(true);
     const [gedungId, setGedungId] = useState(null);
+    const isLargeScreen = useMediaQuery("(min-width: 1280px)");
 
     const fetchData = async () => {
         setLoading(true);
@@ -76,7 +77,7 @@ const Inventory = () => {
         try {
             if (location.state && location.state.gedungId) {
                 setGedungId(location.state.gedungId);
-                const response = await axiosClient.get(`/fasilitas-kamar-v2/${location.state.gedungId}`);
+                const response = await axiosClient.get(`/fasilitas-kamar/${location.state.gedungId}`);
                 const data = response.data;
                 setType(data.type);
                 setFasilitasKamar(data.fasilitas_kamar || []);
@@ -118,8 +119,6 @@ const Inventory = () => {
 
     const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
     const textStyle = { backgroundColor: theme.palette.background.alt };
-    const btnstyle1 = { margin: '0.2em', backgroundColor: '#FF9900', color: "white", borderRadius: '0.5em' };
-    const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '10em' };
 
     return (
         <Box m='1.5rem 2.5rem'>
@@ -153,9 +152,9 @@ const Inventory = () => {
                                     backgroundColor: theme.palette.secondary[500],
                                 }
                             }}>
-                            <Tab label="Kamar" value="1" onClick={handleTab} />
-                            <Tab label="Fasilitas Umum" value="2" onClick={handleTabUmum} />
-                            <Tab label="Fasilitas Kamar" value="3" onClick={handleTabKamar} />
+                            <Tab label="Kamar" sx={{fontSize:isLargeScreen ? '1.5em' : '1.2em',}} value="1" onClick={handleTab} />
+                            <Tab label="Fasilitas Umum" sx={{fontSize:isLargeScreen ? '1.5em' : '1.2em',}} value="2" onClick={handleTabUmum} />
+                            <Tab label="Fasilitas Kamar" sx={{fontSize:isLargeScreen ? '1.5em' : '1.2em',}} value="3" onClick={handleTabKamar} />
                         </TabList>
                     </Box>
                     <TabPanel value="1">
@@ -209,9 +208,9 @@ const Inventory = () => {
                                             component="img"
                                             alt={`${kamar.gambar_kamar}`}
                                             src={`${kamar.gambar_kamar}`}
-                                            style={{ height: '150px', width: 'auto', borderRadius: '1rem' }}
+                                            style={{ height:isLargeScreen ? '300px' : '150px', width: 'auto', borderRadius: '1rem' }}
                                         ></Box>
-                                        <Typography variant="h5" align='center' sx={{ color: theme.palette.secondary[100] }} margin="1em 0 0" fontWeight='bold'>
+                                        <Typography align='center' sx={{ color: theme.palette.secondary[100], fontSize:isLargeScreen ? '2em' : '1.5em' }} margin="0.5em 0 0" fontWeight='bold'>
                                             {kamar.nama_kamar}
                                         </Typography>
                                         <div align="center">
@@ -221,6 +220,7 @@ const Inventory = () => {
                                                 fasilitasKamarList={fasilitasKamarList}
                                                 handleTab={handleTab}
                                                 gedungId={gedungId}
+                                                fetchData={fetchData}
                                             />
                                             <Hapus
                                                 style={style}
@@ -284,9 +284,9 @@ const Inventory = () => {
                                             component="img"
                                             alt={`${fasilitas_umum.gambar_fasilitas}`}
                                             src={`${fasilitas_umum.gambar_fasilitas}`}
-                                            style={{ height: '150px', width: 'auto', borderRadius: '1rem' }}
+                                            style={{ height:isLargeScreen ? '300px' : '150px', width: 'auto', borderRadius: '1rem' }}
                                         ></Box>
-                                        <Typography variant="h3" align='center' sx={{ color: theme.palette.secondary[100] }}>
+                                        <Typography align='center' sx={{ color: theme.palette.secondary[100], fontSize:isLargeScreen ? '2em' : '1.5em'  }}>
                                             {fasilitas_umum.nama_fasilitas}
                                         </Typography>
                                         <div align="center">
@@ -294,11 +294,13 @@ const Inventory = () => {
                                                 style={style}
                                                 fasilitas_umum={fasilitas_umum}
                                                 handleTabUmum={handleTabUmum}
+                                                fetchData={fetchData}
                                             />
                                             <HapusFasilitasUmum
                                                 style={style}
                                                 id_fasilitas_umum={fasilitas_umum.id_fasilitas_umum}
                                                 handleTabUmum={handleTabUmum}
+                                                fetchData={fetchData}
                                             />
                                         </div>
                                     </Box>
@@ -357,9 +359,9 @@ const Inventory = () => {
                                             component="img"
                                             alt={`${fasilitas_kamar.gambar_fasilitas}`}
                                             src={`${fasilitas_kamar.gambar_fasilitas}`}
-                                            style={{ height: '150px', width: 'auto', borderRadius: '1rem' }}
+                                            style={{ height:isLargeScreen ? '300px' : '150px', width: 'auto', borderRadius: '1rem' }}
                                         ></Box>
-                                        <Typography variant="h3" align='center' sx={{ color: theme.palette.secondary[100] }}>
+                                        <Typography align='center' sx={{ color: theme.palette.secondary[100], fontSize:isLargeScreen ? '2em' : '1.5em'  }}>
                                             {fasilitas_kamar.nama_fasilitas}
                                         </Typography>
                                         <div align="center">
@@ -367,11 +369,14 @@ const Inventory = () => {
                                                 style={style}
                                                 fasilitas_kamar={fasilitas_kamar}
                                                 handleTabKamar={handleTabKamar}
+                                                fetchData={fetchData}
+                                                gedungId={gedungId}
                                             />
                                             <HapusFasilitasKamar
                                                 style={style}
                                                 id_fasilitas_kamar={fasilitas_kamar.id_fasilitas_kamar}
                                                 handleTabKamar={handleTabKamar}
+                                                fetchData={fetchData}
                                             />
                                         </div>
                                     </Box>

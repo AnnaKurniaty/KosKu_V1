@@ -13,29 +13,57 @@ use Illuminate\Support\Facades\DB;
 class FasilitasUmumController extends Controller
 {
 
+    public function fasilitasUmum($id_kamar)
+    {
+        $id_gedung = DB::table('kamar')
+                        ->where('id_kamar', $id_kamar)
+                        ->value('id_gedung');
+
+        $fasilitas_umum = DB::table('gedung as g')
+                            ->leftJoin('fasilitas_umum as fu', function($join) {
+                                $join->on('fu.id_gedung', '=', 'g.id_gedung')
+                                    ->whereNull('fu.deleted_at');
+                            })
+                            ->leftJoin('fasilitas as f', 'f.id_fasilitas', '=', 'fu.id_fasilitas')
+                            ->where('g.id_gedung', $id_gedung)
+                            ->groupBy('fu.id_fasilitas_umum', 'f.id_fasilitas', 'f.nama_fasilitas')
+                            ->select(
+                                'fu.id_fasilitas_umum', 
+                                'f.id_fasilitas', 
+                                'f.nama_fasilitas',
+                            )
+                            ->get();
+
+        $type = 'fasilitas_umum';
+
+        // Return the facilities as a JSON response
+        return response()->json(['fasilitas_umum' => $fasilitas_umum, 'type' => $type]);
+    }
+
     public function fasilitasByGedung($id_gedung)
     {
         $fasilitas_umum = DB::table('gedung as g')
-            ->leftJoin('fasilitas_umum as fu', function($join) {
-                $join->on('fu.id_gedung', '=', 'g.id_gedung')
-                    ->whereNull('fu.deleted_at');
-            })
+            ->leftJoin('fasilitas_umum as fu', 'fu.id_gedung', '=', 'g.id_gedung')
             ->leftJoin('fasilitas as f', 'f.id_fasilitas', '=', 'fu.id_fasilitas')
-            ->leftJoin('kebutuhan as k', 'k.id_fasilitas_umum', '=', 'fu.id_fasilitas_umum')
+            ->leftJoin('kebutuhan as ku', function($join) {
+                $join->on('ku.id_fasilitas_umum', '=', 'fu.id_fasilitas_umum');
+            })
             ->where('g.id_gedung', '=', $id_gedung)
-            ->groupBy('fu.id_fasilitas_umum', 'f.id_fasilitas', 'f.nama_fasilitas', 'f.jumlah_fasilitas', 'k.biaya_pembelian', 'k.tanggal_pembelian', 'f.gambar_fasilitas', 'k.biaya_perbaikan', 'k.tanggal_perbaikan')
-            ->havingRaw('f.id_fasilitas IS NOT NULL')
+            ->whereNull('fu.deleted_at') 
             ->select(
-                'fu.id_fasilitas_umum', 
-                'f.id_fasilitas', 
-                'f.nama_fasilitas', 
+                'fu.id_fasilitas_umum',
+                'f.id_fasilitas',
+                'f.nama_fasilitas',
                 'f.jumlah_fasilitas',
-                'k.biaya_pembelian', 
-                'k.tanggal_pembelian', 
-                'f.gambar_fasilitas', 
-                'k.biaya_perbaikan', 
-                'k.tanggal_perbaikan'
+                'fu.id_gedung',
+                DB::raw('MAX(ku.biaya_pembelian) as biaya_pembelian'),
+                DB::raw('MAX(ku.tanggal_pembelian) as tanggal_pembelian'),
+                'f.gambar_fasilitas',
+                DB::raw('MAX(ku.biaya_perbaikan) as biaya_perbaikan'),
+                DB::raw('MAX(ku.tanggal_perbaikan) as tanggal_perbaikan')
             )
+            ->groupBy('fu.id_fasilitas_umum', 'f.id_fasilitas', 'f.nama_fasilitas', 'f.jumlah_fasilitas', 'f.gambar_fasilitas', 'fu.id_gedung')
+            ->orderBy('f.nama_fasilitas', 'asc')
             ->get();
         $type = 'fasilitas_umum';
 
@@ -68,14 +96,10 @@ class FasilitasUmumController extends Controller
             'gambar_fasilitas' => $imageUrl,
         ]);
 
-        $fasilitas->save();
-
         $fasilitas_umum = FasilitasUmum::create([
             'id_gedung' => $request->input('id_gedung'),
             'id_fasilitas' => $fasilitas->id_fasilitas,
         ]);
-
-        $fasilitas_umum->save();
 
         Kebutuhan::create([
             'id_fasilitas_umum' => $fasilitas_umum->id_fasilitas_umum,

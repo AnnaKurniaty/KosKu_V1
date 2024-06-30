@@ -9,11 +9,12 @@ import {
   AppBar,
   IconButton,
   Toolbar,
-  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 
 const NavBar = ({ user, isSideBarOpen, setIsSideBarOpen }) => {
   const dispatch = useDispatch();
+  const isLargeScreen = useMediaQuery("(min-width: 1280px)");
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState(null);
   const [query, setQuery] = useState('')
@@ -44,7 +45,8 @@ const NavBar = ({ user, isSideBarOpen, setIsSideBarOpen }) => {
         {/* LEFT SIDE */}
         <FlexBetween>
           <IconButton onClick={() => setIsSideBarOpen(!isSideBarOpen)} sx={{
-                          color:"black"
+                          color:"black",
+                          fontSize:isLargeScreen ? '2.1em' : '1.9em'
                         }}>
             <span>Menu</span><MenuIcon />
           </IconButton>

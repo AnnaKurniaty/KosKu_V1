@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\KamarModels as Kamar;
+use App\Models\PenyewaModels as Penyewa;
+use App\Models\MenyewaModels as Menyewa;
 use App\Models\FasilitasKamarModels as FasilitasKamar;
 use App\Helper\ImageHelper;
 use Illuminate\Support\Facades\Storage;
@@ -85,13 +87,13 @@ class KamarController extends Controller
                 'k.gambar_kamar',
                 DB::raw('STRING_AGG(kf.id_fasilitas::text, \',\') as id_fasilitas_list')
             )
+            ->orderBy('k.nama_kamar', 'asc')
             ->get();
 
         $type = 'kamar';
 
         return response()->json(['kamar' => $kamar, 'type' => $type]);
     }
-
 
     public function tambahKamar(Request $request)
     {
@@ -187,12 +189,25 @@ class KamarController extends Controller
             return response()->json(['error' => 'Kamar not found'], 404);
         }
 
+        // Update status penyewa menjadi 'tidak aktif'
+        $menyewa = Menyewa::where('id_kamar', $id_kamar)->get();
+        foreach ($menyewa as $sewa) {
+            $penyewa = Penyewa::findOrFail($sewa->id_penyewa);
+            if ($penyewa) {
+                $penyewa->status_penyewa = 'tidak aktif';
+                $penyewa->save();
+            }
+        }
+
+        // Delete gambar_kamar if exists
         if ($kamar->gambar_kamar) {
             ImageHelper::deleteImage($kamar->gambar_kamar);
         }
 
+        // Delete the kamar
         $kamar->delete();
 
         return response()->json(['message' => 'Kamar deleted successfully']);
     }
+
 }

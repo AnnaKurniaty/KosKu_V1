@@ -1,4 +1,4 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import { Box, Button, Modal, TextField, Typography, useMediaQuery } from "@mui/material";
 import React, { useState } from "react";
 import Edit from './update.jsx';
 import Hapus from './hapus.jsx';
@@ -10,8 +10,9 @@ const Detail = ({
   fetchData,
   userId,
 }) => {
-  const btnstyle = { marginLeft:'2px', backgroundColor: '#FF9900', color: "white", padding: '0.2em 0', borderRadius: '0.5em', width: '8em' };
+  const btnstyle = { marginLeft:'2px', backgroundColor: '#FF9900', color: "white", padding: '0.2em 0', borderRadius: '0.5em', width: '8em', height:'3em' };
   const [errorMessage, setErrorMessage] = useState('');
+  const isLargeScreen = useMediaQuery("(min-width: 1280px)");
   const [open, setOpen] = React.useState(false);
   const handleClose = () => { setOpen(false); };
   const handleOpen = () => { setOpen(true); };
@@ -40,7 +41,7 @@ const Detail = ({
 
   return (
     <>
-      <Button style={btnstyle} onClick={handleOpen}>Lihat Detail</Button>
+      <Button sx={{ ...btnstyle, fontSize:isLargeScreen ? '1.1em' : '0.7em'}} onClick={handleOpen}>Lihat Detail</Button>
       <Modal
         open={open}
         onClose={handleClose}

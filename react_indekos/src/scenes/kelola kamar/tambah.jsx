@@ -44,7 +44,7 @@ const TambahFasilitas = ({
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [selectedKamar, setSelectedKamar] = useState('');
-  const isLargeScreen = useMediaQuery("(min-width: 1280px)")
+  const isLargeScreen = useMediaQuery("(min-width: 1280px)");
   const handleOpen = () => {
       if(type === 'kamar'){
           setOpenAdd(true);
@@ -206,18 +206,17 @@ const TambahFasilitas = ({
     };
 
 
-  //STYLE
-  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em', borderRadius: '0.5em', width: '9em', height: '2em', marginLeft:'auto', 
-    fontSize: isLargeScreen ? '1rem' : '0.9rem',};
+  //STYLEs
+  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em', borderRadius: '0.5em', width: '9em', height: '3em', marginLeft:'auto', 
+    fontSize: isLargeScreen ? '0.95rem' : '0.9rem'};
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '80px', marginBottom:'1em' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent:'center', marginBottom:'1em' }}>
       <Box>
         <Typography
-          variant='h5'
           color='#FF9900'
           fontWeight='bold'
-          sx={{ mb: '5px' }}
+          sx={{ mb: '5px', fontSize:isLargeScreen ? '2em' : '1.4em' }}
         >
           Daftar Fasilitas Kos
         </Typography>
@@ -523,8 +522,8 @@ const TambahFasilitas = ({
                                 </Typography>
                             </Box>
                             <div align="center">
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em', borderRadius: '0.5em', width: '9em', fontSize: isLargeScreen ? '1.2rem' : '0.9rem'}} onClick={handleSubmitFasilitasKamar}>Ya, simpan</Button>
-                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em', borderRadius: '0.5em', width: '9em', fontSize: isLargeScreen ? '1.2rem' : '0.9rem'}} onClick={handleClose}>Kembali</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#E21111', color:"white", padding:'0.5em', borderRadius: '0.5em', width: '9em' }} onClick={handleSubmitFasilitasKamar}>Ya, simpan</Button>
+                                <Button type='submit' style={{margin:'0.5em', backgroundColor:'#69AC77', color:"white", padding:'0.5em', borderRadius: '0.5em', width: '9em' }} onClick={handleClose}>Kembali</Button>
                             </div>
                         </form>
                     </Box>

@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { Box, Button, Modal, useMediaQuery } from "@mui/material";
 import axiosClient from "../../axios-client";
 import React, { useState } from "react";
 import SuccessModal from "../../components/SuccessModal";
@@ -9,12 +9,12 @@ const HapusFasilitas = ({
     id_fasilitas_umum,
     fetchData,
 }) => {
-    const btnstyle1 = { margin: '0.2em', backgroundColor: '#FF9900', color: "white", borderRadius: '0.5em' };
     const [open, setOpen] = React.useState(false);
     const handleClose = () => {setOpen(false)};
     const handleOpen = () => {setOpen(true)};
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const isLargeScreen = useMediaQuery("(min-width: 1280px)");
 
     const onDelete = async (e) => {
         e.preventDefault();
@@ -37,7 +37,7 @@ const HapusFasilitas = ({
 
     return (
         <>
-            <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleOpen}>Hapus</Button>
+            <Button style={{ backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em', fontSize:isLargeScreen ? '1.1em' : '0.9em'}} onClick={handleOpen}>Hapus</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -48,8 +48,8 @@ const HapusFasilitas = ({
                     <form onSubmit={onDelete}>
                         <h3 id="parent-modal-title" textstyle="bold">Hapus Fasilitas yang Dipilih ?</h3>
                         <div align="center">
-                            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} >Ya, hapus</Button>
-                            <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }}>Kembali</Button>
+                            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} >Ya, hapus</Button>
+                            <Button type='button' onClick={handleClose} style={{ margin: '0.5em', backgroundColor: '#69AC77', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }}>Kembali</Button>
                         </div>
                     </form>
                 </Box>

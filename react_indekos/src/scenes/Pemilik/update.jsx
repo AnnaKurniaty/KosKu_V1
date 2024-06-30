@@ -2,19 +2,24 @@ import React, { useState } from "react";
 import { Box, Button, Modal, TextField, IconButton, InputAdornment } from "@mui/material";
 import axiosClient from "../../axios-client";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import SuccessModal from "../../components/SuccessModal";
+import ErrorModal from "../../components/ErrorModal";
 
-const Update = ({ user, style, fetchData }) => {
+const Update = ({ user, style, fetchData, userId }) => {
   const [formData, setFormData] = useState({
     nama_lengkap: user.nama_lengkap,
     alamat_pemilik: user.alamat_pemilik,
     nomor_telepon: user.nomor_telepon,
-    password: user.password,
-    confirmPassword: '' // Field tambahan untuk konfirmasi password
+    password: '',
+    confirmPassword: ''
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -27,26 +32,39 @@ const Update = ({ user, style, fetchData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validasi konfirmasi password
-    if (formData.password !== formData.confirmPassword) {
-      alert("Konfirmasi password tidak sesuai");
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      setErrorMessage('Konfirmasi password tidak sesuai');
+      setOpenErrorModal(true);
       return;
     }
 
+    const data = {
+      nama_lengkap: formData.nama_lengkap,
+      alamat_pemilik: formData.alamat_pemilik,
+      nomor_telepon: formData.nomor_telepon,
+    };
+
+    if (formData.password) {
+      data.password = formData.password;
+      data.password_confirmation = formData.confirmPassword;
+    }
+
     try {
-      const response = await axiosClient.post(`/edit-pemilik/${user.id}`, formData, {
+      const response = await axiosClient.post(`/edit-pemilik/${userId}`, data, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
       });
 
-      console.log('Response:', response.data);
+      setSuccessMessage('Data pemilik berhasil diubah');
+      setOpenSuccessModal(true);
       handleClose();
       fetchData();
     } catch (error) {
-      console.error('Error:', error);
-      // Handle error display or logging as needed
+      console.error('Error:', error.response.data.errors);
+      setErrorMessage('Gagal mengubah data pemilik');
+      setOpenErrorModal(true);
     }
   };
 
@@ -151,6 +169,16 @@ const Update = ({ user, style, fetchData }) => {
           </form>
         </Box>
       </Modal>
+      <SuccessModal
+        open={openSuccessModal}
+        handleClose={() => setOpenSuccessModal(false)}
+        message={successMessage}
+      />
+      <ErrorModal
+        open={openErrorModal}
+        handleClose={() => setOpenErrorModal(false)}
+        message={errorMessage}
+      />
     </>
   );
 }

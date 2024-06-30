@@ -148,6 +148,7 @@ const Pemilik = () => {
                         style={style}
                         user={user}
                         fetchData={fetchData}
+                        userId={user.id}
                     />
                     </div>
                 </form>

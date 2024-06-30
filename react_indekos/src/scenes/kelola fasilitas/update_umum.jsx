@@ -1,4 +1,4 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import { Box, Button, Modal, TextField, Typography, useMediaQuery } from "@mui/material";
 import React, { useState } from "react";
 import axiosClient from "../../axios-client";
 import SuccessModal from "../../components/SuccessModal";
@@ -8,6 +8,7 @@ const EditUmum = ({
     style,
     handleTabUmum,
     fasilitas_umum,
+    fetchData,
 }) => {
 
     const [open, setOpen] = React.useState(false);
@@ -15,7 +16,7 @@ const EditUmum = ({
     const handleOpen = () => {setOpen(true)};
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-
+    const isLargeScreen = useMediaQuery("(min-width: 1280px)");
     const [formData, setFormData] = useState({
         'nama_fasilitas': fasilitas_umum.nama_fasilitas,
         'jumlah_fasilitas': fasilitas_umum.jumlah_fasilitas,
@@ -62,6 +63,7 @@ const EditUmum = ({
         setSuccessMessage('Fasilitas berhasil diubah');
         handleClose();
         handleTabUmum();
+        fetchData();
         } catch (error) {
         console.error('Error:', error.response.data.errors);
         setErrorMessage('Fasilitas gagal diubah');
@@ -71,7 +73,7 @@ const EditUmum = ({
 
     return (
         <>
-            <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleOpen}>Edit</Button>
+            <Button style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em', fontSize:isLargeScreen ? '1.1em' : '0.9em'}} onClick={handleOpen}>Edit</Button>
             <Modal
                 open={open}
                 onClose={handleClose}

@@ -29,8 +29,9 @@ const Detail = ({
   handleTab,
   fasilitasKamarList,
   gedungId,
+  fetchData,
 }) => {
-  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '10em' };
+  const btnstyle = { margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '10em', height:'3em' };
   const [errorMessage, setErrorMessage] = useState('');
   const [open, setOpen] = React.useState(false);
   const handleClose = () => { setOpen(false); };
@@ -50,10 +51,6 @@ const Detail = ({
     setFormData({ ...formData, [name]: value });
   };
 
-  // const handleFileChange = (e) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.files[0] });
-  // };
-
   const [selectedFasilitasIds, setSelectedFasilitasIds] = useState([]);
 
   useEffect( () => {
@@ -62,12 +59,9 @@ const Detail = ({
     }
   }, [formData.id_fasilitas_list]);
 
-  console.log("INI fasilitas : ", kamar);
-  console.log("INI KAMAR FASILITAS : ", fasilitasKamarList);
-
   return (
     <>
-      <Button style={btnstyle} onClick={handleOpen}>Lihat Detail</Button>
+      <Button sx={{margin: '0.5em', backgroundColor: '#FF9900', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '10em', height:'3em'}} onClick={handleOpen}>Lihat Detail</Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -164,6 +158,7 @@ const Detail = ({
                 handleTab={handleTab}
                 fasilitasKamarList={fasilitasKamarList}
                 gedungId={gedungId}
+                fetchData={fetchData}
               />
               <Button type='submit' style={{margin:'0.5em', backgroundColor:'#FF9900', color:"white", padding:'0.5em 0', borderRadius: '0.5em', width: '7em', height:'3em'}} onClick={handleClose}>Kembali</Button>
             </div>

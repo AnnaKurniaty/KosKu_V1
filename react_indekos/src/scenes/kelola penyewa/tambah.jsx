@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../../axios-client";
+import { styled } from '@mui/material/styles';
+import FormGroup from '@mui/material/FormGroup';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTheme, Grid, Paper, TextField, Typography, Button, Select, MenuItem, Modal, Box } from '@mui/material';
+import { useTheme, Container, Paper, TextField, Typography, Button, Select, MenuItem, Modal, Box, List, ListItem, ListItemText } from '@mui/material';
 
 const style = {
   position: 'absolute',
@@ -18,6 +20,12 @@ const style = {
   borderRadius: '1em'
 };
 
+const FormGroupContainer = styled(FormGroup)({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: '1px',
+});
+
 const Tambah = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -25,8 +33,8 @@ const Tambah = () => {
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successOpen, setSuccessOpen] = useState(false);
-  const [loading, setLoading] = React.useState(true);
-  const [userId, setUserId] = React.useState(null);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
 
   // State untuk input form
   const [formData, setFormData] = useState({
@@ -42,6 +50,8 @@ const Tambah = () => {
 
   const [kamarList, setKamarList] = useState([]);
   const [selectedKamar, setSelectedKamar] = useState('');
+  const [fasilitasKamar, setFasilitasKamar] = useState([]);
+  const [fasilitasUmum, setFasilitasUmum] = useState([]);
 
   const openError = (message) => {
     setErrorMessage(message);
@@ -56,12 +66,9 @@ const Tambah = () => {
     const fetchKamar = async () => {
       setLoading(true);
       try {
-        // if (location.state && location.state.userId) {
-        //   setUserId(location.state.userId);
-          let id_penyewa = location.pathname.split('/')[2]
-          const response = await axiosClient.get(`/kamar-kosong/`+id_penyewa);
-          setKamarList(response.data);
-        // }
+        let id_penyewa = location.pathname.split('/')[2]
+        const response = await axiosClient.get(`/kamar-kosong/`+id_penyewa);
+        setKamarList(response.data);
       } catch (error) {
         console.error("Failed to fetch data", error);
       } finally {
@@ -70,7 +77,19 @@ const Tambah = () => {
     };
 
     fetchKamar();
-  }, [location.pathname]); // Tambahkan location.state sebagai dependency
+  }, [location.pathname]);
+
+  const fetchFasilitas = async (id_kamar) => {
+    try {
+      const response = await axiosClient.get(`/fasilitasKamar/${id_kamar}`);
+      setFasilitasKamar(response.data.fasilitas_kamar);
+
+      const responseUmum = await axiosClient.get(`/fasilitasUmum/${id_kamar}`);
+      setFasilitasUmum(responseUmum.data.fasilitas_umum);
+    } catch (error) {
+      console.error("Failed to fetch fasilitas", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -82,8 +101,10 @@ const Tambah = () => {
   };
 
   const handleKamarChange = (e) => {
-    setSelectedKamar(e.target.value);
-    setFormData({ ...formData, id_kamar: e.target.value });
+    const id_kamar = e.target.value;
+    setSelectedKamar(id_kamar);
+    setFormData({ ...formData, id_kamar });
+    fetchFasilitas(id_kamar);
   };
 
   const handleSubmit = async (e) => {
@@ -125,7 +146,7 @@ const Tambah = () => {
 
   const paperStyle = {
     padding: 20,
-    height: "auto",
+    maxHeight: 600,
     width: 300,
     backgroundColor: theme.palette.background.alt,
     borderRadius: '3rem',
@@ -135,10 +156,11 @@ const Tambah = () => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
+    overflowY: 'auto'
   };
 
   return (
-    <Grid container justifyContent="center" alignItems="center" style={{ height: '100vh' }}>
+    <Container maxWidth="sm" style={{ height: '100vh' }}>
       <Paper elevation={10} style={paperStyle}>
         <h3 id="parent-modal-title" style={{ fontWeight: 'bold' }} align="center">Tambah Penyewa</h3>
         <form>
@@ -209,6 +231,38 @@ const Tambah = () => {
               </MenuItem>
             ))}
           </Select>
+          {selectedKamar && (
+            <>
+              <Typography align='left' marginTop='10px'>
+                Fasilitas Kamar:
+              </Typography>
+              <Box sx={{ maxHeight: 80, overflow: 'auto'}}>
+                <FormGroupContainer>
+                  <List>
+                    {fasilitasKamar.map((fasilitas) => (
+                      <ListItem key={fasilitas.id_fasilitas}>
+                        - <ListItemText primary={fasilitas.nama_fasilitas} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </FormGroupContainer>
+              </Box>
+              <Typography align='left' marginTop='10px'>
+                Fasilitas Umum:
+              </Typography>
+              <Box sx={{ maxHeight: 80, overflow: 'auto'}}>
+                <FormGroupContainer>
+                  <List>
+                    {fasilitasUmum && fasilitasUmum.map((fasilitas) => (
+                      <ListItem key={fasilitas.id_fasilitas}>
+                        - <ListItemText primary={fasilitas.nama_fasilitas} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </FormGroupContainer>
+              </Box>
+            </>
+          )}
           <TextField
             label='Tanggal Mulai Sewa'
             variant='standard'
@@ -241,7 +295,7 @@ const Tambah = () => {
             </Typography>
           </Box>
           <div align="center">
-            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={handleSubmit}>Ya, Simpan</Button>
+            <Button type='submit' style={{ margin: '0.5em', backgroundColor: '#E21111', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} onClick={handleSubmit}>Ya, Simpan</Button>
           </div>
         </form>
       </Paper>
@@ -252,8 +306,7 @@ const Tambah = () => {
         aria-describedby="success-modal-description"
       >
         <Box sx={{ ...style }}>
-          <Typography id="success-modal
-          title" variant="h6" component="h2">
+          <Typography id="success-modal-title" variant="h6" component="h2">
             Penyewa Berhasil Ditambahkan
           </Typography>
           <Typography id="success-modal-description" sx={{ mt: 2 }}>
@@ -275,10 +328,10 @@ const Tambah = () => {
         <Box sx={{ ...style, width: 320, padding: 2 }} align="center">
           <Typography variant="h6" id="success-modal-title" style={{ fontWeight: 'bold' }}>Error</Typography>
           <Typography>{errorMessage}</Typography>
-          <Button style={{ margin: '0.5em', backgroundColor: '#FF0000', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '2em' }} onClick={closeError}>Tutup</Button>
+          <Button style={{ margin: '0.5em', backgroundColor: '#FF0000', color: "white", padding: '0.5em 0', borderRadius: '0.5em', width: '7em', height: '3em' }} onClick={closeError}>Tutup</Button>
         </Box>
       </Modal>
-    </Grid>
+    </Container>
   );
 };
 
